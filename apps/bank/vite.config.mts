@@ -2,24 +2,20 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/bank',
-  server:{
+  server: {
     port: 4200,
     host: 'localhost',
   },
-  preview:{
+  preview: {
     port: 4200,
     host: 'localhost',
   },
- plugins: [react(), nxViteTsPaths(), tailwindcss()],  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ nxViteTsPaths() ],
-  // },
+  plugins: [react(), tsconfigPaths(), tailwindcss()],
   build: {
     outDir: '../../dist/apps/bank',
     emptyOutDir: true,
@@ -38,6 +34,6 @@ export default defineConfig(() => ({
     coverage: {
       reportsDirectory: '../../coverage/apps/bank',
       provider: 'v8' as const,
-    }
+    },
   },
 }));
