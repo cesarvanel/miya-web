@@ -12,7 +12,8 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "moduleResolution": "bundler",   // ← le fix
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
 
     "paths": {
       "@miya/ui": ["./libs/ui/src/index.ts"],
