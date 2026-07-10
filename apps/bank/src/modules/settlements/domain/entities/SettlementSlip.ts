@@ -1,8 +1,21 @@
-import { createEntityAdapter } from "@reduxjs/toolkit";
+import { createEntityAdapter } from '@reduxjs/toolkit';
 
-export type SettlementStatus = 'PendingValidation' | 'Validated' | 'Rejected';
+export const SettlementStatus = {
+  PendingValidation: 'PendingValidation',
+  Validated: 'Validated',
+  Rejected: 'Rejected',
+} as const;
+export type SettlementStatus =
+  (typeof SettlementStatus)[keyof typeof SettlementStatus];
 
-export type SettlementLineStatus = 'collected' | 'extra' | 'absent' | 'disputed';
+export const SettlementLineStatus = {
+  Collected: 'collected',
+  Extra: 'extra',
+  Absent: 'absent',
+  Disputed: 'disputed',
+} as const;
+export type SettlementLineStatus =
+  (typeof SettlementLineStatus)[keyof typeof SettlementLineStatus];
 
 export interface SettlementLine {
   clientId: string;

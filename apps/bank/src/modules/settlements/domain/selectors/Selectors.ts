@@ -1,7 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { Money } from '@miya/kernel';
 import type { BankRootState } from '@/config/stores/store';
-import {SettlementsAdapter, type SettlementSlip } from '../entities/SettlementSlip';
+import {
+  SettlementsAdapter,
+  SettlementStatus,
+  type SettlementSlip,
+} from '../entities/SettlementSlip';
 import { SettlementLineStatusTotal, SlipSubtotals } from '../types/Type';
 
 const adapterSelectors = SettlementsAdapter.getSelectors(
@@ -16,7 +20,7 @@ export const selectSlipById = (
 ): SettlementSlip | undefined => adapterSelectors.selectById(state, id);
 
 export const selectQueue = createSelector([selectAllSlips], (slips) =>
-  slips.filter((slip) => slip.status === 'PendingValidation'),
+  slips.filter((slip) => slip.status === SettlementStatus.PendingValidation),
 );
 
 export const selectQueueTotal = createSelector([selectQueue], (queue) =>

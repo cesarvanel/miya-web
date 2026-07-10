@@ -1,4 +1,4 @@
-import { getErrorState, type ForceAbleArg } from '@miya/kernel';
+import { getErrorState } from '@miya/kernel';
 import { createBankCachedAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { FetchSettlementQueueResponse } from './FetchSettlementQueueResponse';
 import { FetchSettlementQueueCommand } from './FetchSettlementQueueCommand';

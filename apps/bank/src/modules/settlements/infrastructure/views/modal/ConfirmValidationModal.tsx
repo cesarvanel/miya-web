@@ -3,10 +3,9 @@ import { Button, Modal } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { useModal } from '@/shared/modals';
-import { ValidateSettlementAsync } from '../../application/usecases/ValidateSettlementAsync';
-import { selectSlipById } from '../../domain/selectors/Selectors';
+import { ValidateSettlementAsync } from '../../../application/usecases/validate-settlement-async/ValidateSettlementAsync';
+import { selectSlipById } from '../../../domain/selectors/Selectors';
 
-/** Confirmation avant validation croisée — montant système en évidence. */
 export const ConfirmValidationModal: React.FC = () => {
   const { isOpen, props, close } = useModal('confirmValidation');
   const dispatch = useBankDispatch();

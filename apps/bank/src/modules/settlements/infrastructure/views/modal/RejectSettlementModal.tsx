@@ -3,10 +3,9 @@ import { AmountInput, Button, Modal } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { useModal } from '@/shared/modals';
-import { RejectSettlementAsync } from '../../application/usecases/RejectSettlementAsync';
-import { selectSlipById } from '../../domain/selectors/Selectors';
+import { RejectSettlementAsync } from '../../../application/usecases/reject-settlement-async/RejectSettlementAsync';
+import { selectSlipById } from '../../../domain/selectors/Selectors';
 
-/** Rejet d'un reversement — motif obligatoire + écart Attendu/Reçu/Manquant en Money. */
 export const RejectSettlementModal: React.FC = () => {
   const { isOpen, props, close } = useModal('rejectSettlement');
   const dispatch = useBankDispatch();

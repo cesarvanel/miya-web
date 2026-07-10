@@ -1,5 +1,3 @@
-import { ForceAbleArg } from "@miya/kernel";
+import type { ForceAbleArg } from '@miya/kernel';
 
-export interface FetchSettlementQueueCommand extends ForceAbleArg {
- 
-}
+export type FetchSettlementQueueCommand = ForceAbleArg;

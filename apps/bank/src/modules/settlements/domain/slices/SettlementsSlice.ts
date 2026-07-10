@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { SettlementsAdapter, type SettlementSlip } from '../entities/SettlementSlip';
-import { FetchSettlementQueueAsync } from '../..';
-
+import { FetchSlipAsync } from '../../application/usecases/fetch-slip-async/FetchSlipAsync';
+import { FetchSettlementQueueAsync } from '../../application/usecases/fetch-settlement-queue-async/FetchSettlementQueueAsync';
+import { SettlementsAdapter, SettlementStatus } from '../entities/SettlementSlip';
 
 const initialState = SettlementsAdapter.getInitialState();
 
@@ -11,13 +11,10 @@ export const settlementsSlice = createSlice({
   name: 'settlements',
   initialState,
   reducers: {
-    slipLoaded: (state, action: PayloadAction<SettlementSlip>) => {
-      SettlementsAdapter.upsertOne(state, action.payload);
-    },
     validate: (state, action: PayloadAction<{ id: string }>) => {
       SettlementsAdapter.updateOne(state, {
         id: action.payload.id,
-        changes: { status: 'Validated' },
+        changes: { status: SettlementStatus.Validated },
       });
     },
     reject: (
@@ -27,16 +24,23 @@ export const settlementsSlice = createSlice({
       const { id, reason, receivedAmount } = action.payload;
       SettlementsAdapter.updateOne(state, {
         id,
-        changes: { status: 'Rejected', rejection: { reason, receivedAmount } },
+        changes: {
+          status: SettlementStatus.Rejected,
+          rejection: { reason, receivedAmount },
+        },
       });
     },
   },
 
   extraReducers: (builder) => {
-    builder.addCase(FetchSettlementQueueAsync.fulfilled, (state, action) => {
-      SettlementsAdapter.upsertMany(state, action.payload.settlements);
-    });
-  }
+    builder
+      .addCase(FetchSettlementQueueAsync.fulfilled, (state, action) => {
+        SettlementsAdapter.upsertMany(state, action.payload.settlements);
+      })
+      .addCase(FetchSlipAsync.fulfilled, (state, action) => {
+        SettlementsAdapter.upsertOne(state, action.payload.settlement);
+      });
+  },
 });
 
 export const SettlementsActions = settlementsSlice.actions;

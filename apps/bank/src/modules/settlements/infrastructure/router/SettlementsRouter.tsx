@@ -1,23 +1,32 @@
 import React from 'react';
 import type { RouteObject } from 'react-router-dom';
 import type { BankStore } from '@/config/stores/store';
-import { SettlementQueuePage } from '../views/index/SettlementQueuePage';
-import { SlipDetailPage } from '../views/SlipDetailPage';
+import { GetSettlementSlipLoader } from '../views/detail/loaders/SettlementsLoaders';
+import { SlipDetailPage } from '../views/detail/SlipDetailPage';
 import {
-  GetSettlementQueueLoader,
-  GetSettlementSlipLoader,
-} from '../views/index/loaders/SettlementsLoaders';
+  SettlementQueuePage,
+  SettlementsIndexRedirect,
+} from '../views/index/SettlementQueuePage';
+import { GetSettlementQueueLoader } from '../views/index/loaders/SettlementsLoaders';
 import { SettlementsRoutes } from './SettlementsRoutes';
 
+/**
+ * Layout + enfants imbriqués : la file (gauche) reste montée, seul le
+ * panneau détail (droite, <Outlet/>) change avec l'id sélectionné —
+ * un seul écran, comme sur la maquette 2a.
+ */
 export const SettlementsRouter = (store: BankStore): RouteObject[] => [
   {
     path: SettlementsRoutes.base,
     element: <SettlementQueuePage />,
     loader: GetSettlementQueueLoader(store),
-  },
-  {
-    path: SettlementsRoutes.detail,
-    element: <SlipDetailPage />,
-    loader: GetSettlementSlipLoader(store),
+    children: [
+      { index: true, element: <SettlementsIndexRedirect /> },
+      {
+        path: SettlementsRoutes.detailSegment,
+        element: <SlipDetailPage />,
+        loader: GetSettlementSlipLoader(store),
+      },
+    ],
   },
 ];
