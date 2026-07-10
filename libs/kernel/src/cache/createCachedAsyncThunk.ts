@@ -7,29 +7,19 @@ import {
 } from '@reduxjs/toolkit';
 import { cacheSlice, markFetched, type CacheState } from './cacheSlice';
 
-/** Cached use case arguments may carry `force: true` to bypass freshness. */
-export interface ForceableArg {
+export interface ForceAbleArg {
   force?: boolean;
 }
 
 export interface CachedAsyncThunkOptions<TArg> {
-  /** Cache entry key, static or derived from the thunk argument. */
   key: string | ((arg: TArg) => string);
-  /** Tags letting mutations evict this entry via `invalidateTags`. */
   tags?: string[] | ((arg: TArg) => string[]);
-  /** Freshness window: a fresh entry cancels the thunk unless forced. */
   ttlMs: number;
 }
 
 const isForced = (arg: unknown): boolean =>
-  typeof arg === 'object' && arg !== null && (arg as ForceableArg).force === true;
+  typeof arg === 'object' && arg !== null && (arg as ForceAbleArg).force === true;
 
-/**
- * `createAsyncThunk` with declarative caching. The thunk is cancelled via
- * `condition` while its cache entry is fresher than `ttlMs` (unless the
- * argument carries `force: true`), and the entry's `fetchedAt` is marked
- * when the payload creator fulfills (not when it rejects).
- */
 export const createCachedAsyncThunk = <
   Returned,
   TArg = void,
@@ -48,11 +38,8 @@ export const createCachedAsyncThunk = <
     arg: TArg,
     thunkApi: GetThunkAPI<AsyncThunkConfig>,
   ) => {
-    // Intercept rejectWithValue so a `return rejectWithValue(...)` from the
-    // wrapped creator never marks the cache entry as fetched.
+ 
     let didRejectWithValue = false;
-    // Loosen the signature: the optional rejectedMeta argument only exists
-    // for configs declaring it, which TConfig may.
     const rejectWithValue = thunkApi.rejectWithValue as (
       value: unknown,
       meta?: unknown,
@@ -95,8 +82,6 @@ export const createCachedAsyncThunk = <
     },
   );
 
-  // Built with the loose default config internally: RTK normalizes TConfig
-  // through conditional types a wrapper cannot preserve. Runtime behavior is
-  // identical; the caller-facing type keeps the caller's TConfig.
+ 
   return thunk as unknown as AsyncThunk<Returned, TArg, TConfig>;
 };

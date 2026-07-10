@@ -7,7 +7,12 @@
     "types": [
       "vite/client",
       "vitest"
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@miya/ui": ["../../libs/ui/src/index.ts"],
+      "@miya/kernel": ["../../libs/kernel/src/index.ts"]
+    }
   },
   "files": [],
   "include": [],
