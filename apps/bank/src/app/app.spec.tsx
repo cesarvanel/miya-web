@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import App from './app';
 
@@ -8,8 +8,11 @@ describe('App', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should have a greeting as the title', () => {
-    const { getAllByText } = render(<App />);
-    expect(getAllByText(new RegExp('Welcome bank', 'gi')).length > 0).toBeTruthy();
+  it('shows the Miya Banque home with a link to the design system page', () => {
+    render(<App />);
+    expect(screen.getByText(/Miya/)).toBeDefined();
+    expect(
+      screen.getByRole('link', { name: /Design system/i }),
+    ).toBeDefined();
   });
 });

@@ -1,0 +1,148 @@
+/*
+ * Preset Tailwind v4 partagé — Miya.
+ * Source de vérité : design/tokens/tokens.json (extrait des maquettes
+ * design/Miya Web - Spec.dc.html). Ne pas inventer de valeurs ici :
+ * toute nouvelle entrée doit d'abord exister dans design/tokens/.
+ *
+ * Usage (styles.css d'une app) :
+ *   @import 'tailwindcss';
+ *   @import '../../../libs/ui/src/styles/theme.css';
+ */
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/space-grotesk';
+
+@theme {
+  /* — Fonds & surfaces — */
+  --color-cream: #f6f5f1;
+  --color-cream-50: #faf9f5;
+  --color-cream-100: #f1efe8;
+  --color-card: #ffffff;
+  --color-line: #ebe9e2;
+  --color-line-soft: #f0eee8;
+  --color-line-faint: #f3f1eb;
+  --color-scrim: rgb(11 20 15 / 50%);
+
+  /* — Texte — */
+  --color-ink: #16241e;
+  --color-ink-muted: #6b7069;
+  --color-ink-faint: #8a8a82;
+  --color-ink-soft: #9a9c93;
+  --color-ink-disabled: #b9bab2;
+
+  /* — Émeraude primaire — */
+  --color-primary: #0a6b4e;
+  --color-primary-deep: #0b3b2a;
+  --color-primary-bright: #7fd8ae;
+  --color-primary-soft: #dceae3;
+  --color-primary-tint: #a9d6c4;
+  --color-primary-muted: #6fa98f;
+
+  /* — Ambre — */
+  --color-amber: #b5771a;
+  --color-amber-strong: #e08a1e;
+  --color-amber-fill-end: #e2761a;
+  --color-amber-soft: #fbeed8;
+  --color-amber-border: #efd3a0;
+  --color-amber-deep: #96702a;
+  --color-amber-track: #f0e4c6;
+
+  /* — Rouge — */
+  --color-danger: #c43b32;
+  --color-danger-soft: #fbebe9;
+  --color-danger-deep: #96382f;
+
+  /* — Bleu / violet / olive / neutre (badges & avatars) — */
+  --color-info: #2a6ba8;
+  --color-info-soft: #e1edf9;
+  --color-info-tint: #cfe3f5;
+  --color-violet: #7a56a8;
+  --color-violet-soft: #e6dcf2;
+  --color-olive: #5a7a26;
+  --color-olive-soft: #d9e7c4;
+  --color-orange-avatar: #b5661a;
+  --color-orange-avatar-soft: #f3d9c0;
+  --color-neutral: #8a8a82;
+  --color-neutral-soft: #efede7;
+
+  /* — Typo — */
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', sans-serif;
+  --font-num: 'Space Grotesk Variable', 'Space Grotesk', sans-serif;
+
+  /* — Radii — */
+  --radius-input: 12px;
+  --radius-tile: 12px;
+  --radius-card-sm: 16px;
+  --radius-card: 20px;
+  --radius-card-lg: 22px;
+  --radius-modal: 24px;
+  --radius-gauge: 6px;
+
+  /* — Ombres — */
+  --shadow-modal: 0 50px 100px -30px rgb(0 0 0 / 60%);
+  --shadow-toast: 0 24px 50px -18px rgb(0 0 0 / 35%), 0 0 0 1px rgb(0 0 0 / 4%);
+  --shadow-primary-glow: 0 14px 28px -12px rgb(10 107 78 / 60%);
+  --shadow-primary-glow-sm: 0 6px 18px rgb(10 107 78 / 35%);
+  --shadow-danger-glow: 0 12px 24px -12px rgb(196 59 50 / 60%);
+  --shadow-focus-ring: 0 0 0 3px rgb(10 107 78 / 14%);
+  --shadow-danger-ring: 0 0 0 4px rgb(196 59 50 / 12%);
+
+  /* — Animations (durées/courbes des maquettes) — */
+  --animate-modal-in: modal-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-scrim-in: scrim-in 0.2s ease-out;
+  --animate-toast-in: toast-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes scrim-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+}
+
+/* Montants : Space Grotesk + chiffres tabulaires (classe .num des maquettes). */
+@utility num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}

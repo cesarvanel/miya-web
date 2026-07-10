@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+@import '../../../libs/ui/src/styles/theme.css';
+
+/* Tailwind doit scanner les sources de libs/ui utilisées par l'app. */
+@source '../../../libs/ui/src';
