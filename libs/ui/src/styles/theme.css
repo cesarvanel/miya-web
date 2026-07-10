@@ -64,6 +64,25 @@
   --color-neutral: #8a8a82;
   --color-neutral-soft: #efede7;
 
+  /* — Sidebar (fond primary-deep) & header — */
+  --color-sidebar-item: #b7d6c8;
+  --color-sidebar-icon: #8fbbaa;
+  --color-sidebar-heading: #5f9680;
+  --color-badge-amber: #e5a93b;
+  --color-badge-amber-ink: #3a2a08;
+  --color-header-line: #e9e6de;
+
+  /* — Sidebar console éditeur (Miya Admin - Spec) — */
+  --color-admin-sidebar: #13201b;
+  --color-admin-primary: #0f9e6c;
+  --color-admin-accent: #5fd6a5;
+  --color-admin-chip-text: #8fe3c0;
+  --color-admin-muted: #6e9285;
+  --color-admin-heading: #5e7e72;
+  --color-admin-item: #a9c0b6;
+  --color-admin-icon: #7fa093;
+  --color-admin-badge-ink: #c9dcd3;
+
   /* — Typo — */
   --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', sans-serif;
   --font-num: 'Space Grotesk Variable', 'Space Grotesk', sans-serif;
