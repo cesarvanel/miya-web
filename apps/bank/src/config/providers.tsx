@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { startDashboardActivitySimulation } from '@/modules/dashboard';
+import { startCollectionsActivitySimulation } from '@/modules/collections';
 import { startDisputesActivitySimulation } from '@/modules/disputes';
 import { bankDependencies } from './stores/dependencies/dependencies';
 import { FakeRealtimeClient } from './stores/socket/realtime';
@@ -26,10 +26,10 @@ export const BankProviders: React.FC<BankProvidersProps> = ({ children }) => {
   useEffect(() => {
     // StrictMode monte deux fois en dev : connect/disconnect doit rester idempotent.
     realtimeClient.connect();
-    const stopDashboardSimulation = startDashboardActivitySimulation(realtimeClient);
+    const stopCollectionsSimulation = startCollectionsActivitySimulation(realtimeClient);
     const stopDisputesSimulation = startDisputesActivitySimulation(realtimeClient);
     return () => {
-      stopDashboardSimulation();
+      stopCollectionsSimulation();
       stopDisputesSimulation();
       realtimeClient.disconnect();
     };

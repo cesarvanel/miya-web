@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Money } from '@miya/kernel';
+import { collectionConfirmed, partialDepositValidated, roundClosed } from '@/modules/collections';
 import { disputeOpened, disputeResolved } from '@/modules/disputes';
 import { FetchDaySummaryAsync } from '../../application/usecases/fetch-day-summary-async/FetchDaySummaryAsync';
 import { ActivityEventKind, ActivityEventsAdapter } from '../entities/ActivityEvent';
-import { AgentDaySummariesAdapter } from '../entities/AgentDaySummary';
-import { collectionConfirmed } from '../events/Events';
+import { AgentDayStatus, AgentDaySummariesAdapter } from '../entities/AgentDaySummary';
 
 const initialState = {
   agents: AgentDaySummariesAdapter.getInitialState(),
@@ -75,6 +75,29 @@ export const dashboardSlice = createSlice({
           AgentDaySummariesAdapter.updateOne(state.agents, {
             id: agentId,
             changes: { openDisputesCount: Math.max(0, agent.openDisputesCount - 1) },
+          });
+        }
+      })
+      .addCase(partialDepositValidated, (state, action) => {
+        const { agentId, amount } = action.payload;
+        const agent = state.agents.entities[agentId];
+        if (agent) {
+          AgentDaySummariesAdapter.updateOne(state.agents, {
+            id: agentId,
+            changes: { cashInHand: Math.max(0, agent.cashInHand - amount) },
+          });
+        }
+      })
+      .addCase(roundClosed, (state, action) => {
+        const { agentId } = action.payload;
+        const agent = state.agents.entities[agentId];
+        if (agent && agent.status === AgentDayStatus.OnRound) {
+          AgentDaySummariesAdapter.updateOne(state.agents, {
+            id: agentId,
+            changes: {
+              status: AgentDayStatus.SettlementPending,
+              settlementPendingSince: new Date().toISOString(),
+            },
           });
         }
       });

@@ -33,6 +33,12 @@ export const selectQueueTotal = createSelector([selectQueue], (queue) =>
 /** Compteur pour la pastille de nav « Reversements » — bordereaux en attente de validation. */
 export const selectPendingCount = createSelector([selectQueue], (queue) => queue.length);
 
+/** Bordereau en attente d'un agent — consommé par disputes (impact reversement de la résolution). */
+export const selectPendingSlipByAgentId = createSelector(
+  [selectQueue, (_state: BankRootState, agentId: string) => agentId],
+  (queue, agentId) => queue.find((slip) => slip.agentId === agentId),
+);
+
 
 const emptyTotal = (): SettlementLineStatusTotal => ({
   count: 0,
@@ -66,5 +72,6 @@ export const SettlementSelectors = {
   selectQueue,
   selectQueueTotal,
   selectPendingCount,
+  selectPendingSlipByAgentId,
   selectSlipSubtotals,
 };

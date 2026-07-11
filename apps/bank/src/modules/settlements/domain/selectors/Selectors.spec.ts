@@ -5,7 +5,7 @@ import {
   SettlementKind,
   type SettlementSlip,
 } from '../entities/SettlementSlip';
-import { selectPendingCount } from './Selectors';
+import { selectPendingCount, selectPendingSlipByAgentId } from './Selectors';
 
 const makeSlip = (overrides: Partial<SettlementSlip> = {}): SettlementSlip => ({
   id: 'BRD-1',
@@ -46,6 +46,24 @@ describe('settlements selectors', () => {
     it('returns zero when there is nothing pending', () => {
       const state = makeState([makeSlip({ status: SettlementStatus.Validated })]);
       expect(selectPendingCount(state)).toBe(0);
+    });
+  });
+
+  describe('selectPendingSlipByAgentId', () => {
+    it('finds the pending slip for the given agent — used by disputes (impact reversement)', () => {
+      const state = makeState([
+        makeSlip({ id: 'BRD-2026-0703-02', agentId: 'agent-grace-atangana', slipNumber: 'BRD-2026-0703-02' }),
+        makeSlip({ id: 'BRD-other', agentId: 'agent-other' }),
+      ]);
+
+      const slip = selectPendingSlipByAgentId(state, 'agent-grace-atangana');
+
+      expect(slip?.slipNumber).toBe('BRD-2026-0703-02');
+    });
+
+    it('returns undefined when the agent has no pending slip', () => {
+      const state = makeState([makeSlip({ agentId: 'agent-1', status: SettlementStatus.Validated })]);
+      expect(selectPendingSlipByAgentId(state, 'agent-1')).toBeUndefined();
     });
   });
 });

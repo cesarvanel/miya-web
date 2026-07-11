@@ -34,6 +34,16 @@ export const selectOpenDisputesForAgent = createSelector(
 export const selectDisputeGap = (dispute: Dispute): number =>
   dispute.client.declaredAmount - dispute.agent.enteredAmount;
 
+/** Délai ouverture → décision, en minutes — null si non résolue. Calculé, jamais stocké. */
+export const selectResolutionDelayMinutes = (dispute: Dispute): number | null => {
+  if (!dispute.resolution) {
+    return null;
+  }
+  const openedAt = new Date(dispute.openedAt).getTime();
+  const decidedAt = new Date(dispute.resolution.decidedAt).getTime();
+  return Math.max(0, Math.round((decidedAt - openedAt) / 60_000));
+};
+
 export const DisputesSelectors = {
   selectAllDisputes,
   selectDisputeById,
@@ -42,4 +52,5 @@ export const DisputesSelectors = {
   selectOpenCount,
   selectOpenDisputesForAgent,
   selectDisputeGap,
+  selectResolutionDelayMinutes,
 };

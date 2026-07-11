@@ -1,6 +1,11 @@
 import type { BankRootState } from '@/config/stores/store';
 import { DisputesAdapter, DisputeStatus, type Dispute } from '../entities/Dispute';
-import { selectDisputeGap, selectOpenCount, selectOpenDisputesForAgent } from './Selectors';
+import {
+  selectDisputeGap,
+  selectOpenCount,
+  selectOpenDisputesForAgent,
+  selectResolutionDelayMinutes,
+} from './Selectors';
 
 const makeDispute = (overrides: Partial<Dispute> = {}): Dispute => ({
   id: 'CT-1',
@@ -61,6 +66,26 @@ describe('disputes selectors', () => {
         client: { id: 'client-1', name: 'Client Un', declaredAmount: 1_000 },
       });
       expect(selectDisputeGap(dispute)).toBe(500);
+    });
+  });
+
+  describe('selectResolutionDelayMinutes', () => {
+    it('returns null for an open dispute', () => {
+      expect(selectResolutionDelayMinutes(makeDispute({ status: DisputeStatus.Open }))).toBeNull();
+    });
+
+    it('computes the elapsed minutes between opening and decision for a resolved dispute', () => {
+      const dispute = makeDispute({
+        status: DisputeStatus.Resolved,
+        openedAt: '2026-07-03T09:00:00.000Z',
+        resolution: {
+          decidedInFavorOf: 'Client',
+          reason: 'x',
+          decidedBy: 'A. Mbarga',
+          decidedAt: '2026-07-03T13:20:00.000Z',
+        },
+      });
+      expect(selectResolutionDelayMinutes(dispute)).toBe(260);
     });
   });
 });

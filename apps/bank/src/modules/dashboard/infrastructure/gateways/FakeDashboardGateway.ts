@@ -1,3 +1,4 @@
+import { AGENTS_ROSTER } from '@/config/fixtures/AgentsRosterFixture';
 import type { DashboardGateway } from '../../application/ports/DashboardGateway';
 import type { FetchDaySummaryResponse } from '../../application/usecases/fetch-day-summary-async/FetchDaySummaryResponse';
 import { ActivityEventKind, type ActivityEvent } from '../../domain/entities/ActivityEvent';
@@ -8,76 +9,60 @@ const minutesAgo = (minutes: number): string =>
 
 const hoursAgo = (hours: number): string => new Date(Date.now() - hours * 3_600_000).toISOString();
 
-/** Résumés du jour — données exactes de la maquette 1a (5 des 10 agents). */
-const seedAgents = (): AgentDaySummary[] => [
-  {
-    agentId: 'agent-cedric-nkoulou',
-    name: 'Cédric Nkoulou',
-    zone: 'Marché Mokolo',
-    roundProgress: { visited: 34, total: 52 },
-    collectedAmount: 34_200,
-    cashInHand: 85_000,
-    cashHoldingCap: 100_000,
-    status: AgentDayStatus.OnRound,
-    openDisputesCount: 0,
-    slipId: null,
-    settlementPendingSince: null,
-  },
-  {
-    agentId: 'agent-grace-atangana',
-    name: 'Grace Atangana',
-    zone: 'Carrefour Warda',
-    roundProgress: { visited: 41, total: 45 },
-    collectedAmount: 39_500,
-    cashInHand: 52_000,
-    cashHoldingCap: 100_000,
-    status: AgentDayStatus.OnRound,
-    openDisputesCount: 1,
-    slipId: null,
-    settlementPendingSince: null,
-  },
-  {
-    // Même bordereau que FakeSettlementGateway (module settlements) : le clic
-    // "Ouvrir le bordereau" doit atterrir sur un vrai slip existant.
-    agentId: 'agent-ibrahim-sali',
-    name: 'Ibrahim Sali',
-    zone: 'Mvog-Ada',
-    roundProgress: { visited: 52, total: 52 },
-    collectedAmount: 44_500,
-    cashInHand: 44_500,
-    cashHoldingCap: 100_000,
-    status: AgentDayStatus.SettlementPending,
-    openDisputesCount: 0,
-    slipId: 'BRD-2026-0703-01',
-    settlementPendingSince: hoursAgo(2.17),
-  },
-  {
-    agentId: 'agent-jean-baptiste-owona',
-    name: 'Jean-Baptiste Owona',
-    zone: 'Essos',
-    roundProgress: { visited: 45, total: 45 },
-    collectedAmount: 47_000,
-    cashInHand: 0,
-    cashHoldingCap: 100_000,
-    status: AgentDayStatus.Validated,
-    openDisputesCount: 0,
-    slipId: null,
-    settlementPendingSince: null,
-  },
-  {
-    agentId: 'agent-rosalie-fotso',
-    name: 'Rosalie Fotso',
-    zone: 'Marché Mokolo',
-    roundProgress: { visited: 28, total: 40 },
-    collectedAmount: 21_000,
-    cashInHand: 61_000,
-    cashHoldingCap: 100_000,
-    status: AgentDayStatus.OnRound,
-    openDisputesCount: 0,
-    slipId: null,
-    settlementPendingSince: null,
-  },
-];
+/**
+ * Résumés du jour — chiffres partagés avec `collections` via
+ * `AGENTS_ROSTER` (même tournée, mêmes montants des deux côtés) ; seuls le
+ * statut dashboard, les contestations et le lien vers le reversement sont
+ * propres à ce module.
+ */
+const seedAgents = (): AgentDaySummary[] =>
+  AGENTS_ROSTER.map((agent) => {
+    if (agent.agentId === 'agent-ibrahim-sali') {
+      return {
+        agentId: agent.agentId,
+        name: agent.name,
+        zone: agent.zone,
+        roundProgress: agent.roundProgress,
+        collectedAmount: agent.collectedAmount,
+        cashInHand: agent.cashInHand,
+        cashHoldingCap: agent.cashHoldingCap,
+        status: AgentDayStatus.SettlementPending,
+        openDisputesCount: 0,
+        // Même bordereau que FakeSettlementGateway (module settlements) : le clic
+        // "Ouvrir le bordereau" doit atterrir sur un vrai slip existant.
+        slipId: 'BRD-2026-0703-01',
+        settlementPendingSince: hoursAgo(2.17),
+      };
+    }
+    if (agent.agentId === 'agent-jean-baptiste-owona') {
+      return {
+        agentId: agent.agentId,
+        name: agent.name,
+        zone: agent.zone,
+        roundProgress: agent.roundProgress,
+        collectedAmount: agent.collectedAmount,
+        cashInHand: agent.cashInHand,
+        cashHoldingCap: agent.cashHoldingCap,
+        status: AgentDayStatus.Validated,
+        openDisputesCount: 0,
+        slipId: null,
+        settlementPendingSince: null,
+      };
+    }
+    return {
+      agentId: agent.agentId,
+      name: agent.name,
+      zone: agent.zone,
+      roundProgress: agent.roundProgress,
+      collectedAmount: agent.collectedAmount,
+      cashInHand: agent.cashInHand,
+      cashHoldingCap: agent.cashHoldingCap,
+      status: AgentDayStatus.OnRound,
+      openDisputesCount: agent.agentId === 'agent-grace-atangana' ? 1 : 0,
+      slipId: null,
+      settlementPendingSince: null,
+    };
+  });
 
 /** Fil d'activité — événements exacts de la maquette 1a, horodatés en relatif. */
 const seedActivity = (): ActivityEvent[] => [

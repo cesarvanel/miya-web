@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { cacheSlice, requestStatusSlice } from '@miya/kernel';
+import { collectionsReducer } from '@/modules/collections';
 import { dashboardReducer } from '@/modules/dashboard';
 import { disputesReducer } from '@/modules/disputes';
 import { settlementsReducer } from '@/modules/settlements';
@@ -19,6 +20,7 @@ export const rootReducer = combineReducers({
   settlements: settlementsReducer,
   dashboard: dashboardReducer,
   disputes: disputesReducer,
+  collections: collectionsReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

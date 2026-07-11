@@ -17,10 +17,9 @@ export type { DashboardAlert, DashboardAlertKind, DashboardKpis } from './domain
 // Reducer (branché dans RootReducer)
 export const dashboardReducer = dashboardSlice.reducer;
 
-// Events (réalimentés par le RealtimeClient — jamais de mutation directe)
-// disputeOpened n'est pas ré-exporté ici : le module disputes en est le propriétaire canonique.
-export { collectionConfirmed } from './domain/events/Events';
-export type { CollectionConfirmedPayload } from './domain/events/Events';
+// Ce module ne possède plus d'events en propre : collectionConfirmed vient de
+// collections, disputeOpened/disputeResolved viennent de disputes — ce
+// module se contente de les consommer via leur index public respectif.
 
 // Selectors — groupés, comme prescrit par CLAUDE.md
 export const dashboardSelectors = {
@@ -42,5 +41,4 @@ export type { DashboardGateway } from './application/ports/DashboardGateway';
 
 // Infrastructure (instanciée par la composition root)
 export { FakeDashboardGateway } from './infrastructure/gateways/FakeDashboardGateway';
-export { startDashboardActivitySimulation } from './infrastructure/realtime/DashboardActivitySimulator';
 export { DashboardRouter } from './infrastructure/router/DashboardRouter';

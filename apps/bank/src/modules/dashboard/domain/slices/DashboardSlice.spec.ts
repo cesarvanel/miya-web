@@ -1,7 +1,7 @@
+import { collectionConfirmed, partialDepositValidated, roundClosed } from '@/modules/collections';
 import { disputeOpened, disputeResolved } from '@/modules/disputes';
 import { FetchDaySummaryAsync } from '../../application/usecases/fetch-day-summary-async/FetchDaySummaryAsync';
 import { AgentDaySummariesAdapter, AgentDayStatus, type AgentDaySummary } from '../entities/AgentDaySummary';
-import { collectionConfirmed } from '../events/Events';
 import { dashboardSlice } from './DashboardSlice';
 
 const makeAgent = (overrides: Partial<AgentDaySummary> = {}): AgentDaySummary => ({
@@ -61,7 +61,13 @@ describe('dashboardSlice', () => {
 
       const next = dashboardSlice.reducer(
         state,
-        collectionConfirmed({ agentId: 'agent-cedric-nkoulou', amount: 1_000, clientName: 'Bernadette Ngo' }),
+        collectionConfirmed({
+          roundId: 'agent-cedric-nkoulou',
+          agentId: 'agent-cedric-nkoulou',
+          stopId: 'stop-1',
+          amount: 1_000,
+          clientName: 'Bernadette Ngo',
+        }),
       );
 
       const updated = next.agents.entities['agent-cedric-nkoulou'];
@@ -81,7 +87,13 @@ describe('dashboardSlice', () => {
 
       const next = dashboardSlice.reducer(
         state,
-        collectionConfirmed({ agentId: 'agent-cedric-nkoulou', amount: 500, clientName: 'X' }),
+        collectionConfirmed({
+          roundId: 'agent-cedric-nkoulou',
+          agentId: 'agent-cedric-nkoulou',
+          stopId: 'stop-1',
+          amount: 500,
+          clientName: 'X',
+        }),
       );
 
       expect(next.agents.entities['agent-cedric-nkoulou']?.roundProgress.visited).toBe(52);
@@ -91,7 +103,13 @@ describe('dashboardSlice', () => {
       const state = dashboardSlice.reducer(undefined, { type: '@@init' });
       const next = dashboardSlice.reducer(
         state,
-        collectionConfirmed({ agentId: 'unknown-agent', amount: 1_000, clientName: 'X' }),
+        collectionConfirmed({
+          roundId: 'unknown-agent',
+          agentId: 'unknown-agent',
+          stopId: 'stop-1',
+          amount: 1_000,
+          clientName: 'X',
+        }),
       );
       expect(next.activity.ids).toHaveLength(1);
       expect(next.agents.ids).toEqual([]);
@@ -142,6 +160,50 @@ describe('dashboardSlice', () => {
       );
 
       expect(next.agents.entities['agent-grace-atangana']?.openDisputesCount).toBe(0);
+    });
+  });
+
+  describe('partialDepositValidated (temps réel)', () => {
+    it('decrements cashInHand, floored at zero', () => {
+      const state = stateWithAgent(makeAgent({ cashInHand: 85_000 }));
+
+      const next = dashboardSlice.reducer(
+        state,
+        partialDepositValidated({
+          roundId: 'agent-cedric-nkoulou',
+          agentId: 'agent-cedric-nkoulou',
+          amount: 15_000,
+          validatedBy: 'A. Mbarga',
+        }),
+      );
+
+      expect(next.agents.entities['agent-cedric-nkoulou']?.cashInHand).toBe(70_000);
+    });
+  });
+
+  describe('roundClosed (temps réel)', () => {
+    it('moves an OnRound agent to SettlementPending', () => {
+      const state = stateWithAgent(makeAgent({ status: AgentDayStatus.OnRound }));
+
+      const next = dashboardSlice.reducer(
+        state,
+        roundClosed({ roundId: 'agent-cedric-nkoulou', agentId: 'agent-cedric-nkoulou' }),
+      );
+
+      const agent = next.agents.entities['agent-cedric-nkoulou'];
+      expect(agent?.status).toBe(AgentDayStatus.SettlementPending);
+      expect(agent?.settlementPendingSince).toBeDefined();
+    });
+
+    it('does nothing for an agent that is not OnRound', () => {
+      const state = stateWithAgent(makeAgent({ status: AgentDayStatus.Validated }));
+
+      const next = dashboardSlice.reducer(
+        state,
+        roundClosed({ roundId: 'agent-cedric-nkoulou', agentId: 'agent-cedric-nkoulou' }),
+      );
+
+      expect(next.agents.entities['agent-cedric-nkoulou']?.status).toBe(AgentDayStatus.Validated);
     });
   });
 });

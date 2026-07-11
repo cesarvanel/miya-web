@@ -62,25 +62,26 @@ describe('makeBankStore', () => {
 
   it('lets listeners emit to the socket in reaction to a dispatched action', () => {
     const { store, realtimeClient } = makeStore();
-    // Action métier telle qu'un use case la dispatcherait après confirmation serveur.
-    const collectionConfirmed = createAction<{ collectionId: string }>(
-      'collections/collectionConfirmed',
+    // Action de démo isolée (type volontairement distinct des events réels des
+    // modules, pour ne pas percuter leurs propres reducers dans ce test générique).
+    const demoActionProcessed = createAction<{ itemId: string }>(
+      'demo/actionProcessed',
     );
 
     startBankListening({
-      actionCreator: collectionConfirmed,
+      actionCreator: demoActionProcessed,
       effect: (action) => {
         realtimeClient.emit({
-          type: 'collections/ack',
-          payload: action.payload.collectionId,
+          type: 'demo/ack',
+          payload: action.payload.itemId,
         });
       },
     });
 
-    store.dispatch(collectionConfirmed({ collectionId: 'col-1' }));
+    store.dispatch(demoActionProcessed({ itemId: 'col-1' }));
 
     expect(realtimeClient.emitted).toEqual([
-      { type: 'collections/ack', payload: 'col-1' },
+      { type: 'demo/ack', payload: 'col-1' },
     ]);
     clearBankListeners();
   });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRequestStatus } from '@miya/kernel';
+import { settlementSelectors } from '@/modules/settlements';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { openModal } from '@/shared/modals';
 import { FetchDisputesAsync } from '../../../application/usecases/fetch-disputes-async/FetchDisputesAsync';
@@ -15,6 +16,9 @@ export const useDisputeResolution = () => {
   const dispute = useBankSelector((state) => selectDisputeById(state, id));
   const openDisputes = useBankSelector(selectOpenDisputes);
   const { isPending } = useRequestStatus(FetchDisputesAsync);
+  const pendingSlip = useBankSelector((state) =>
+    dispute ? settlementSelectors.selectPendingSlipByAgentId(state, dispute.agent.id) : undefined,
+  );
 
   const position = openDisputes.findIndex((candidate) => candidate.id === id);
   const positionLabel =
@@ -37,5 +41,6 @@ export const useDisputeResolution = () => {
     setReason,
     canDecide,
     openConfirm,
+    pendingSlipNumber: pendingSlip?.slipNumber,
   };
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
+import { CollectionsRouter } from '@/modules/collections';
 import { DashboardRouter } from '@/modules/dashboard';
 import { DisputesRouter } from '@/modules/disputes';
 import { SettlementsRouter } from '@/modules/settlements';
@@ -65,9 +66,7 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       ...DashboardRouter(store),
       ...SettlementsRouter(store),
       ...DisputesRouter(store),
-      { path: 'collections', element: <ModulePlaceholder title="Tournées" /> },
-      /* Drill-down tournée d'un agent — module collections à venir. */
-      { path: 'collections/rounds/:agentId', element: <ModulePlaceholder title="Tournée" /> },
+      ...CollectionsRouter(store),
       { path: 'clients', element: <ModulePlaceholder title="Clients" /> },
       { path: 'agents', element: <ModulePlaceholder title="Agents" /> },
       { path: 'withdrawals', element: <ModulePlaceholder title="Retraits" /> },
