@@ -6,15 +6,50 @@ import type {
   SettlementGateway,
 } from '../../application/ports/SettlementGateway';
 import {
+  SettlementKind,
   SettlementLineStatus,
   SettlementStatus,
   type SettlementSlip,
 } from '../../domain/entities/SettlementSlip';
 
-/** Bordereaux de la file du soir — données exactes de la maquette 2a. */
+/**
+ * Reste du portefeuille d'Ibrahim (44 cotisé / 3 supplément / 5 absent au
+ * total, comme sur la maquette 2a) — au-delà des 5 premières lignes
+ * affichées d'emblée, pour donner un sens réel à « Afficher les lignes
+ * restantes » dans le détail par client.
+ */
+const generateIbrahimRemainingLines = (): SettlementSlip['lines'] => {
+  const firstNames = ['Marie', 'André', 'Clémence', 'Emmanuel', 'Ariane', 'Blaise', 'Nadège', 'Florence', 'Patrice', 'Solange', 'Bertrand', 'Huguette', 'Cyrille', 'Delphine', 'Gaston', 'Irène', 'Junior', 'Léa'];
+  const lastNames = ['Mbida', 'Fouda', 'Essomba', 'Nkolo', 'Owona', 'Tchana', 'Abega', 'Meka', 'Ella', 'Zang', 'Bilo', 'Mendo', 'Sende', 'Amougou', 'Onana', 'Ekwalla', 'Talla'];
+
+  const statuses: SettlementLineStatus[] = [
+    ...Array<SettlementLineStatus>(4).fill(SettlementLineStatus.Absent),
+    ...Array<SettlementLineStatus>(2).fill(SettlementLineStatus.Extra),
+    ...Array<SettlementLineStatus>(41).fill(SettlementLineStatus.Collected),
+  ];
+
+  let minutesFromMidnight = 9 * 60 + 42; // reprend juste après Sylvie (09h35)
+
+  return statuses.map((status, index) => {
+    minutesFromMidnight += 6;
+    const hh = String(Math.floor(minutesFromMidnight / 60)).padStart(2, '0');
+    const mm = String(minutesFromMidnight % 60).padStart(2, '0');
+    const isAbsent = status === SettlementLineStatus.Absent;
+    return {
+      clientId: `c-${String(index + 6).padStart(2, '0')}`,
+      clientName: `${firstNames[index % firstNames.length]} ${lastNames[(index * 3 + 5) % lastNames.length]}`,
+      collectedAt: isAbsent ? null : `${hh}h${mm}`,
+      amount: isAbsent ? 0 : status === SettlementLineStatus.Extra ? 1_500 : 1_000,
+      status,
+    };
+  });
+};
+
+/** Bordereaux de la file du soir (2a) + demande de dépôt partiel (2d) — données exactes des maquettes. */
 const seedSlips = (): SettlementSlip[] => [
   {
     id: 'BRD-2026-0703-01',
+    kind: SettlementKind.Settlement,
     slipNumber: 'BRD-2026-0703-01',
     agentId: 'agent-ibrahim-sali',
     agentName: 'Ibrahim Sali',
@@ -29,12 +64,15 @@ const seedSlips = (): SettlementSlip[] => [
       { clientId: 'c-03', clientName: 'Marthe Tchoumi', collectedAt: '09h03', amount: 2_000, status: SettlementLineStatus.Extra },
       { clientId: 'c-04', clientName: 'Paul Kamga', collectedAt: null, amount: 0, status: SettlementLineStatus.Absent },
       { clientId: 'c-05', clientName: 'Sylvie Mballa', collectedAt: '09h35', amount: 1_000, status: SettlementLineStatus.Collected },
+      ...generateIbrahimRemainingLines(),
     ],
     partialDeposits: [{ amount: 20_000, validatedAt: '11h02' }],
+    partialDepositContext: null,
     rejection: null,
   },
   {
     id: 'BRD-2026-0703-02',
+    kind: SettlementKind.Settlement,
     slipNumber: 'BRD-2026-0703-02',
     agentId: 'agent-grace-atangana',
     agentName: 'Grace Atangana',
@@ -49,10 +87,12 @@ const seedSlips = (): SettlementSlip[] => [
       { clientId: 'c-08', clientName: 'Béatrice Eyenga', collectedAt: '10h15', amount: 4_500, status: SettlementLineStatus.Disputed },
     ],
     partialDeposits: [],
+    partialDepositContext: null,
     rejection: null,
   },
   {
     id: 'BRD-2026-0703-03',
+    kind: SettlementKind.Settlement,
     slipNumber: 'BRD-2026-0703-03',
     agentId: 'agent-rosalie-fotso',
     agentName: 'Rosalie Fotso',
@@ -66,10 +106,12 @@ const seedSlips = (): SettlementSlip[] => [
       { clientId: 'c-10', clientName: 'Vincent Abega', collectedAt: '09h10', amount: 2_000, status: SettlementLineStatus.Collected },
     ],
     partialDeposits: [],
+    partialDepositContext: null,
     rejection: null,
   },
   {
     id: 'BRD-2026-0703-04',
+    kind: SettlementKind.Settlement,
     slipNumber: 'BRD-2026-0703-04',
     agentId: 'agent-aicha-bakari',
     agentName: 'Aïcha Bakari',
@@ -83,6 +125,30 @@ const seedSlips = (): SettlementSlip[] => [
       { clientId: 'c-12', clientName: 'Hamidou Sali', collectedAt: '08h55', amount: 1_500, status: SettlementLineStatus.Extra },
     ],
     partialDeposits: [],
+    partialDepositContext: null,
+    rejection: null,
+  },
+  {
+    id: 'DEP-2026-0703-07',
+    kind: SettlementKind.PartialDeposit,
+    slipNumber: 'DEP-2026-0703-07',
+    agentId: 'agent-cedric-nkoulou',
+    agentName: 'Cédric Nkoulou',
+    zone: 'Marché Mokolo',
+    clientCount: 52,
+    closedAt: null,
+    expectedAmount: 60_000,
+    status: SettlementStatus.PendingValidation,
+    lines: [],
+    partialDeposits: [],
+    partialDepositContext: {
+      cashOnHand: 85_000,
+      ceiling: 100_000,
+      tourProgressPercent: 65,
+      visitedClients: 34,
+      collectedSoFar: 34_200,
+      remainingClients: 18,
+    },
     rejection: null,
   },
 ];

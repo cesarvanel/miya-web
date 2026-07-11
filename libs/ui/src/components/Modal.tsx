@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useEscapeToClose } from '../internal/useEscapeToClose';
 
 interface ModalProps {
   isOpen: boolean;
@@ -6,6 +7,8 @@ interface ModalProps {
   /** Largeur du panneau en px (440 dans les maquettes). */
   width?: number;
   ariaLabel?: string;
+  /** Fond/texte/padding du panneau — par défaut la carte blanche des maquettes. */
+  panelClassName?: string;
   children: React.ReactNode;
 }
 
@@ -14,20 +17,10 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   width = 440,
   ariaLabel,
+  panelClassName = 'bg-card p-[30px]',
   children,
 }) => {
-  useEffect(() => {
-    if (!isOpen) {
-      return undefined;
-    }
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
+  useEscapeToClose(isOpen, onClose);
 
   if (!isOpen) {
     return null;
@@ -46,7 +39,10 @@ export const Modal: React.FC<ModalProps> = ({
           aria-modal="true"
           aria-label={ariaLabel}
           style={{ width }}
-          className="animate-modal-in rounded-modal pointer-events-auto max-h-full max-w-full overflow-auto bg-card p-[30px] shadow-modal"
+          className={[
+            'animate-modal-in rounded-modal pointer-events-auto max-h-full max-w-full overflow-auto shadow-modal',
+            panelClassName,
+          ].join(' ')}
         >
           {children}
         </div>

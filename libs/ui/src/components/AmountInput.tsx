@@ -6,6 +6,7 @@ interface AmountInputProps {
   onChange: (value: number | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  error?: boolean;
   id?: string;
   'aria-label'?: string;
 }
@@ -25,13 +26,17 @@ export const AmountInput: React.FC<AmountInputProps> = ({
   onChange,
   placeholder = '0',
   disabled = false,
+  error = false,
   id,
   'aria-label': ariaLabel,
 }) => {
   return (
     <div
       className={[
-        'rounded-input focus-within:shadow-focus-ring inline-flex items-center gap-2 border border-line bg-card px-[14px] py-[10px] transition',
+        'rounded-input inline-flex items-center gap-2 border bg-card px-[14px] py-[10px] transition',
+        error
+          ? 'border-[1.5px] border-danger focus-within:shadow-danger-ring'
+          : 'border-line focus-within:shadow-focus-ring',
         disabled ? 'pointer-events-none opacity-50' : '',
       ].join(' ')}
     >

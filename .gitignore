@@ -33,6 +33,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/design/tokens/MIYA-WEB.spec.html
 
 # System Files
 .DS_Store

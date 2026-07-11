@@ -19,3 +19,6 @@ export * from './requestStatus/useRequestStatus';
 
 // Use case error normalization for rejectWithValue
 export * from './errors/getErrorState';
+
+// Realtime data freshness ("il y a 8 s"), keyed off cacheSlice's fetchedAt
+export * from './realtime/useFreshness';

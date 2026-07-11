@@ -1,6 +1,6 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
-import { closeModal } from '@/shared/modals';
+import { openModal } from '@/shared/modals';
 import { pushToast } from '@/shared/toasts';
 import { settlementValidated } from '../../../domain/events/Events';
 import { selectSlipById } from '../../../domain/selectors/Selectors';
@@ -9,7 +9,7 @@ import { FetchSettlementQueueAsync } from '../fetch-settlement-queue-async/Fetch
 import { ValidateSettlementCommand } from './ValidateSettlementCommand';
 import { ValidateSettlementResponse } from './ValidateSettlementResponse';
 
-/** Validation croisée : gateway → transition domaine → cache → modale → toast. */
+/** Validation croisée : gateway → transition domaine → cache → modale de succès → toast. */
 export const ValidateSettlementAsync = createBankAsyncThunk<
   ValidateSettlementResponse,
   ValidateSettlementCommand
@@ -17,19 +17,29 @@ export const ValidateSettlementAsync = createBankAsyncThunk<
   'settlements/validateSettlement',
   async ({ id }, { extra, dispatch, getState, rejectWithValue }) => {
     try {
+      const slip = selectSlipById(getState(), id);
       const result = await extra.settlementGateway.validate(id);
-      const agentId = selectSlipById(getState(), id)?.agentId ?? '';
 
       dispatch(SettlementsActions.validate({ id }));
-      dispatch(settlementValidated({ slipId: id, agentId }));
+      dispatch(settlementValidated({ slipId: id, agentId: slip?.agentId ?? '' }));
       dispatch(invalidateTags(['SettlementQueue', `Slip:${id}`]));
       dispatch(FetchSettlementQueueAsync({ force: true }));
-      dispatch(closeModal());
+      dispatch(
+        openModal({
+          type: 'validationSuccess',
+          props: {
+            agentName: slip?.agentName ?? '',
+            slipNumber: slip?.slipNumber ?? '',
+            amount: slip?.expectedAmount ?? 0,
+            receiptNumber: result.receiptNumber,
+          },
+        }),
+      );
       dispatch(
         pushToast({
           variant: 'success',
-          title: 'Reversement validé',
-          message: `Quittance ${result.receiptNumber} émise.`,
+          title: `Quittance ${result.receiptNumber} émise`,
+          message: `Envoyée à ${slip?.agentName ?? "l'agent"} · reçue sur son téléphone.`,
         }),
       );
 

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Link, Navigate, Outlet, useParams } from 'react-router-dom';
-import { Card, EmptyState, InitialsAvatar, Skeleton } from '@miya/ui';
-import { Money } from '@miya/kernel';
+import { Navigate, Outlet, useParams } from 'react-router-dom';
+import { Card, EmptyState, Skeleton } from '@miya/ui';
 import { PageShell } from '@/shared/layout/PageShell';
 import { SettlementsRoutes } from '../../router/SettlementsRoutes';
 import { ConfirmValidationModal } from '../modal/ConfirmValidationModal';
+import { QueueItemCard } from '../composants/QueueItemCard';
 import { RejectSettlementModal } from '../modal/RejectSettlementModal';
+import { SuccessValidationModal } from '../modal/SuccessValidationModal';
 import { useSettlements } from './useSettlements';
 
 /**
@@ -46,7 +47,7 @@ export const SettlementQueuePage: React.FC = () => {
       subtitle="Vous comptez le cash, le système connaît le chiffre."
     >
       <div className="flex items-start gap-5.5">
-        <Card padding="none" className="w-95 flex-none">
+        <Card padding="none" className="sticky top-0 w-95 flex-none">
           <div className="px-5 pt-4.5 pb-3.5">
             <div className="flex items-baseline justify-between">
               <div className="text-[17px] font-extrabold text-ink">
@@ -63,7 +64,7 @@ export const SettlementQueuePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2.5 px-4">
+          <div className="flex max-h-[65vh] flex-col gap-2.5 overflow-y-auto px-4">
             {isPending &&
               queue.length === 0 &&
               Array.from({ length: 3 }).map((_, index) => (
@@ -77,48 +78,14 @@ export const SettlementQueuePage: React.FC = () => {
               />
             )}
 
-            {queue.map((slip) => {
-              const disputes = disputeCount(slip.lines);
-              const isSelected = slip.id === selectedId;
-              return (
-                <Link
-                  key={slip.id}
-                  to={SettlementsRoutes.buildDetailPath(slip.id)}
-                  aria-current={isSelected ? 'true' : undefined}
-                  className={[
-                    'block rounded-2xl bg-card p-3.25 transition',
-                    isSelected
-                      ? 'border-2 border-primary p-2.75'
-                      : 'border border-line hover:border-primary/40',
-                  ].join(' ')}
-                >
-                  <div className="flex items-center gap-2.75">
-                    <InitialsAvatar name={slip.agentName} />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-ink">
-                        {slip.agentName}
-                      </div>
-                      <div className="num text-xs font-semibold text-ink-muted">
-                        {slip.slipNumber}
-                      </div>
-                    </div>
-                    {disputes > 0 && (
-                      <span className="rounded-full bg-amber-soft px-2.25 py-1 text-[10.5px] font-bold whitespace-nowrap text-amber">
-                        {disputes} LITIGE{disputes > 1 ? 'S' : ''}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2.75 flex items-center justify-between">
-                    <span className="num text-xl font-bold text-ink">
-                      {Money.from(slip.expectedAmount).format()}
-                    </span>
-                    <span className="text-xs font-semibold text-ink-faint">
-                      {slip.zone}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+            {queue.map((slip) => (
+              <QueueItemCard
+                key={slip.id}
+                slip={slip}
+                isSelected={slip.id === selectedId}
+                disputeCount={disputeCount(slip.lines)}
+              />
+            ))}
           </div>
 
           <div className="rounded-tile m-4 flex items-center justify-between bg-cream-100 px-3.75 py-3.25">
@@ -138,6 +105,7 @@ export const SettlementQueuePage: React.FC = () => {
 
       <ConfirmValidationModal />
       <RejectSettlementModal />
+      <SuccessValidationModal />
     </PageShell>
   );
 };

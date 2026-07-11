@@ -110,6 +110,10 @@
   --animate-scrim-in: scrim-in 0.2s ease-out;
   --animate-toast-in: toast-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.4s infinite linear;
+  --animate-indeterminate: indeterminate 1.3s ease-in-out infinite;
+  --animate-flash-amber: flash-amber 0.8s ease-out;
+  --animate-drawer-in: drawer-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   @keyframes modal-in {
     from {
@@ -148,6 +152,53 @@
       opacity: 0.4;
     }
   }
+  @keyframes shimmer {
+    from {
+      background-position: -420px 0;
+    }
+    to {
+      background-position: 420px 0;
+    }
+  }
+  @keyframes indeterminate {
+    0% {
+      left: -35%;
+      width: 35%;
+    }
+    60%,
+    100% {
+      left: 100%;
+      width: 35%;
+    }
+  }
+  @keyframes flash-amber {
+    0% {
+      background-color: var(--color-amber-soft);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Fond shimmer des skeletons — dégradé glissant (remplace le pulse d'opacité). */
+@utility shimmer-surface {
+  background: linear-gradient(
+    90deg,
+    var(--color-cream-100) 25%,
+    var(--color-cream-50) 50%,
+    var(--color-cream-100) 75%
+  );
+  background-size: 840px 100%;
+  animation: var(--animate-shimmer);
 }
 
 /* Montants : Space Grotesk + chiffres tabulaires (classe .num des maquettes). */

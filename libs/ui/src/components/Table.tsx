@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Pagination } from './Pagination';
 
 export interface TableColumn<TRow> {
   key: string;
@@ -15,6 +16,15 @@ export interface TableSort {
   direction: 'asc' | 'desc';
 }
 
+export interface TablePagination {
+  page: number;
+  pageCount: number;
+  onChange: (page: number) => void;
+  totalItems?: number;
+  pageSize?: number;
+  itemLabel?: string;
+}
+
 interface TableProps<TRow> {
   columns: TableColumn<TRow>[];
   rows: TRow[];
@@ -24,6 +34,10 @@ interface TableProps<TRow> {
   onRowClick?: (row: TRow) => void;
   /** Tri initial (le tri se pilote ensuite par les en-têtes). */
   initialSort?: TableSort;
+  /** Ligne mise en surbrillance (liseré vert). */
+  selectedRowKey?: string;
+  /** Rend `<Pagination/>` sous la table quand fourni. */
+  pagination?: TablePagination;
 }
 
 const compareValues = (a: string | number, b: string | number): number => {
@@ -58,6 +72,8 @@ export const Table = <TRow,>({
   emptyState,
   onRowClick,
   initialSort,
+  selectedRowKey,
+  pagination,
 }: TableProps<TRow>): React.ReactElement => {
   const [sort, setSort] = useState<TableSort | null>(initialSort ?? null);
 
@@ -142,31 +158,48 @@ export const Table = <TRow,>({
               </td>
             </tr>
           ) : (
-            sortedRows.map((row) => (
-              <tr
-                key={rowKey(row)}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={[
-                  'border-b border-line-faint last:border-b-0 hover:bg-cream-50',
-                  onRowClick ? 'cursor-pointer' : '',
-                ].join(' ')}
-              >
-                {columns.map((column) => (
-                  <td
-                    key={column.key}
-                    className={[
-                      'px-[22px] py-[15px] text-sm',
-                      column.align === 'right' ? 'text-right' : 'text-left',
-                    ].join(' ')}
-                  >
-                    {column.cell(row)}
-                  </td>
-                ))}
-              </tr>
-            ))
+            sortedRows.map((row) => {
+              const key = rowKey(row);
+              const isSelected = key === selectedRowKey;
+              return (
+                <tr
+                  key={key}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={[
+                    'border-b border-line-faint last:border-b-0',
+                    onRowClick ? 'cursor-pointer' : '',
+                    isSelected
+                      ? 'bg-[#F3FAF6] shadow-[inset_3px_0_0_#0A6B4E]'
+                      : 'hover:bg-cream-50 hover:shadow-[inset_3px_0_0_#D8D5CC]',
+                  ].join(' ')}
+                >
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className={[
+                        'px-[22px] py-[15px] text-sm',
+                        column.align === 'right' ? 'text-right' : 'text-left',
+                      ].join(' ')}
+                    >
+                      {column.cell(row)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>
+      {pagination && (
+        <Pagination
+          page={pagination.page}
+          pageCount={pagination.pageCount}
+          onChange={pagination.onChange}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          itemLabel={pagination.itemLabel}
+        />
+      )}
     </div>
   );
 };
