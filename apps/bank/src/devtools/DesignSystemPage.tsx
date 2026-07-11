@@ -25,6 +25,7 @@ import {
   LiveBadge,
   Modal,
   MultiSelectChips,
+  NavBadge,
   NotificationBell,
   NotificationPanel,
   Pagination,
@@ -199,6 +200,7 @@ export const DesignSystemPage: React.FC = () => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   const [counter, setCounter] = useState(214700);
+  const [navBadgeCount, setNavBadgeCount] = useState(4);
   const [fetchedAt, setFetchedAt] = useState<number | null>(() => Date.now());
   const [isPending, setPending] = useState(false);
   const freshness = useFreshness(fetchedAt, isPending);
@@ -648,6 +650,36 @@ export const DesignSystemPage: React.FC = () => {
               <FreshnessIndicator status={freshness.status} label={freshness.label} />
               <Button size="sm" variant="secondary" onClick={simulateRefresh}>
                 Rafraîchir
+              </Button>
+            </div>
+          </div>
+          <div>
+            <div className="mb-[14px] text-[13px] font-extrabold text-ink">
+              Pastille de nav (NavBadge)
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 rounded-tile bg-primary-deep px-[13px] py-[11px]">
+                <span className="text-sm font-semibold text-sidebar-item">Reversements</span>
+                <NavBadge count={navBadgeCount} tone="amber" />
+              </div>
+              <div className="flex items-center gap-2 rounded-tile bg-primary-deep px-[13px] py-[11px]">
+                <span className="text-sm font-semibold text-sidebar-item">Contestations</span>
+                <NavBadge count={3} tone="red" />
+              </div>
+              <div className="flex items-center gap-2 rounded-tile bg-primary-deep px-[13px] py-[11px]">
+                <span className="text-sm font-semibold text-sidebar-item">Retraits</span>
+                <NavBadge count={6} tone="neutral" />
+              </div>
+              <div className="flex items-center gap-2 rounded-tile bg-primary px-[13px] py-[11px]">
+                <span className="text-sm font-bold text-white">Contestations (actif)</span>
+                <NavBadge count={3} tone="red" inverted />
+              </div>
+              <div className="flex items-center gap-2 rounded-tile bg-primary-deep px-[13px] py-[11px]">
+                <span className="text-sm font-semibold text-sidebar-item">À zéro (rien affiché)</span>
+                <NavBadge count={0} tone="amber" />
+              </div>
+              <Button size="sm" variant="secondary" onClick={() => setNavBadgeCount((n) => n + 1)}>
+                Incrémenter
               </Button>
             </div>
           </div>

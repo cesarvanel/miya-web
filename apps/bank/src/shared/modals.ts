@@ -1,4 +1,5 @@
 import { createModalSystem } from '@miya/kernel';
+import type { DisputeDecision } from '@/modules/disputes';
 
 /**
  * Enum des modales de l'app bank — chaque module y ajoute ses types
@@ -7,7 +8,8 @@ import { createModalSystem } from '@miya/kernel';
 export type BankModal =
   | 'rejectSettlement'
   | 'confirmValidation'
-  | 'validationSuccess';
+  | 'validationSuccess'
+  | 'confirmResolveDispute';
 
 /** Props par modale : { rejectSettlement: { slipId: string }, ... } */
 export interface BankModalProps {
@@ -19,6 +21,7 @@ export interface BankModalProps {
     amount: number;
     receiptNumber: string;
   };
+  confirmResolveDispute: { disputeId: string; inFavorOf: DisputeDecision; reason: string };
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

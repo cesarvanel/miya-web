@@ -1,5 +1,6 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
+import { disputesSelectors } from '@/modules/disputes';
 import { openModal } from '@/shared/modals';
 import { pushToast } from '@/shared/toasts';
 import { settlementValidated } from '../../../domain/events/Events';
@@ -9,7 +10,10 @@ import { FetchSettlementQueueAsync } from '../fetch-settlement-queue-async/Fetch
 import { ValidateSettlementCommand } from './ValidateSettlementCommand';
 import { ValidateSettlementResponse } from './ValidateSettlementResponse';
 
-/** Validation croisée : gateway → transition domaine → cache → modale de succès → toast. */
+/**
+ * Validation croisée : garde-fou contestation ouverte → gateway → transition
+ * domaine → cache → modale de succès → toast.
+ */
 export const ValidateSettlementAsync = createBankAsyncThunk<
   ValidateSettlementResponse,
   ValidateSettlementCommand
@@ -18,6 +22,17 @@ export const ValidateSettlementAsync = createBankAsyncThunk<
   async ({ id }, { extra, dispatch, getState, rejectWithValue }) => {
     try {
       const slip = selectSlipById(getState(), id);
+
+      const openDisputes = disputesSelectors.selectOpenDisputesForAgent(
+        getState(),
+        slip?.agentId ?? '',
+      );
+      if (openDisputes.length > 0) {
+        throw new Error(
+          `${slip?.agentName ?? "L'agent"} a une contestation ouverte — validation bloquée tant qu'elle n'est pas résolue.`,
+        );
+      }
+
       const result = await extra.settlementGateway.validate(id);
 
       dispatch(SettlementsActions.validate({ id }));

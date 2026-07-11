@@ -30,6 +30,9 @@ export const selectQueueTotal = createSelector([selectQueue], (queue) =>
   ),
 );
 
+/** Compteur pour la pastille de nav « Reversements » — bordereaux en attente de validation. */
+export const selectPendingCount = createSelector([selectQueue], (queue) => queue.length);
+
 
 const emptyTotal = (): SettlementLineStatusTotal => ({
   count: 0,
@@ -62,5 +65,6 @@ export const SettlementSelectors = {
   selectSlipById,
   selectQueue,
   selectQueueTotal,
+  selectPendingCount,
   selectSlipSubtotals,
 };

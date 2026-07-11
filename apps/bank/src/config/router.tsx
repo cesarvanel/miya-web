@@ -2,17 +2,18 @@ import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
 import { DashboardRouter } from '@/modules/dashboard';
+import { DisputesRouter } from '@/modules/disputes';
 import { SettlementsRouter } from '@/modules/settlements';
 import { RequireRole } from '@/shared/guards/RequireRole';
 import { PageShell } from '@/shared/layout/PageShell';
-import { Sidebar } from '@/shared/layout/Sidebar';
 import { ToastHost } from '@/shared/layout/ToastHost';
 import { DesignSystemPage } from '@/devtools/DesignSystemPage';
+import { SidebarContainer } from './layout/SidebarContainer';
 import type { BankStore } from './stores/store';
 
 const BankLayout: React.FC = () => (
   <div className="flex h-screen bg-cream">
-    <Sidebar />
+    <SidebarContainer />
     <Outlet />
     <ToastHost />
   </div>
@@ -63,7 +64,7 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
     children: [
       ...DashboardRouter(store),
       ...SettlementsRouter(store),
-      { path: 'disputes', element: <ModulePlaceholder title="Contestations" /> },
+      ...DisputesRouter(store),
       { path: 'collections', element: <ModulePlaceholder title="Tournées" /> },
       /* Drill-down tournée d'un agent — module collections à venir. */
       { path: 'collections/rounds/:agentId', element: <ModulePlaceholder title="Tournée" /> },

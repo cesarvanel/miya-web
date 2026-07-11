@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { NavBadge, type NavBadgeTone } from '@miya/ui';
 
 export interface SidebarBadge {
   count: number;
-  tone: 'amber' | 'danger' | 'primary';
+  tone: NavBadgeTone;
 }
 
 interface SidebarUser {
@@ -116,12 +117,6 @@ const sections: NavSectionConfig[] = [
   },
 ];
 
-const badgeToneClasses: Record<SidebarBadge['tone'], string> = {
-  amber: 'bg-badge-amber text-badge-amber-ink',
-  danger: 'bg-danger text-white',
-  primary: 'bg-primary text-white',
-};
-
 const defaultUser: SidebarUser = {
   name: 'A. Mbarga',
   caption: 'Responsable · Mokolo',
@@ -175,17 +170,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     ].join(' ')
                   }
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
-                  {badge && badge.count > 0 && (
-                    <span
-                      className={[
-                        'num ml-auto rounded-full px-2 py-[2px] text-[11px] font-bold',
-                        badgeToneClasses[badge.tone],
-                      ].join(' ')}
-                    >
-                      {badge.count}
-                    </span>
+                  {({ isActive }) => (
+                    <>
+                      {item.icon}
+                      <span>{item.label}</span>
+                      {badge && (
+                        <NavBadge
+                          count={badge.count}
+                          tone={badge.tone}
+                          inverted={isActive}
+                          className="ml-auto"
+                        />
+                      )}
+                    </>
                   )}
                 </NavLink>
               );

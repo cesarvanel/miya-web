@@ -1,0 +1,30 @@
+import React, { useEffect } from 'react';
+import { disputesSelectors, FetchDisputesAsync } from '@/modules/disputes';
+import { FetchSettlementQueueAsync, settlementSelectors } from '@/modules/settlements';
+import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
+import { Sidebar, type SidebarBadge } from '@/shared/layout/Sidebar';
+
+/**
+ * Composition root : lit les compteurs (dérivés du state, donc temps réel)
+ * dans l'index public de chaque module et les passe à la `Sidebar`, qui
+ * reste un composant de layout pur — aucun accès store depuis `shared/`.
+ */
+export const SidebarContainer: React.FC = () => {
+  const dispatch = useBankDispatch();
+  const pendingSettlementsCount = useBankSelector(settlementSelectors.selectPendingCount);
+  const openDisputesCount = useBankSelector(disputesSelectors.selectOpenCount);
+
+  useEffect(() => {
+    // Les compteurs doivent être visibles dès l'entrée dans l'app, quelle que
+    // soit la première route visitée — dédupliqué par le cache (createCachedAsyncThunk).
+    dispatch(FetchSettlementQueueAsync({}));
+    dispatch(FetchDisputesAsync({}));
+  }, [dispatch]);
+
+  const badges: Partial<Record<string, SidebarBadge>> = {
+    '/settlements': { count: pendingSettlementsCount, tone: 'amber' },
+    '/disputes': { count: openDisputesCount, tone: 'red' },
+  };
+
+  return <Sidebar badges={badges} />;
+};

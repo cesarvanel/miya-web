@@ -39,8 +39,10 @@ describe('bank router', () => {
     expect(screen.getByText('MEC La Confiance')).toBeDefined();
   });
 
-  it('marks the active link only', () => {
+  it('marks the active link only', async () => {
     renderAt('/disputes');
+    // Le loader de route est async (fetch caché) : attendre l'hydratation.
+    await screen.findByRole('heading', { name: 'Contestations' });
     const active = screen.getByRole('link', { name: /Contestations/ });
     const inactive = screen.getByRole('link', { name: /Tournées/ });
     expect(active.className).toContain('bg-primary');

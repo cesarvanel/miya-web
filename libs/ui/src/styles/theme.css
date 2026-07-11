@@ -114,6 +114,7 @@
   --animate-indeterminate: indeterminate 1.3s ease-in-out infinite;
   --animate-flash-amber: flash-amber 0.8s ease-out;
   --animate-drawer-in: drawer-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-badge-in: badge-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   @keyframes modal-in {
     from {
@@ -185,6 +186,16 @@
     }
     to {
       transform: translateX(0);
+    }
+  }
+  @keyframes badge-in {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 }

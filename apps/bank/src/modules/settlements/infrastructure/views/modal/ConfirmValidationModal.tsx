@@ -3,6 +3,7 @@ import { Button, Modal } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { useModal } from '@/shared/modals';
+import { pushToast } from '@/shared/toasts';
 import { ValidateSettlementAsync } from '../../../application/usecases/validate-settlement-async/ValidateSettlementAsync';
 import { selectSlipById } from '../../../domain/selectors/Selectors';
 
@@ -20,8 +21,17 @@ export const ConfirmValidationModal: React.FC = () => {
 
   const handleConfirm = async (): Promise<void> => {
     setSubmitting(true);
-    await dispatch(ValidateSettlementAsync({ id: slip.id }));
+    const result = await dispatch(ValidateSettlementAsync({ id: slip.id }));
     setSubmitting(false);
+    if (ValidateSettlementAsync.rejected.match(result)) {
+      dispatch(
+        pushToast({
+          variant: 'error',
+          title: 'Validation impossible',
+          message: result.payload?.message ?? 'Une erreur est survenue.',
+        }),
+      );
+    }
   };
 
   return (

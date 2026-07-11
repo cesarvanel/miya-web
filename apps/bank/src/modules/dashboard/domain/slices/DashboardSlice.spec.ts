@@ -1,6 +1,7 @@
+import { disputeOpened, disputeResolved } from '@/modules/disputes';
 import { FetchDaySummaryAsync } from '../../application/usecases/fetch-day-summary-async/FetchDaySummaryAsync';
 import { AgentDaySummariesAdapter, AgentDayStatus, type AgentDaySummary } from '../entities/AgentDaySummary';
-import { collectionConfirmed, disputeOpened } from '../events/Events';
+import { collectionConfirmed } from '../events/Events';
 import { dashboardSlice } from './DashboardSlice';
 
 const makeAgent = (overrides: Partial<AgentDaySummary> = {}): AgentDaySummary => ({
@@ -104,10 +105,11 @@ describe('dashboardSlice', () => {
       const next = dashboardSlice.reducer(
         state,
         disputeOpened({
-          agentId: 'agent-grace-atangana',
-          clientName: 'Christine Eyenga',
-          declaredAmount: 500,
-          statedAmount: 1_000,
+          zone: 'Carrefour Warda',
+          agent: { id: 'agent-grace-atangana', name: 'Grace Atangana', enteredAmount: 500 },
+          client: { id: 'client-christine-eyenga', name: 'Christine Eyenga', declaredAmount: 1_000 },
+          clientHistory: { regularity: { onTime: 29, total: 30 }, disputesLast12Months: 0, clientSince: '2022' },
+          agentHistory: { confirmationRate: 98.4, disputesLast12Months: 3, settlementGaps: 1 },
         }),
       );
 
@@ -116,6 +118,30 @@ describe('dashboardSlice', () => {
       const event = next.activity.entities[next.activity.ids[0] as string];
       expect(event?.kind).toBe('disputeOpened');
       expect(event?.message).toContain('500 FCFA');
+    });
+  });
+
+  describe('disputeResolved (temps réel)', () => {
+    it('decrements openDisputesCount, floored at zero', () => {
+      const state = stateWithAgent(makeAgent({ agentId: 'agent-grace-atangana', openDisputesCount: 1 }));
+
+      const next = dashboardSlice.reducer(
+        state,
+        disputeResolved({ disputeId: 'CT-0703-07', agentId: 'agent-grace-atangana', decidedInFavorOf: 'Client' }),
+      );
+
+      expect(next.agents.entities['agent-grace-atangana']?.openDisputesCount).toBe(0);
+    });
+
+    it('does not go below zero', () => {
+      const state = stateWithAgent(makeAgent({ agentId: 'agent-grace-atangana', openDisputesCount: 0 }));
+
+      const next = dashboardSlice.reducer(
+        state,
+        disputeResolved({ disputeId: 'CT-x', agentId: 'agent-grace-atangana', decidedInFavorOf: 'Agent' }),
+      );
+
+      expect(next.agents.entities['agent-grace-atangana']?.openDisputesCount).toBe(0);
     });
   });
 });

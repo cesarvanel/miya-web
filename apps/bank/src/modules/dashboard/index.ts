@@ -18,8 +18,9 @@ export type { DashboardAlert, DashboardAlertKind, DashboardKpis } from './domain
 export const dashboardReducer = dashboardSlice.reducer;
 
 // Events (réalimentés par le RealtimeClient — jamais de mutation directe)
-export { collectionConfirmed, disputeOpened } from './domain/events/Events';
-export type { CollectionConfirmedPayload, DisputeOpenedPayload } from './domain/events/Events';
+// disputeOpened n'est pas ré-exporté ici : le module disputes en est le propriétaire canonique.
+export { collectionConfirmed } from './domain/events/Events';
+export type { CollectionConfirmedPayload } from './domain/events/Events';
 
 // Selectors — groupés, comme prescrit par CLAUDE.md
 export const dashboardSelectors = {
