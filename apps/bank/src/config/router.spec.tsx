@@ -18,10 +18,13 @@ const renderAt = (path: string) => {
 };
 
 describe('bank router', () => {
-  it('renders the sidebar and the dashboard placeholder at /', () => {
+  it('renders the sidebar and the dashboard at /', async () => {
     renderAt('/');
+    // Le loader de route est async (fetch caché) : attendre l'hydratation.
+    expect(
+      await screen.findByRole('heading', { name: 'Tableau de bord' }),
+    ).toBeDefined();
     expect(screen.getByText('MEC La Confiance')).toBeDefined();
-    expect(screen.getByRole('heading', { name: 'Tableau de bord' })).toBeDefined();
     expect(screen.getByText('Pilotage')).toBeDefined();
     expect(screen.getByText('Administration')).toBeDefined();
   });

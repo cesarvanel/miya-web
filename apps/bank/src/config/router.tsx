@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
+import { DashboardRouter } from '@/modules/dashboard';
 import { SettlementsRouter } from '@/modules/settlements';
 import { RequireRole } from '@/shared/guards/RequireRole';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -60,10 +61,12 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       </RequireRole>
     ),
     children: [
-      { index: true, element: <ModulePlaceholder title="Tableau de bord" /> },
+      ...DashboardRouter(store),
       ...SettlementsRouter(store),
       { path: 'disputes', element: <ModulePlaceholder title="Contestations" /> },
       { path: 'collections', element: <ModulePlaceholder title="Tournées" /> },
+      /* Drill-down tournée d'un agent — module collections à venir. */
+      { path: 'collections/rounds/:agentId', element: <ModulePlaceholder title="Tournée" /> },
       { path: 'clients', element: <ModulePlaceholder title="Clients" /> },
       { path: 'agents', element: <ModulePlaceholder title="Agents" /> },
       { path: 'withdrawals', element: <ModulePlaceholder title="Retraits" /> },

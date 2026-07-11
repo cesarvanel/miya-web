@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { cacheSlice, requestStatusSlice } from '@miya/kernel';
+import { dashboardReducer } from '@/modules/dashboard';
 import { settlementsReducer } from '@/modules/settlements';
 import { modalsSlice } from '@/shared/modals';
 import { toastSlice } from '@/shared/toasts';
@@ -15,8 +16,8 @@ export const rootReducer = combineReducers({
   toasts: toastSlice.reducer,
   requestStatus: requestStatusSlice.reducer,
   settlements: settlementsReducer,
-  // Reducers des autres modules ajoutés au fur et à mesure :
-  // dashboard: dashboardReducer, …
+  dashboard: dashboardReducer,
+  // Reducers des autres modules ajoutés au fur et à mesure.
 });
 
 /** State métier (sans la clé _persist ajoutée par redux-persist). */

@@ -33,3 +33,5 @@ export * from './components/Drawer';
 export * from './components/LiveBadge';
 export * from './components/FlashValue';
 export * from './components/FreshnessIndicator';
+export * from './components/CountUp';
+export * from './components/KpiCard';
