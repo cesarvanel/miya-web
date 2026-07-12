@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, Skeleton, Textarea } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -31,7 +32,11 @@ export const DisputeResolutionPage: React.FC = () => {
     const finalAmount = isForClient ? dispute.client.declaredAmount : dispute.agent.enteredAmount;
 
     return (
-      <PageShell title={`${dispute.id} · ${dispute.client.name}`} subtitle="Clôturée · lecture seule">
+      <PageShell
+        title={`${dispute.id} · ${dispute.client.name}`}
+        subtitle="Clôturée · lecture seule"
+        back={{ label: 'Contestations', to: '/disputes' }}
+      >
         <div className="max-w-240">
           {/* Bandeau de résolution */}
           <div className="flex items-center gap-4 rounded-card-lg bg-primary p-5 text-white">
@@ -107,7 +112,9 @@ export const DisputeResolutionPage: React.FC = () => {
               >
                 {isForClient ? 'Retenu · déclaré par le client' : 'Déclaré par le client'}
               </div>
-              <div className="mt-1 text-sm font-bold text-ink">{dispute.client.name}</div>
+              <Link to={`/clients/${dispute.client.id}`} className="mt-1 block text-sm font-bold text-ink hover:underline">
+                {dispute.client.name}
+              </Link>
               <div
                 className={[
                   'num mt-3.5 text-[34px] font-bold tracking-[-0.02em]',
@@ -186,6 +193,7 @@ export const DisputeResolutionPage: React.FC = () => {
     <PageShell
       title={`${dispute.id} · ${dispute.client.name}`}
       subtitle={`Écart de ${Money.from(Math.abs(gap)).format()} · zone ${dispute.zone}`}
+      back={{ label: 'Contestations', to: '/disputes' }}
     >
       {positionLabel && (
         <div className="mb-4 flex justify-end">
@@ -227,7 +235,9 @@ export const DisputeResolutionPage: React.FC = () => {
             <div className="text-[11px] font-bold tracking-[.04em] text-danger uppercase">
               Déclaration du client
             </div>
-            <div className="mt-1 text-sm font-bold text-ink">{dispute.client.name}</div>
+            <Link to={`/clients/${dispute.client.id}`} className="mt-1 block text-sm font-bold text-ink hover:underline">
+              {dispute.client.name}
+            </Link>
             <div className="num mt-4 text-[38px] font-bold tracking-[-0.02em] text-danger">
               {Money.from(dispute.client.declaredAmount).format()}
             </div>

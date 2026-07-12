@@ -64,6 +64,68 @@ export const selectRoundKpis = createSelector([selectRoundById], (round): RoundK
   };
 });
 
+export interface RoundsSummary {
+  openCount: number;
+  closedCount: number;
+  totalCount: number;
+  collectedTotal: number;
+  averageProgressRatio: number;
+  capAlert: { agentName: string; ratio: number } | null;
+}
+
+const CAP_WARN_RATIO = 0.85;
+
+/** Agrégat pour les tuiles KPI du listing (maquette 4a). */
+export const selectRoundsSummary = createSelector([selectAllRounds], (rounds): RoundsSummary => {
+  const openRounds = rounds.filter((round) => round.status === RoundStatus.Open);
+  const collectedTotal = rounds.reduce((total, round) => total + round.collectedTotal, 0);
+  const averageProgressRatio =
+    rounds.length === 0 ? 0 : rounds.reduce((total, round) => total + progressRatio(round), 0) / rounds.length;
+
+  const capAlert = openRounds
+    .filter((round) => round.cashHoldingCap > 0 && round.cashInHand / round.cashHoldingCap >= CAP_WARN_RATIO)
+    .map((round) => ({ agentName: round.agent.name, ratio: round.cashInHand / round.cashHoldingCap }))
+    .sort((a, b) => b.ratio - a.ratio)[0];
+
+  return {
+    openCount: openRounds.length,
+    closedCount: rounds.length - openRounds.length,
+    totalCount: rounds.length,
+    collectedTotal,
+    averageProgressRatio,
+    capAlert: capAlert ?? null,
+  };
+});
+
+export interface CollectedBreakdown {
+  normal: number;
+  extra: number;
+  absent: number;
+}
+
+/** Répartition Cotisé/Supplément/Absent d'une tournée clôturée (maquette 4b). */
+export const selectCollectedBreakdown = createSelector(
+  [selectAllStops, (_state: BankRootState, roundId: string) => roundId],
+  (stops, roundId): CollectedBreakdown => {
+    const breakdown: CollectedBreakdown = { normal: 0, extra: 0, absent: 0 };
+    for (const stop of stops) {
+      if (stop.roundId !== roundId) {
+        continue;
+      }
+      if (stop.status === RoundStopStatus.Collected) {
+        if ((stop.collectedAmount ?? 0) > stop.usualAmount) {
+          breakdown.extra += 1;
+        } else {
+          breakdown.normal += 1;
+        }
+      } else if (stop.status === RoundStopStatus.Absent) {
+        breakdown.absent += 1;
+      }
+    }
+    return breakdown;
+  },
+);
+
 export type StopsBreakdown = Record<RoundStopStatus, number>;
 
 export const selectStopsBreakdown = createSelector(
@@ -91,7 +153,9 @@ export const CollectionsSelectors = {
   selectAllStops,
   selectRoundById,
   selectRoundsOfDay,
+  selectRoundsSummary,
   selectStopsByRound,
   selectRoundKpis,
   selectStopsBreakdown,
+  selectCollectedBreakdown,
 };

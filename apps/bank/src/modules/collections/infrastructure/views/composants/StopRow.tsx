@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { InitialsAvatar } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import type { RoundStop } from '../../../domain/entities/RoundStop';
@@ -34,9 +35,16 @@ export const StopRow: React.FC<StopRowProps> = ({ stop }) => {
       <StopStatusDot status={stop.status} />
       <InitialsAvatar name={stop.client.name} size="sm" />
       <div className="min-w-0 flex-1">
-        <div className={['truncate text-[13px] font-semibold', isCollected ? 'text-ink' : 'text-ink-muted'].join(' ')}>
+        <Link
+          to={`/clients/${stop.client.id}`}
+          onClick={(event) => event.stopPropagation()}
+          className={[
+            'block truncate text-[13px] font-semibold hover:underline',
+            isCollected ? 'text-ink' : 'text-ink-muted',
+          ].join(' ')}
+        >
           {stop.client.name}
-        </div>
+        </Link>
         <div className={['num text-[11px]', isCollected ? 'text-ink-muted' : 'text-ink-faint'].join(' ')}>
           {statusNote(stop)}
         </div>

@@ -42,7 +42,7 @@ export const DisputesListPage: React.FC = () => {
     {
       key: 'client',
       header: 'Client',
-      cell: (dispute) => <PartyCell name={dispute.client.name} />,
+      cell: (dispute) => <PartyCell name={dispute.client.name} to={`/clients/${dispute.client.id}`} />,
     },
     {
       key: 'agent',

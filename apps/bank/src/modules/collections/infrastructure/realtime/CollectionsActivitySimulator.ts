@@ -5,6 +5,7 @@ interface ScriptEntry {
   roundId: string;
   agentId: string;
   stopId: string;
+  clientId: string;
   clientName: string;
   amount: number;
 }
@@ -19,6 +20,7 @@ const SCRIPT: ScriptEntry[] = [
     roundId: 'agent-cedric-nkoulou',
     agentId: 'agent-cedric-nkoulou',
     stopId: 'stop-cedric-06',
+    clientId: 'client-robert-biya',
     clientName: 'Robert Biya',
     amount: 1_100,
   },
@@ -26,6 +28,7 @@ const SCRIPT: ScriptEntry[] = [
     roundId: 'agent-cedric-nkoulou',
     agentId: 'agent-cedric-nkoulou',
     stopId: 'stop-cedric-07',
+    clientId: 'client-alice-fouda',
     clientName: 'Alice Fouda',
     amount: 1_000,
   },
@@ -33,6 +36,7 @@ const SCRIPT: ScriptEntry[] = [
     roundId: 'agent-cedric-nkoulou',
     agentId: 'agent-cedric-nkoulou',
     stopId: 'stop-cedric-08',
+    clientId: 'client-daniel-manga',
     clientName: 'Daniel Manga',
     amount: 1_200,
   },
@@ -44,8 +48,8 @@ const MAX_DELAY_MS = 15_000;
 /**
  * Fait « vivre » une tournée ouverte (dev/démo, pas de backend) : toutes les
  * 8-15s, un stop passe Collected — jamais de mutation directe du domaine
- * depuis l'infra, uniquement l'événement typé (`domain/events`) que ce slice
- * ET celui de `dashboard` savent traiter (unification des events).
+ * depuis l'infra, uniquement l'événement typé (`domain/events`) que ce slice,
+ * celui de `dashboard` ET celui de `clients` savent traiter (unification des events).
  */
 export const startCollectionsActivitySimulation = (
   realtimeClient: FakeRealtimeClient,
@@ -64,6 +68,7 @@ export const startCollectionsActivitySimulation = (
           roundId: entry.roundId,
           agentId: entry.agentId,
           stopId: entry.stopId,
+          clientId: entry.clientId,
           clientName: entry.clientName,
           amount: entry.amount,
         },

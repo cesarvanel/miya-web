@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFreshness, useRequestStatus } from '@miya/kernel';
+import { settlementSelectors } from '@/modules/settlements';
 import { useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { FetchRoundDetailAsync } from '../../../application/usecases/fetch-round-detail-async/FetchRoundDetailAsync';
 import {
+  selectCollectedBreakdown,
   selectRoundById,
   selectRoundKpis,
   selectStopsBreakdown,
@@ -17,6 +19,10 @@ export const useRoundDetail = () => {
   const kpis = useBankSelector((state) => selectRoundKpis(state, roundId));
   const stopsByZone = useBankSelector((state) => selectStopsByRound(state, roundId));
   const breakdown = useBankSelector((state) => selectStopsBreakdown(state, roundId));
+  const collectedBreakdown = useBankSelector((state) => selectCollectedBreakdown(state, roundId));
+  const pendingSlip = useBankSelector((state) =>
+    round ? settlementSelectors.selectPendingSlipByAgentId(state, round.agent.id) : undefined,
+  );
   const { isPending } = useRequestStatus(FetchRoundDetailAsync);
 
   const fetchedAt = useBankSelector(
@@ -31,5 +37,23 @@ export const useRoundDetail = () => {
     navigate(`/disputes?agentId=${round.agent.id}`);
   };
 
-  return { round, kpis, stopsByZone, breakdown, isPending, freshness, goToAgentDisputes };
+  const goToSlip = (): void => {
+    if (!pendingSlip) {
+      return;
+    }
+    navigate(`/settlements/${pendingSlip.id}`);
+  };
+
+  return {
+    round,
+    kpis,
+    stopsByZone,
+    breakdown,
+    collectedBreakdown,
+    pendingSlip,
+    isPending,
+    freshness,
+    goToAgentDisputes,
+    goToSlip,
+  };
 };

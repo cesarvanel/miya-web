@@ -5,12 +5,13 @@ import { PageShell } from '@/shared/layout/PageShell';
 import type { CollectionRound } from '../../../domain/entities/CollectionRound';
 import { CashGaugeCell } from '../composants/CashGaugeCell';
 import { RoundProgressCell } from '../composants/RoundProgressCell';
+import { RoundsStatsRow } from '../composants/RoundsStatsRow';
 import { RoundStatusChip } from '../composants/RoundStatusChip';
 import { useRoundsList } from './useRoundsList';
 
 /** Listing des tournées du jour — suivi temps réel, fidèle à la maquette 4a. */
 export const RoundsListPage: React.FC = () => {
-  const { rounds, goToRound } = useRoundsList();
+  const { rounds, summary, goToRound } = useRoundsList();
 
   const columns: TableColumn<CollectionRound>[] = [
     {
@@ -74,6 +75,7 @@ export const RoundsListPage: React.FC = () => {
 
   return (
     <PageShell title="Tournées" subtitle="Suivi temps réel · les chiffres évoluent en direct.">
+      <RoundsStatsRow summary={summary} />
       <Table columns={columns} rows={rounds} rowKey={(round) => round.id} onRowClick={(round) => goToRound(round.id)} />
     </PageShell>
   );

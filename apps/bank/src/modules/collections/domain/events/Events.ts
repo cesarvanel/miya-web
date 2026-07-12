@@ -1,16 +1,18 @@
 import { createAction } from '@reduxjs/toolkit';
 
 /**
- * Événements canoniques du domaine collections — owné par ce module (« un
- * seul event domaine par fait métier »). `collectionConfirmed` est consommé
- * aussi par `dashboard` (compteur/activité par agent) via cet index public,
- * jamais redéfini localement ailleurs — même solution déjà retenue pour
- * `disputeOpened`/`disputeResolved` du module disputes.
+ * Evenements canoniques du domaine collections - un seul event domaine par
+ * fait metier. `collectionConfirmed` est consomme aussi par `dashboard`
+ * (compteur/activite par agent) et par `clients` (solde d'epargne/regularite
+ * du client concerne) via cet index public, jamais redefini localement
+ * ailleurs - meme solution deja retenue pour `disputeOpened`/`disputeResolved`
+ * du module disputes.
  */
 export interface CollectionConfirmedPayload {
   roundId: string;
   agentId: string;
   stopId: string;
+  clientId: string;
   clientName: string;
   amount: number;
 }
@@ -25,9 +27,9 @@ export interface RoundClosedPayload {
 export const roundClosed = createAction<RoundClosedPayload>('collections/roundClosed');
 
 /**
- * Dispatché aussi par `settlements` (ValidateSettlementAsync) quand un
- * bordereau de type dépôt partiel est validé — collections décrémente le
- * cash en main de la tournée, dashboard fait de même sur son propre agrégat.
+ * Dispatche aussi par `settlements` (ValidateSettlementAsync) quand un
+ * bordereau de type depot partiel est valide - collections decremente le
+ * cash en main de la tournee, dashboard fait de meme sur son propre agregat.
  */
 export interface PartialDepositValidatedPayload {
   roundId: string;

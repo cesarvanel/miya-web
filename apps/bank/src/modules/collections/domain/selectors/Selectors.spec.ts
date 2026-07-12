@@ -1,7 +1,13 @@
 import type { BankRootState } from '@/config/stores/store';
 import { RoundsAdapter, RoundStatus, type CollectionRound } from '../entities/CollectionRound';
 import { RoundStopStatus, StopsAdapter, type RoundStop } from '../entities/RoundStop';
-import { selectRoundKpis, selectRoundsOfDay, selectStopsBreakdown } from './Selectors';
+import {
+  selectCollectedBreakdown,
+  selectRoundKpis,
+  selectRoundsOfDay,
+  selectRoundsSummary,
+  selectStopsBreakdown,
+} from './Selectors';
 
 const makeRound = (overrides: Partial<CollectionRound> = {}): CollectionRound => ({
   id: 'round-1',
@@ -81,6 +87,65 @@ describe('collections selectors', () => {
       expect(breakdown.ToVisit).toBe(1);
       expect(breakdown.Absent).toBe(1);
       expect(breakdown.Postponed).toBe(0);
+    });
+  });
+
+  describe('selectRoundsSummary', () => {
+    it('aggregates open/closed counts, collected total, average progress and the highest cap alert', () => {
+      const state = makeState([
+        makeRound({
+          id: 'r1',
+          agent: { id: 'agent-1', name: 'Cédric Nkoulou' },
+          status: RoundStatus.Open,
+          collectedTotal: 34_200,
+          cashInHand: 85_000,
+          cashHoldingCap: 100_000,
+          progress: { visited: 34, expected: 52 },
+        }),
+        makeRound({
+          id: 'r2',
+          agent: { id: 'agent-2', name: 'Rosalie Fotso' },
+          status: RoundStatus.Open,
+          collectedTotal: 21_000,
+          cashInHand: 61_000,
+          cashHoldingCap: 100_000,
+          progress: { visited: 28, expected: 40 },
+        }),
+        makeRound({
+          id: 'r3',
+          status: RoundStatus.Closed,
+          collectedTotal: 47_000,
+          progress: { visited: 45, expected: 45 },
+        }),
+      ]);
+
+      const summary = selectRoundsSummary(state);
+
+      expect(summary.openCount).toBe(2);
+      expect(summary.closedCount).toBe(1);
+      expect(summary.totalCount).toBe(3);
+      expect(summary.collectedTotal).toBe(34_200 + 21_000 + 47_000);
+      expect(summary.capAlert).toMatchObject({ agentName: 'Cédric Nkoulou', ratio: 0.85 });
+    });
+
+    it('returns no cap alert when nobody is near the ceiling', () => {
+      const state = makeState([makeRound({ cashInHand: 10_000, cashHoldingCap: 100_000 })]);
+      expect(selectRoundsSummary(state).capAlert).toBeNull();
+    });
+  });
+
+  describe('selectCollectedBreakdown', () => {
+    it('splits collected stops into normal vs extra (collected above usual), plus absent', () => {
+      const state = makeState([makeRound()], [
+        makeStop({ id: 's1', status: RoundStopStatus.Collected, usualAmount: 1_000, collectedAmount: 1_000 }),
+        makeStop({ id: 's2', status: RoundStopStatus.Collected, usualAmount: 1_000, collectedAmount: 2_000 }),
+        makeStop({ id: 's3', status: RoundStopStatus.Absent }),
+        makeStop({ id: 's4', roundId: 'other-round', status: RoundStopStatus.Collected }),
+      ]);
+
+      const breakdown = selectCollectedBreakdown(state, 'round-1');
+
+      expect(breakdown).toEqual({ normal: 1, extra: 1, absent: 1 });
     });
   });
 });
