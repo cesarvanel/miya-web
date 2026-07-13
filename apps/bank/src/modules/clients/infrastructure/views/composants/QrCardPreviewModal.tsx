@@ -11,12 +11,6 @@ interface QrCardPreviewModalProps {
   client: Client;
 }
 
-const FREQUENCY_LABEL: Record<Client['plan']['frequency'], string> = {
-  Daily: '/ j',
-  EveryTwoDays: '/ 2j',
-  Weekly: '/ sem.',
-};
-
 /**
  * Aperçu imprimable de la carte QR — maquette 6c. Impression/téléchargement
  * restent des stubs : aucun module de génération de documents pour l'instant.
@@ -86,7 +80,7 @@ export const QrCardPreviewModal: React.FC<QrCardPreviewModalProps> = ({ isOpen, 
                 <div>
                   <div className="text-[10.5px] font-semibold text-primary-muted">Cotisation</div>
                   <div className="num text-sm font-bold">
-                    {Money.from(client.usualAmount).format().replace(' FCFA', '')} {FREQUENCY_LABEL[client.plan.frequency]}
+                    {Money.from(client.savingsPlan.amountPerCollectionDay).format().replace(' FCFA', '')} / jour
                   </div>
                 </div>
               </div>

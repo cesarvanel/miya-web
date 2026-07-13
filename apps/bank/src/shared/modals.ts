@@ -10,8 +10,15 @@ export type BankModal =
   | 'confirmValidation'
   | 'validationSuccess'
   | 'confirmResolveDispute'
-  | 'editUsualAmount'
-  | 'deactivateClient';
+  | 'editSavingsPlan'
+  | 'deactivateClient'
+  | 'revokeDevice'
+  | 'activationCode'
+  | 'suspendAgent'
+  | 'confirmReactivate'
+  | 'approveWithdrawal'
+  | 'rejectWithdrawal'
+  | 'disburseWithdrawal';
 
 /** Props par modale : { rejectSettlement: { slipId: string }, ... } */
 export interface BankModalProps {
@@ -24,8 +31,15 @@ export interface BankModalProps {
     receiptNumber: string;
   };
   confirmResolveDispute: { disputeId: string; inFavorOf: DisputeDecision; reason: string };
-  editUsualAmount: { clientId: string };
+  editSavingsPlan: { clientId: string };
   deactivateClient: { clientId: string };
+  revokeDevice: { agentId: string };
+  activationCode: { agentId: string };
+  suspendAgent: { agentId: string };
+  confirmReactivate: { agentId: string };
+  approveWithdrawal: { withdrawalId: string };
+  rejectWithdrawal: { withdrawalId: string };
+  disburseWithdrawal: { withdrawalId: string };
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

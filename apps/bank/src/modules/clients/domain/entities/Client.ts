@@ -1,14 +1,8 @@
 import { createEntityAdapter } from '@reduxjs/toolkit';
+import type { SavingsPlan } from './SavingsPlan';
 
 export const ClientStatus = { Active: 'Active', Inactive: 'Inactive' } as const;
 export type ClientStatus = (typeof ClientStatus)[keyof typeof ClientStatus];
-
-export const ClientPlanFrequency = {
-  Daily: 'Daily',
-  EveryTwoDays: 'EveryTwoDays',
-  Weekly: 'Weekly',
-} as const;
-export type ClientPlanFrequency = (typeof ClientPlanFrequency)[keyof typeof ClientPlanFrequency];
 
 export interface ClientAssignedAgent {
   id: string;
@@ -19,12 +13,6 @@ export interface ClientIdDocument {
   type: 'CNI';
   /** Ex. « CNI ••• 4471 » — jamais le numéro complet côté client. */
   maskedNumber: string;
-}
-
-export interface ClientPlan {
-  frequency: ClientPlanFrequency;
-  /** Plancher du plan, en FCFA — usualAmount doit toujours être ≥ floorAmount. */
-  floorAmount: number;
 }
 
 export interface ClientRegularity {
@@ -52,9 +40,7 @@ export interface Client {
   /** ISO (YYYY-MM-DD) — mois/année affichés dans les vues. */
   clientSince: string;
   status: ClientStatus;
-  plan: ClientPlan;
-  /** Montant choisi par la cliente, ≥ plan.floorAmount. */
-  usualAmount: number;
+  savingsPlan: SavingsPlan;
   savingsBalance: number;
   regularity: ClientRegularity;
   pendingWithdrawal: PendingWithdrawal | null;

@@ -1,4 +1,4 @@
-import type { ClientPlanFrequency } from '../../../domain/entities/Client';
+import type { DayOfWeek, EngagementPreset } from '../../../domain/entities/SavingsPlan';
 
 export interface CreateClientIdentity {
   fullName: string;
@@ -9,9 +9,14 @@ export interface CreateClientIdentity {
   activity: string;
 }
 
-export interface CreateClientPlan {
-  frequency: ClientPlanFrequency;
-  floorAmount: number;
+export interface CreateClientSavingsPlan {
+  amountPerCollectionDay: number;
+  /** Au moins un jour coché. */
+  collectionDays: DayOfWeek[];
+  startDate: string;
+  endDate: string;
+  preset: EngagementPreset;
+  openingDeposit?: number;
 }
 
 export interface CreateClientAssignment {
@@ -22,8 +27,7 @@ export interface CreateClientAssignment {
 
 export interface CreateClientCommand {
   identity: CreateClientIdentity;
-  plan: CreateClientPlan;
-  usualAmount: number;
+  savingsPlan: CreateClientSavingsPlan;
   assignment: CreateClientAssignment;
   hasSmartphone: boolean;
 }

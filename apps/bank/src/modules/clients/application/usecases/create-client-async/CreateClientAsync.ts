@@ -1,14 +1,16 @@
 import { getErrorState, invalidateTags, PhoneNumber } from '@miya/kernel';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { pushToast } from '@/shared/toasts';
+import { SAVINGS_PLAN_FLOOR_AMOUNT } from '../../../domain/entities/SavingsPlan';
 import { ClientsActions } from '../../../domain/slices/ClientsSlice';
 import { CreateClientCommand } from './CreateClientCommand';
 import { CreateClientResponse } from './CreateClientResponse';
 
 /**
- * Création d'une cliente : validations (montant ≥ plancher, téléphone
- * camerounais valide) → gateway → transition domaine → cache → toast.
- * La navigation vers la fiche se fait côté vue, sur le `fulfilled`.
+ * Création d'une cliente : validations (jours de collecte cochés, échéance
+ * postérieure au départ, montant ≥ plancher, téléphone camerounais valide)
+ * → gateway (calcule `computed` via le service pur) → transition domaine →
+ * cache → toast. La navigation vers la fiche se fait côté vue, sur le `fulfilled`.
  */
 export const CreateClientAsync = createBankAsyncThunk<
   CreateClientResponse,
@@ -17,9 +19,16 @@ export const CreateClientAsync = createBankAsyncThunk<
   'clients/createClient',
   async (command, { extra, dispatch, rejectWithValue }) => {
     try {
-      if (command.usualAmount < command.plan.floorAmount) {
+      const { savingsPlan } = command;
+      if (savingsPlan.collectionDays.length === 0) {
+        throw new Error('Sélectionnez au moins un jour de collecte.');
+      }
+      if (savingsPlan.endDate <= savingsPlan.startDate) {
+        throw new Error("La date de fin d'engagement doit être postérieure à la date de départ.");
+      }
+      if (savingsPlan.amountPerCollectionDay < SAVINGS_PLAN_FLOOR_AMOUNT) {
         throw new Error(
-          `Le montant choisi doit être supérieur ou égal au plancher du plan (${command.plan.floorAmount} FCFA).`,
+          `Le montant choisi doit être supérieur ou égal au plancher (${SAVINGS_PLAN_FLOOR_AMOUNT} FCFA).`,
         );
       }
       try {

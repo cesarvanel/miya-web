@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { InitialsAvatar, KpiCard, NotificationBell, Skeleton, Table, Tabs, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -41,7 +42,13 @@ export const DashboardPage: React.FC = () => {
         <div className="flex min-w-0 items-center gap-[11px]">
           <InitialsAvatar name={row.name} />
           <div className="min-w-0">
-            <div className="text-sm font-bold text-ink">{row.name}</div>
+            <Link
+              to={`/agents/${row.agentId}`}
+              onClick={(event) => event.stopPropagation()}
+              className="block truncate text-sm font-bold text-ink hover:underline"
+            >
+              {row.name}
+            </Link>
             <div className="text-xs font-medium text-ink-muted">{row.zone}</div>
           </div>
         </div>

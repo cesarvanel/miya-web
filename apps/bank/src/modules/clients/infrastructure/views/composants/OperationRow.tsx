@@ -11,6 +11,7 @@ const LABELS: Record<ClientOperationKind, string> = {
   Collection: 'Cotisation journalière',
   Withdrawal: 'Retrait en agence',
   CustodyFee: 'Frais de tenue de compte',
+  OpeningDeposit: "Dépôt d'ouverture",
 };
 
 const CollectionIcon: React.FC = () => (
@@ -41,7 +42,7 @@ export const OperationRow: React.FC<OperationRowProps> = ({ operation }) => {
           isPositive ? 'bg-primary-soft' : 'bg-amber-soft',
         ].join(' ')}
       >
-        {operation.kind === ClientOperationKind.Collection ? <CollectionIcon /> : <WithdrawalIcon />}
+        {isPositive ? <CollectionIcon /> : <WithdrawalIcon />}
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-[13.5px] font-bold text-ink">

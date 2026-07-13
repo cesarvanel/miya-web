@@ -6,14 +6,43 @@ import type { FetchClientResponse } from '../../application/usecases/fetch-clien
 import type { FetchClientsResponse } from '../../application/usecases/fetch-clients-async/FetchClientsResponse';
 import { ClientStatus, type Client } from '../../domain/entities/Client';
 import { ClientOperationKind, ClientOperationStatus, type ClientOperation } from '../../domain/entities/ClientOperation';
+import { DayOfWeek, EngagementPreset, type SavingsPlan } from '../../domain/entities/SavingsPlan';
+import { computeSavingsPlanComputed } from '../../domain/services/SavingsPlanCalculator';
 
 const daysAgo = (days: number): string => new Date(Date.now() - days * 86_400_000).toISOString();
+
+const MON_SAT: DayOfWeek[] = [
+  DayOfWeek.Monday,
+  DayOfWeek.Tuesday,
+  DayOfWeek.Wednesday,
+  DayOfWeek.Thursday,
+  DayOfWeek.Friday,
+  DayOfWeek.Saturday,
+];
+
+/** Construit un plan d'épargne — `computed` est TOUJOURS dérivé via le service pur, jamais saisi. */
+const buildSavingsPlan = (
+  amountPerCollectionDay: number,
+  collectionDays: DayOfWeek[],
+  startDate: string,
+  endDate: string,
+  preset: EngagementPreset,
+  openingDeposit?: number,
+): SavingsPlan => ({
+  amountPerCollectionDay,
+  collectionDays,
+  engagement: { startDate, endDate, preset },
+  computed: computeSavingsPlanComputed(amountPerCollectionDay, collectionDays, startDate, endDate, openingDeposit ?? 0),
+  openingDeposit,
+});
 
 /**
  * Clients repris des fixtures des autres modules quand la même personne y
  * apparaît déjà (Bernadette Ngo, Christine Eyenga, Jean-Pierre Etoa, Sylvie
  * Mballa — mêmes ids que dans collections/disputes), pour que la fiche
- * client soit cohérente avec ce qu'on voit déjà ailleurs dans l'app.
+ * client soit cohérente avec ce qu'on voit déjà ailleurs dans l'app. Les
+ * jours de collecte couvrent tous « aujourd'hui » (lundi) pour rester
+ * cohérents avec la feuille de route des tournées (FakeCollectionGateway).
  */
 const seedClients = (): Client[] => [
   {
@@ -27,8 +56,8 @@ const seedClients = (): Client[] => [
     hasSmartphone: false,
     clientSince: '2023-03-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 1_000,
+    /** 1 000/jour, Lun-Sam, engagement 6 mois démarré en mars → objectif ~156 000, jauge ~28% (solde 43 500). */
+    savingsPlan: buildSavingsPlan(1_000, MON_SAT, '2026-03-01', '2026-09-01', EngagementPreset.SixMonths),
     savingsBalance: 43_500,
     regularity: { contributed: 27, expected: 30 },
     pendingWithdrawal: { amount: 15_000, requestedAt: 'hier' },
@@ -44,8 +73,7 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2022-01-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 1_000,
+    savingsPlan: buildSavingsPlan(1_000, MON_SAT, '2026-01-05', '2027-01-05', EngagementPreset.OneYear),
     savingsBalance: 128_500,
     regularity: { contributed: 29, expected: 30 },
     pendingWithdrawal: { amount: 50_000, requestedAt: "aujourd'hui 14h52" },
@@ -61,8 +89,7 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2021-06-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 1_500,
+    savingsPlan: buildSavingsPlan(1_500, MON_SAT, '2026-02-02', '2026-08-02', EngagementPreset.SixMonths),
     savingsBalance: 67_000,
     regularity: { contributed: 26, expected: 30 },
     pendingWithdrawal: null,
@@ -78,8 +105,13 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2021-01-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 2_000,
+    savingsPlan: buildSavingsPlan(
+      2_000,
+      [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday],
+      '2025-09-01',
+      '2026-09-01',
+      EngagementPreset.OneYear,
+    ),
     savingsBalance: 210_000,
     regularity: { contributed: 21, expected: 30 },
     pendingWithdrawal: null,
@@ -95,8 +127,7 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2022-05-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 1_000,
+    savingsPlan: buildSavingsPlan(1_000, MON_SAT, '2026-06-01', '2026-09-01', EngagementPreset.ThreeMonths),
     savingsBalance: 31_000,
     regularity: { contributed: 28, expected: 30 },
     pendingWithdrawal: null,
@@ -112,8 +143,13 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2026-05-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 500,
+    savingsPlan: buildSavingsPlan(
+      500,
+      [DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday],
+      '2026-06-01',
+      '2026-09-01',
+      EngagementPreset.ThreeMonths,
+    ),
     savingsBalance: 9_000,
     regularity: { contributed: 22, expected: 30 },
     pendingWithdrawal: null,
@@ -129,15 +165,14 @@ const seedClients = (): Client[] => [
     hasSmartphone: true,
     clientSince: '2022-09-01',
     status: ClientStatus.Active,
-    plan: { frequency: 'Daily', floorAmount: 500 },
-    usualAmount: 1_200,
+    savingsPlan: buildSavingsPlan(1_200, MON_SAT, '2026-04-01', '2026-10-01', EngagementPreset.SixMonths),
     savingsBalance: 54_000,
     regularity: { contributed: 27, expected: 30 },
     pendingWithdrawal: { amount: 20_000, requestedAt: 'il y a 2 jours' },
   },
 ];
 
-/** Historique exact demandé pour Bernadette Ngo — cotisations, retrait, frais de tenue de compte. */
+/** Historique exact demandé pour Bernadette Ngo — dépôt d'ouverture, cotisations, retrait, frais de tenue de compte. */
 const seedOperations = (): ClientOperation[] => [
   {
     id: 'op-bernadette-01',
@@ -172,6 +207,15 @@ const seedOperations = (): ClientOperation[] => [
     kind: ClientOperationKind.CustodyFee,
     amount: -200,
     occurredAt: '2026-06-01T00:00:00.000Z',
+    status: ClientOperationStatus.Completed,
+  },
+  {
+    id: 'op-bernadette-00',
+    clientId: 'client-bernadette-ngo',
+    kind: ClientOperationKind.OpeningDeposit,
+    amount: 2_000,
+    occurredAt: '2026-03-01T09:00:00.000Z',
+    agentName: 'Cédric Nkoulou',
     status: ClientOperationStatus.Completed,
   },
 ];
@@ -214,6 +258,7 @@ export class FakeClientGateway implements ClientGateway {
   async create(command: CreateClientCommand): Promise<CreateClientResponse> {
     await delay();
     this.nextClientSeq += 1;
+    const { savingsPlan: plan } = command;
     const client: Client = {
       id: `client-${command.identity.fullName.toLowerCase().replace(/[^a-z]+/g, '-')}-${this.nextClientSeq}`,
       fullName: command.identity.fullName,
@@ -228,23 +273,49 @@ export class FakeClientGateway implements ClientGateway {
       hasSmartphone: command.hasSmartphone,
       clientSince: new Date().toISOString().slice(0, 10),
       status: ClientStatus.Active,
-      plan: command.plan,
-      usualAmount: command.usualAmount,
-      savingsBalance: 0,
+      savingsPlan: buildSavingsPlan(
+        plan.amountPerCollectionDay,
+        plan.collectionDays,
+        plan.startDate,
+        plan.endDate,
+        plan.preset,
+        plan.openingDeposit,
+      ),
+      savingsBalance: plan.openingDeposit ?? 0,
       regularity: { contributed: 0, expected: 0 },
       pendingWithdrawal: null,
     };
     this.clients.push(client);
+
+    if (plan.openingDeposit) {
+      this.operations.push({
+        id: `op-${client.id}-opening`,
+        clientId: client.id,
+        kind: ClientOperationKind.OpeningDeposit,
+        amount: plan.openingDeposit,
+        occurredAt: new Date().toISOString(),
+        agentName: command.assignment.agentName,
+        status: ClientOperationStatus.Completed,
+      });
+    }
+
     return { client: structuredClone(client) };
   }
 
-  async updateUsualAmount(id: string, amount: number): Promise<void> {
+  async updateSavingsPlan(id: string, amountPerCollectionDay: number, collectionDays: DayOfWeek[]): Promise<void> {
     await delay();
     const client = this.clients.find((candidate) => candidate.id === id);
     if (!client) {
       throw new Error(`Client introuvable : ${id}`);
     }
-    client.usualAmount = amount;
+    client.savingsPlan = buildSavingsPlan(
+      amountPerCollectionDay,
+      collectionDays,
+      client.savingsPlan.engagement.startDate,
+      client.savingsPlan.engagement.endDate,
+      client.savingsPlan.engagement.preset,
+      client.savingsPlan.openingDeposit,
+    );
   }
 
   async deactivate(id: string, _reason: string): Promise<void> {

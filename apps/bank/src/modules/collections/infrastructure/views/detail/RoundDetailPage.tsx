@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Card, FreshnessIndicator, KpiCard, LiveBadge, Skeleton } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -47,6 +48,9 @@ export const RoundDetailPage: React.FC = () => {
             <span className="text-[13px] font-medium text-ink-faint">
               Tous les clients traités · GPS remis à l'agence
             </span>
+            <Link to={`/agents/${round.agent.id}`} className="text-[12.5px] font-bold text-primary hover:underline">
+              Voir la fiche agent
+            </Link>
           </div>
 
           {/* Bandeau en attente de reversement */}
@@ -172,6 +176,9 @@ export const RoundDetailPage: React.FC = () => {
         <RoundStatusChip status={round.status} />
         <LiveBadge />
         <FreshnessIndicator status={freshness.status} label={freshness.label} />
+        <Link to={`/agents/${round.agent.id}`} className="ml-auto text-[12.5px] font-bold text-primary hover:underline">
+          Voir la fiche agent
+        </Link>
       </div>
 
       <div className="grid grid-cols-4 gap-4">

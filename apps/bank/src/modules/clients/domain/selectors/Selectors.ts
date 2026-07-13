@@ -87,6 +87,24 @@ export const selectOperationsByClient = createSelector(
   },
 );
 
+export interface SavingsProgress {
+  balance: number;
+  target: number;
+  /** 0-1, borné même si le solde dépasse l'objectif (indicatif, jamais bloquant). */
+  ratio: number;
+}
+
+/** Progression vers l'objectif d'épargne — objectif purement indicatif. */
+export const selectSavingsProgress = (state: BankRootState, clientId: string): SavingsProgress | undefined => {
+  const client = selectClientById(state, clientId);
+  if (!client) {
+    return undefined;
+  }
+  const target = client.savingsPlan.computed.targetAmount;
+  const ratio = target === 0 ? 0 : Math.min(1, client.savingsBalance / target);
+  return { balance: client.savingsBalance, target, ratio };
+};
+
 export const ClientsSelectors = {
   selectAllClients,
   selectClientById,
@@ -95,4 +113,5 @@ export const ClientsSelectors = {
   selectTotalActiveClientsLabel,
   selectLowRegularityCount,
   selectOperationsByClient,
+  selectSavingsProgress,
 };

@@ -47,7 +47,7 @@ export const DisputesListPage: React.FC = () => {
     {
       key: 'agent',
       header: 'Agent',
-      cell: (dispute) => <PartyCell name={dispute.agent.name} muted />,
+      cell: (dispute) => <PartyCell name={dispute.agent.name} to={`/agents/${dispute.agent.id}`} muted />,
     },
     {
       key: 'amounts',

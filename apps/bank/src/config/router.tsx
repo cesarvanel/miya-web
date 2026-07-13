@@ -1,11 +1,13 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
+import { AgentsRouter } from '@/modules/agents';
 import { ClientsRouter } from '@/modules/clients';
 import { CollectionsRouter } from '@/modules/collections';
 import { DashboardRouter } from '@/modules/dashboard';
 import { DisputesRouter } from '@/modules/disputes';
 import { SettlementsRouter } from '@/modules/settlements';
+import { WithdrawalsRouter } from '@/modules/withdrawals';
 import { RequireRole } from '@/shared/guards/RequireRole';
 import { PageShell } from '@/shared/layout/PageShell';
 import { ToastHost } from '@/shared/layout/ToastHost';
@@ -69,8 +71,8 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       ...DisputesRouter(store),
       ...CollectionsRouter(store),
       ...ClientsRouter(store),
-      { path: 'agents', element: <ModulePlaceholder title="Agents" /> },
-      { path: 'withdrawals', element: <ModulePlaceholder title="Retraits" /> },
+      ...AgentsRouter(store),
+      ...WithdrawalsRouter(store),
       { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
     ],
   },

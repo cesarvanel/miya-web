@@ -36,6 +36,7 @@ export const SlipDetailPage: React.FC = () => {
     <Card className="max-w-180">
       <SlipHeader
         agentName={slip.agentName}
+        agentId={slip.agentId}
         slipMeta={
           isPartialDeposit && context
             ? `${slip.slipNumber} · Zone ${slip.zone} · ${context.visitedClients} / ${slip.clientCount} clients`

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Card, InitialsAvatar, Skeleton } from '@miya/ui';
 import { Money, PhoneNumber } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -7,25 +8,27 @@ import { formatMonthLabel } from '../composants/formatClientTime';
 import { OperationRow } from '../composants/OperationRow';
 import { QrCardPreviewModal } from '../composants/QrCardPreviewModal';
 import { regularityPercent } from '../composants/RegularityCell';
+import { SavingsPlanCard } from '../composants/SavingsPlanCard';
 import { DeactivateClientModal } from '../modal/DeactivateClientModal';
-import { EditUsualAmountModal } from '../modal/EditUsualAmountModal';
+import { EditSavingsPlanModal } from '../modal/EditSavingsPlanModal';
 import { useClientDetail } from './useClientDetail';
 
-/** Fiche client pleine page — identité, épargne, calendrier de cotisation, mouvements. Maquette 6/6d. */
+/** Fiche client pleine page — identité, plan d'épargne, calendrier de cotisation, mouvements. Maquette 6/6d. */
 export const ClientDetailPage: React.FC = () => {
   const {
     client,
     operationsByMonth,
+    savingsProgress,
     isPending,
     isQrPreviewOpen,
     openQrPreview,
     closeQrPreview,
-    openEditUsualAmount,
+    openEditSavingsPlan,
     openDeactivate,
     goToWithdrawal,
   } = useClientDetail();
 
-  if (!client) {
+  if (!client || !savingsProgress) {
     return isPending ? (
       <Skeleton variant="card" />
     ) : (
@@ -46,8 +49,8 @@ export const ClientDetailPage: React.FC = () => {
       back={{ label: 'Clients', to: '/clients' }}
       actions={
         <>
-          <Button variant="secondary" onClick={openEditUsualAmount}>
-            Modifier le montant habituel
+          <Button variant="secondary" onClick={openEditSavingsPlan}>
+            Modifier le plan d&rsquo;épargne
           </Button>
           <Button variant="primary" onClick={openQrPreview}>
             Imprimer la carte QR
@@ -137,24 +140,9 @@ export const ClientDetailPage: React.FC = () => {
 
         {/* RIGHT column */}
         <div className="min-w-0 flex-1 space-y-4">
-          <div className="flex gap-4">
-            <div className="rounded-card-lg flex-[1.4] bg-primary-deep p-6 text-white">
-              <div className="text-primary-bright text-[12.5px] font-bold tracking-[.06em] uppercase">
-                Solde d'épargne
-              </div>
-              <div className="num mt-1.5 text-[42px] leading-tight font-bold tracking-[-0.02em]">
-                {Money.from(client.savingsBalance).format()}
-              </div>
-              <div className="mt-2.5 flex gap-5">
-                <div>
-                  <div className="text-[11.5px] font-semibold text-primary-muted">Cotisation habituelle</div>
-                  <div className="num text-[15px] font-bold">{Money.from(client.usualAmount).format()}</div>
-                </div>
-                <div>
-                  <div className="text-[11.5px] font-semibold text-primary-muted">Plancher du plan</div>
-                  <div className="num text-[15px] font-bold">{Money.from(client.plan.floorAmount).format()}</div>
-                </div>
-              </div>
+          <div className="flex items-start gap-4">
+            <div className="flex-[1.4]">
+              <SavingsPlanCard client={client} progress={savingsProgress} />
             </div>
             <div className="flex flex-1 flex-col gap-4">
               <Card>
@@ -163,7 +151,9 @@ export const ClientDetailPage: React.FC = () => {
               </Card>
               <Card>
                 <div className="text-xs font-semibold text-ink-muted">Agent collecteur</div>
-                <div className="mt-1.5 text-[15px] font-bold text-ink">{client.assignedAgent.name}</div>
+                <Link to={`/agents/${client.assignedAgent.id}`} className="mt-1.5 block text-[15px] font-bold text-ink hover:underline">
+                  {client.assignedAgent.name}
+                </Link>
               </Card>
             </div>
           </div>
@@ -201,7 +191,7 @@ export const ClientDetailPage: React.FC = () => {
       </div>
 
       <QrCardPreviewModal isOpen={isQrPreviewOpen} onClose={closeQrPreview} client={client} />
-      <EditUsualAmountModal />
+      <EditSavingsPlanModal />
       <DeactivateClientModal />
     </PageShell>
   );

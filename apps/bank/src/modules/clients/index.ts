@@ -2,17 +2,26 @@ import { ClientsSelectors } from './domain/selectors/Selectors';
 import { clientsSlice } from './domain/slices/ClientsSlice';
 
 // Types de domaine
-export { ClientPlanFrequency, ClientStatus, ClientsAdapter } from './domain/entities/Client';
-export type {
-  Client,
-  ClientAssignedAgent,
-  ClientIdDocument,
-  ClientPlan,
-  ClientRegularity,
-  PendingWithdrawal,
-} from './domain/entities/Client';
+export { ClientStatus, ClientsAdapter } from './domain/entities/Client';
+export type { Client, ClientAssignedAgent, ClientIdDocument, ClientRegularity, PendingWithdrawal } from './domain/entities/Client';
+export {
+  DayOfWeek,
+  DAY_OF_WEEK_ORDER,
+  DAY_OF_WEEK_SHORT_LABEL,
+  EngagementPreset,
+  SAVINGS_PLAN_FLOOR_AMOUNT,
+} from './domain/entities/SavingsPlan';
+export type { SavingsEngagement, SavingsPlan, SavingsPlanComputed } from './domain/entities/SavingsPlan';
 export { ClientOperationKind, ClientOperationStatus, OperationsAdapter } from './domain/entities/ClientOperation';
 export type { ClientOperation } from './domain/entities/ClientOperation';
+
+// Services purs du domaine — utilisés par le formulaire ET par les selectors
+export {
+  computeEngagementEndDate,
+  computePlannedCollectionDays,
+  computeSavingsPlanComputed,
+  computeSavingsTarget,
+} from './domain/services/SavingsPlanCalculator';
 
 // Reducer (branché dans RootReducer)
 export const clientsReducer = clientsSlice.reducer;
@@ -21,7 +30,7 @@ export const clientsReducer = clientsSlice.reducer;
 export const clientsSelectors = {
   ...ClientsSelectors,
 };
-export type { ClientsListFilters } from './domain/selectors/Selectors';
+export type { ClientsListFilters, SavingsProgress } from './domain/selectors/Selectors';
 
 // Use cases
 export { FetchClientsAsync } from './application/usecases/fetch-clients-async/FetchClientsAsync';
@@ -41,13 +50,13 @@ export type {
   CreateClientAssignment,
   CreateClientCommand,
   CreateClientIdentity,
-  CreateClientPlan,
+  CreateClientSavingsPlan,
 } from './application/usecases/create-client-async/CreateClientCommand';
 export type { CreateClientResponse } from './application/usecases/create-client-async/CreateClientResponse';
 
-export { UpdateUsualAmountAsync } from './application/usecases/update-usual-amount-async/UpdateUsualAmountAsync';
-export type { UpdateUsualAmountCommand } from './application/usecases/update-usual-amount-async/UpdateUsualAmountCommand';
-export type { UpdateUsualAmountResponse } from './application/usecases/update-usual-amount-async/UpdateUsualAmountResponse';
+export { UpdateSavingsPlanAsync } from './application/usecases/update-savings-plan-async/UpdateSavingsPlanAsync';
+export type { UpdateSavingsPlanCommand } from './application/usecases/update-savings-plan-async/UpdateSavingsPlanCommand';
+export type { UpdateSavingsPlanResponse } from './application/usecases/update-savings-plan-async/UpdateSavingsPlanResponse';
 
 export { DeactivateClientAsync } from './application/usecases/deactivate-client-async/DeactivateClientAsync';
 export type { DeactivateClientCommand } from './application/usecases/deactivate-client-async/DeactivateClientCommand';

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { InitialsAvatar } from '@miya/ui';
 
 export type SlipBadgeTone = 'amber' | 'primary' | 'neutral';
@@ -10,6 +11,7 @@ interface SlipBadge {
 
 interface SlipHeaderProps {
   agentName: string;
+  agentId: string;
   slipMeta: string;
   statusBadge?: SlipBadge;
   cornerBadge?: SlipBadge;
@@ -24,6 +26,7 @@ const badgeClasses: Record<SlipBadgeTone, string> = {
 /** En-tête du bordereau sélectionné — partagé entre reversement et dépôt partiel. */
 export const SlipHeader: React.FC<SlipHeaderProps> = ({
   agentName,
+  agentId,
   slipMeta,
   statusBadge,
   cornerBadge,
@@ -33,7 +36,9 @@ export const SlipHeader: React.FC<SlipHeaderProps> = ({
       <InitialsAvatar name={agentName} size="lg" />
       <div className="flex-1">
         <div className="flex items-center gap-[10px]">
-          <span className="text-xl font-extrabold text-ink">{agentName}</span>
+          <Link to={`/agents/${agentId}`} className="text-xl font-extrabold text-ink hover:underline">
+            {agentName}
+          </Link>
           {statusBadge && (
             <span
               className={[

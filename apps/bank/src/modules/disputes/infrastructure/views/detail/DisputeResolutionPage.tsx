@@ -78,7 +78,9 @@ export const DisputeResolutionPage: React.FC = () => {
               >
                 {!isForClient ? 'Retenu · saisi par l’agent' : "Saisi par l'agent"}
               </div>
-              <div className="mt-1 text-sm font-bold text-ink">{dispute.agent.name}</div>
+              <Link to={`/agents/${dispute.agent.id}`} className="mt-1 block text-sm font-bold text-ink hover:underline">
+                {dispute.agent.name}
+              </Link>
               <div
                 className={[
                   'num mt-3.5 text-[34px] font-bold tracking-[-0.02em]',
@@ -221,7 +223,9 @@ export const DisputeResolutionPage: React.FC = () => {
             <div className="text-[11px] font-bold tracking-[.04em] text-ink-faint uppercase">
               Saisie de l'agent
             </div>
-            <div className="mt-1 text-sm font-bold text-ink">{dispute.agent.name}</div>
+            <Link to={`/agents/${dispute.agent.id}`} className="mt-1 block text-sm font-bold text-ink hover:underline">
+              {dispute.agent.name}
+            </Link>
             <div className="num mt-4 text-[38px] font-bold tracking-[-0.02em] text-ink">
               {Money.from(dispute.agent.enteredAmount).format()}
             </div>

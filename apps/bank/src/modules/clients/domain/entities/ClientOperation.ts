@@ -4,6 +4,7 @@ export const ClientOperationKind = {
   Collection: 'Collection',
   Withdrawal: 'Withdrawal',
   CustodyFee: 'CustodyFee',
+  OpeningDeposit: 'OpeningDeposit',
 } as const;
 export type ClientOperationKind = (typeof ClientOperationKind)[keyof typeof ClientOperationKind];
 

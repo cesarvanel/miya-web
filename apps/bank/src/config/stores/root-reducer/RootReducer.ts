@@ -1,10 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { cacheSlice, requestStatusSlice } from '@miya/kernel';
+import { agentsReducer } from '@/modules/agents';
 import { clientsReducer } from '@/modules/clients';
 import { collectionsReducer } from '@/modules/collections';
 import { dashboardReducer } from '@/modules/dashboard';
 import { disputesReducer } from '@/modules/disputes';
 import { settlementsReducer } from '@/modules/settlements';
+import { withdrawalsReducer } from '@/modules/withdrawals';
 import { modalsSlice } from '@/shared/modals';
 import { toastSlice } from '@/shared/toasts';
 
@@ -23,6 +25,8 @@ export const rootReducer = combineReducers({
   disputes: disputesReducer,
   collections: collectionsReducer,
   clients: clientsReducer,
+  agents: agentsReducer,
+  withdrawals: withdrawalsReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

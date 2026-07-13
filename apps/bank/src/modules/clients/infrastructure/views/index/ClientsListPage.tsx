@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Dropdown, InitialsAvatar, SearchInput, Table, Tabs, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -63,7 +64,13 @@ export const ClientsListPage: React.FC = () => {
       key: 'agent',
       header: 'Agent',
       cell: (client) => (
-        <span className="text-[12.5px] font-medium text-ink-muted">{client.assignedAgent.name}</span>
+        <Link
+          to={`/agents/${client.assignedAgent.id}`}
+          onClick={(event) => event.stopPropagation()}
+          className="text-[12.5px] font-medium text-ink-muted hover:underline"
+        >
+          {client.assignedAgent.name}
+        </Link>
       ),
     },
     {

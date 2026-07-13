@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { InitialsAvatar, Table, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
@@ -21,7 +22,13 @@ export const RoundsListPage: React.FC = () => {
         <div className="flex min-w-0 items-center gap-2.75">
           <InitialsAvatar name={round.agent.name} />
           <div className="min-w-0">
-            <div className="truncate text-sm font-bold text-ink">{round.agent.name}</div>
+            <Link
+              to={`/agents/${round.agent.id}`}
+              onClick={(event) => event.stopPropagation()}
+              className="block truncate text-sm font-bold text-ink hover:underline"
+            >
+              {round.agent.name}
+            </Link>
           </div>
         </div>
       ),
