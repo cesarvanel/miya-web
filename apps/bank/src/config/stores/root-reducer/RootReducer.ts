@@ -5,6 +5,7 @@ import { clientsReducer } from '@/modules/clients';
 import { collectionsReducer } from '@/modules/collections';
 import { dashboardReducer } from '@/modules/dashboard';
 import { disputesReducer } from '@/modules/disputes';
+import { settingsReducer } from '@/modules/settings';
 import { settlementsReducer } from '@/modules/settlements';
 import { withdrawalsReducer } from '@/modules/withdrawals';
 import { modalsSlice } from '@/shared/modals';
@@ -27,6 +28,7 @@ export const rootReducer = combineReducers({
   clients: clientsReducer,
   agents: agentsReducer,
   withdrawals: withdrawalsReducer,
+  settings: settingsReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

@@ -6,10 +6,11 @@ import { ClientsRouter } from '@/modules/clients';
 import { CollectionsRouter } from '@/modules/collections';
 import { DashboardRouter } from '@/modules/dashboard';
 import { DisputesRouter } from '@/modules/disputes';
+import { SettingsRouter } from '@/modules/settings';
 import { SettlementsRouter } from '@/modules/settlements';
 import { WithdrawalsRouter } from '@/modules/withdrawals';
 import { RequireRole } from '@/shared/guards/RequireRole';
-import { PageShell } from '@/shared/layout/PageShell';
+import { AdminShell } from '@/shared/layout/AdminShell';
 import { ToastHost } from '@/shared/layout/ToastHost';
 import { DesignSystemPage } from '@/devtools/DesignSystemPage';
 import { SidebarContainer } from './layout/SidebarContainer';
@@ -23,20 +24,13 @@ const BankLayout: React.FC = () => (
   </div>
 );
 
-interface ModulePlaceholderProps {
-  title: string;
-}
-
-/** Placeholder en attendant les views des modules. */
-const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title }) => (
-  <PageShell title={title}>
+/** Zones & agences — carte du hub déjà branchée, section pas encore construite. */
+const AdminZonesPlaceholder: React.FC = () => (
+  <AdminShell breadcrumb={[{ label: 'Administration', to: '/admin' }, { label: 'Zones & agences' }]} title="Zones & agences">
     <Card padding="none">
-      <EmptyState
-        title={title}
-        description="Module en construction — les vues arrivent avec l'intégration."
-      />
+      <EmptyState title="Zones & agences" description="Découpage géographique et rattachement des agences — à venir." />
     </Card>
-  </PageShell>
+  </AdminShell>
 );
 
 /** Placeholder du module auth (hors layout, non gardé). */
@@ -73,7 +67,14 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       ...ClientsRouter(store),
       ...AgentsRouter(store),
       ...WithdrawalsRouter(store),
-      { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
+      {
+        // TODO(auth): remettre allow={['bank_admin']} une fois l'auth branchée.
+        path: 'admin',
+        children: [
+          ...SettingsRouter(store),
+          { path: 'zones', element: <AdminZonesPlaceholder /> },
+        ],
+      },
     ],
   },
 ];

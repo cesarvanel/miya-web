@@ -19,6 +19,8 @@ interface SidebarProps {
   badges?: Partial<Record<string, SidebarBadge>>;
   /** TODO(auth): utilisateur connecté — placeholder maquette par défaut. */
   user?: SidebarUser;
+  /** Entrée « Administration » — visible uniquement pour le rôle bank_admin. */
+  showAdministration?: boolean;
   onLogout?: () => void;
 }
 
@@ -92,8 +94,8 @@ const icons = {
   ),
 };
 
-/* Sections des maquettes ; « Administration » ajoutée pour Paramètres. */
-const sections: NavSectionConfig[] = [
+/* Sections des maquettes ; pilotage + suivi opérationnel quotidien (agents y reste). */
+const baseSections: NavSectionConfig[] = [
   {
     heading: 'Pilotage',
     items: [
@@ -111,11 +113,13 @@ const sections: NavSectionConfig[] = [
       { to: '/withdrawals', label: 'Retraits', icon: icons.withdrawals },
     ],
   },
-  {
-    heading: 'Administration',
-    items: [{ to: '/settings', label: 'Paramètres', icon: icons.settings }],
-  },
 ];
+
+/** Entrée unique repliant toute l'administration — visible pour bank_admin uniquement. */
+const administrationSection: NavSectionConfig = {
+  heading: 'Administration',
+  items: [{ to: '/admin', label: 'Administration', icon: icons.settings }],
+};
 
 const defaultUser: SidebarUser = {
   name: 'A. Mbarga',
@@ -126,9 +130,11 @@ const defaultUser: SidebarUser = {
 export const Sidebar: React.FC<SidebarProps> = ({
   badges = {},
   user = defaultUser,
+  showAdministration = false,
   onLogout,
 }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const sections = showAdministration ? [...baseSections, administrationSection] : baseSections;
 
   return (
     <aside className="flex w-64 flex-none flex-col bg-primary-deep px-4 pt-[22px] pb-[18px]">

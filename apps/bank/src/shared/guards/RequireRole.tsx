@@ -6,9 +6,10 @@ export type BankRole = 'bank_admin' | 'supervisor';
 /**
  * Rôle courant de l'utilisateur connecté.
  * TODO(auth): brancher sur authSelectors.role (module auth) — en attendant,
- * le squelette laisse passer un responsable.
+ * le squelette laisse passer un bank_admin pour que l'espace Administration
+ * (gardé par `allow={['bank_admin']}`) reste explorable.
  */
-export const useCurrentRole = (): BankRole | null => 'supervisor';
+export const useCurrentRole = (): BankRole | null => 'bank_admin';
 
 interface RequireRoleProps {
   allow: BankRole[];

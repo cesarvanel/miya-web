@@ -18,7 +18,10 @@ export type BankModal =
   | 'confirmReactivate'
   | 'approveWithdrawal'
   | 'rejectWithdrawal'
-  | 'disburseWithdrawal';
+  | 'disburseWithdrawal'
+  | 'editIdentity'
+  | 'managePlans'
+  | 'editCustodyFees';
 
 /** Props par modale : { rejectSettlement: { slipId: string }, ... } */
 export interface BankModalProps {
@@ -40,6 +43,9 @@ export interface BankModalProps {
   approveWithdrawal: { withdrawalId: string };
   rejectWithdrawal: { withdrawalId: string };
   disburseWithdrawal: { withdrawalId: string };
+  editIdentity: undefined;
+  managePlans: undefined;
+  editCustodyFees: undefined;
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

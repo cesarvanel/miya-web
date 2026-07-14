@@ -26,7 +26,8 @@ describe('bank router', () => {
     ).toBeDefined();
     expect(screen.getByText('MEC La Confiance')).toBeDefined();
     expect(screen.getByText('Pilotage')).toBeDefined();
-    expect(screen.getByText('Administration')).toBeDefined();
+    // « Administration » apparaît deux fois (titre de section + entrée unique repliée) — on vérifie le lien.
+    expect(screen.getByRole('link', { name: 'Administration' })).toBeDefined();
   });
 
   it('renders the settlements queue under the layout', async () => {

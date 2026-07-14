@@ -30,5 +30,8 @@ export const SidebarContainer: React.FC = () => {
     '/withdrawals': { count: pendingWithdrawalsCount, tone: 'amber' },
   };
 
-  return <Sidebar badges={badges} />;
+  return (
+    // TODO(auth): remettre `showAdministration` derrière le rôle bank_admin une fois l'auth branchée.
+    <Sidebar badges={badges} showAdministration />
+  );
 };
