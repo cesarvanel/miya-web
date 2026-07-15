@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Dropdown, Modal } from '@miya/ui';
 import { Money } from '@miya/kernel';
-import { agentSelectors } from '@/modules/agents';
+import { agentSelectors } from '@/modules/settings';
 import { clientsSelectors } from '@/modules/clients';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { useModal } from '@/shared/modals';

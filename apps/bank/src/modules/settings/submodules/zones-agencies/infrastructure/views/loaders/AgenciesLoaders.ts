@@ -1,5 +1,5 @@
 import type { LoaderFunction } from 'react-router-dom';
-import { FetchAgentsAsync } from '@/modules/agents';
+import { FetchAgentsAsync } from '@/modules/settings';
 import type { BankStore } from '@/config/stores/store';
 import { FetchAgenciesAsync } from '../../../application/usecases/fetch-agencies-async/FetchAgenciesAsync';
 

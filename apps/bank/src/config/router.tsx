@@ -1,13 +1,11 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card } from '@miya/ui';
-import { AgenciesRouter } from '@/modules/agencies';
-import { AgentsRouter } from '@/modules/agents';
 import { ClientsRouter } from '@/modules/clients';
 import { CollectionsRouter } from '@/modules/collections';
 import { DashboardRouter } from '@/modules/dashboard';
 import { DisputesRouter } from '@/modules/disputes';
-import { SettingsRouter } from '@/modules/settings';
+import { AdminRouter, AgentsRouter } from '@/modules/settings';
 import { SettlementsRouter } from '@/modules/settlements';
 import { WithdrawalsRouter } from '@/modules/withdrawals';
 import { RequireRole } from '@/shared/guards/RequireRole';
@@ -61,10 +59,7 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       {
         // TODO(auth): remettre allow={['bank_admin']} une fois l'auth branchée.
         path: 'admin',
-        children: [
-          ...SettingsRouter(store),
-          ...AgenciesRouter(store),
-        ],
+        children: AdminRouter(store),
       },
     ],
   },

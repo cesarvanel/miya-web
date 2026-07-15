@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { agentSelectors, AgentRole } from '@/modules/agents';
+import { agentSelectors, AgentRole } from '@/modules/settings';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { computeSavingsPlanComputed, computeEngagementEndDate } from '../../../domain/services/SavingsPlanCalculator';
 import {

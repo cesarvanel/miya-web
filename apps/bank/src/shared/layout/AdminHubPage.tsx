@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { agenciesSelectors, FetchAgenciesAsync } from '@/modules/agencies';
-import { settingsSelectors } from '@/modules/settings';
+import { AgentRole, FetchAgenciesAsync, FetchAgentsAsync, agenciesSelectors, agentSelectors, settingsSelectors } from '@/modules/settings';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { AdminShell } from './AdminShell';
 
@@ -34,13 +33,16 @@ export const AdminHubPage: React.FC = () => {
   const latestEntry = useBankSelector(settingsSelectors.selectLatestChangeLogEntry);
   const agencyCount = useBankSelector(agenciesSelectors.selectAgencyCount);
   const zoneCount = useBankSelector(agenciesSelectors.selectZoneCount);
+  const allAgents = useBankSelector(agentSelectors.selectAllAgents);
+  const supervisorsCount = allAgents.filter((agent) => agent.role === AgentRole.Supervisor).length;
 
   useEffect(() => {
     dispatch(FetchAgenciesAsync({}));
+    dispatch(FetchAgentsAsync({}));
   }, [dispatch]);
 
   return (
-    <AdminShell breadcrumb={[{ label: 'Administration' }]} title="Administration" subtitle="Configuration, zones & agences, audit">
+    <AdminShell breadcrumb={[{ label: 'Administration' }]} title="Administration" subtitle="Configuration, zones & agences, agents, supervision">
       <div className="grid grid-cols-3 gap-5">
         <HubCard
           to="/admin/settings"
@@ -63,6 +65,32 @@ export const AdminHubPage: React.FC = () => {
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
               <path d="M11 19s7-5 7-11a7 7 0 1 0-14 0c0 6 7 11 7 11z" stroke="#0A6B4E" strokeWidth="1.6" />
               <circle cx="11" cy="8" r="2.6" stroke="#0A6B4E" strokeWidth="1.6" />
+            </svg>
+          }
+        />
+        <HubCard
+          to="/agents"
+          title="Agents & responsables"
+          description="Roster, rôles, rattachement et création des comptes agents."
+          meta={allAgents.length > 0 ? `${allAgents.length} membres · ${supervisorsCount} responsables` : undefined}
+          icon={
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="2.7" stroke="#0A6B4E" strokeWidth="1.6" />
+              <circle cx="15" cy="9" r="2.1" stroke="#0A6B4E" strokeWidth="1.6" />
+              <path d="M3 18a5 5 0 0 1 10 0M13.5 17.4a4 4 0 0 1 5.5.6" stroke="#0A6B4E" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          }
+        />
+        <HubCard
+          to="/admin/supervision"
+          title="Supervision"
+          description="Tableau de bord global — vue consolidée toutes agences."
+          icon={
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+              <rect x="2.5" y="3.5" width="6" height="7" rx="1.3" stroke="#0A6B4E" strokeWidth="1.6" />
+              <rect x="2.5" y="13" width="6" height="3.5" rx="1.3" stroke="#0A6B4E" strokeWidth="1.6" />
+              <rect x="11.5" y="3.5" width="6" height="3.5" rx="1.3" stroke="#0A6B4E" strokeWidth="1.6" />
+              <rect x="11.5" y="9.5" width="6" height="7" rx="1.3" stroke="#0A6B4E" strokeWidth="1.6" />
             </svg>
           }
         />

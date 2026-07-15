@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Modal, TextField } from '@miya/ui';
-import { AgentRole, agentSelectors } from '@/modules/agents';
+import { AgentRole, agentSelectors } from '@/modules/settings';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { useModal } from '@/shared/modals';
 import { AgenciesSelectors } from '../../../domain/selectors/Selectors';
