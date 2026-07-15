@@ -115,6 +115,13 @@
   --animate-flash-amber: flash-amber 0.8s ease-out;
   --animate-drawer-in: drawer-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-badge-in: badge-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-auth-gradient: auth-gradient 18s ease-in-out infinite;
+  --animate-auth-float-a: auth-float-a 7s ease-in-out infinite;
+  --animate-auth-float-b: auth-float-b 6.5s ease-in-out infinite;
+  --animate-auth-float-c: auth-float-c 8s ease-in-out infinite;
+  --animate-auth-slide-loop: auth-slide-loop 6s ease-in-out infinite;
+  --animate-auth-shake: auth-shake 0.25s ease-in-out;
+  --animate-seal-pop: seal-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.3);
 
   @keyframes modal-in {
     from {
@@ -195,6 +202,87 @@
     }
     to {
       opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes auth-gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes auth-float-a {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-11px);
+    }
+  }
+  @keyframes auth-float-b {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes auth-float-c {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-9px) rotate(-1deg);
+    }
+  }
+  @keyframes auth-slide-loop {
+    0% {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    10%,
+    80% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    95%,
+    100% {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.98);
+    }
+  }
+  @keyframes auth-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-7px);
+    }
+    40% {
+      transform: translateX(6px);
+    }
+    60% {
+      transform: translateX(-4px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
+  }
+  @keyframes seal-pop {
+    0% {
+      transform: scale(0.8);
+    }
+    60% {
+      transform: scale(1.05);
+    }
+    100% {
       transform: scale(1);
     }
   }

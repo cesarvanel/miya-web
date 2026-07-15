@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Dropdown, Modal } from '@miya/ui';
 import { Money } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { agentSelectors } from '@/modules/settings';
 import { clientsSelectors } from '@/modules/clients';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
@@ -9,15 +10,13 @@ import { DisburseWithdrawalAsync } from '../../../application/usecases/disburse-
 import { DisbursementMethod } from '../../../domain/entities/Withdrawal';
 import { selectWithdrawalById } from '../../../domain/selectors/Selectors';
 
-/** TODO(auth): remplacer par l'utilisateur connecté réel — pas d'auth branchée pour l'instant. */
-const CURRENT_USER = 'A. Mbarga';
-
 export const DisburseWithdrawalModal: React.FC = () => {
   const { isOpen, props, close } = useModal('disburseWithdrawal');
   const dispatch = useBankDispatch();
   const withdrawal = useBankSelector((state) => (props ? selectWithdrawalById(state, props.withdrawalId) : undefined));
   const client = useBankSelector((state) => (withdrawal ? clientsSelectors.selectClientById(state, withdrawal.client.id) : undefined));
   const agents = useBankSelector(agentSelectors.selectAllAgents);
+  const currentUserName = useBankSelector(authSelectors.selectCurrentUserDisplayName);
 
   const [method, setMethod] = useState<DisbursementMethod>(DisbursementMethod.CashAtBranch);
   const [agentId, setAgentId] = useState('');
@@ -116,7 +115,7 @@ export const DisburseWithdrawalModal: React.FC = () => {
 
       <div className="mt-3.5 flex items-center justify-between rounded-lg bg-cream-100 px-3.25 py-2.5">
         <span className="text-[12.5px] font-semibold text-ink-muted">Décaissé par</span>
-        <span className="text-[13px] font-bold text-ink">{CURRENT_USER}</span>
+        <span className="text-[13px] font-bold text-ink">{currentUserName}</span>
       </div>
 
       <div className="mt-4">

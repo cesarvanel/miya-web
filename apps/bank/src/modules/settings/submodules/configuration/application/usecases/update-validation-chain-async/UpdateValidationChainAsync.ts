@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { pushToast } from '@/shared/toasts';
 import { selectValidationChainByAgency } from '../../../domain/selectors/Selectors';
@@ -48,7 +49,7 @@ export const UpdateValidationChainAsync = createBankAsyncThunk<void, UpdateValid
 
       dispatch(
         SettingsActions.validationChainUpdated({
-          by: 'D. Ndione',
+          by: authSelectors.selectCurrentUserDisplayName(getState()),
           at: new Date().toISOString(),
           agencyId,
           agencyName,

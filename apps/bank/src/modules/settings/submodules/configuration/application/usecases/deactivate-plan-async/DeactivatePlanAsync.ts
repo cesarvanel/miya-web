@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { pushToast } from '@/shared/toasts';
 import { SettingsActions } from '../../../domain/slices/SettingsSlice';
@@ -7,11 +8,11 @@ import { DeactivatePlanCommand } from './DeactivatePlanCommand';
 /** Un plan utilisé ne peut pas être supprimé, seulement désactivé pour les nouveaux clients. */
 export const DeactivatePlanAsync = createBankAsyncThunk<void, DeactivatePlanCommand>(
   'settings/deactivatePlan',
-  async ({ planId }, { extra, dispatch, rejectWithValue }) => {
+  async ({ planId }, { extra, dispatch, getState, rejectWithValue }) => {
     try {
       await extra.settingsGateway.deactivatePlan(planId);
 
-      dispatch(SettingsActions.planDeactivated({ by: 'D. Ndione', at: new Date().toISOString(), planId }));
+      dispatch(SettingsActions.planDeactivated({ by: authSelectors.selectCurrentUserDisplayName(getState()), at: new Date().toISOString(), planId }));
       dispatch(invalidateTags(['Settings']));
       dispatch(
         pushToast({

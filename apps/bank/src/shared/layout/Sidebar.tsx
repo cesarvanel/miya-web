@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { NavBadge, type NavBadgeTone } from '@miya/ui';
+import { useBankDispatch } from '@/config/stores/root-hook/RootHook';
+import { openModal } from '@/shared/modals';
 
 export interface SidebarBadge {
   count: number;
@@ -17,11 +19,9 @@ interface SidebarUser {
 interface SidebarProps {
   /** Compteurs par route (branchés plus tard sur les selectors des modules). */
   badges?: Partial<Record<string, SidebarBadge>>;
-  /** TODO(auth): utilisateur connecté — placeholder maquette par défaut. */
-  user?: SidebarUser;
+  user: SidebarUser;
   /** Entrée « Administration » — visible uniquement pour le rôle bank_admin. */
   showAdministration?: boolean;
-  onLogout?: () => void;
 }
 
 interface NavItemConfig {
@@ -121,18 +121,13 @@ const administrationSection: NavSectionConfig = {
   items: [{ to: '/admin', label: 'Administration', icon: icons.settings }],
 };
 
-const defaultUser: SidebarUser = {
-  name: 'A. Mbarga',
-  caption: 'Responsable · Mokolo',
-  initials: 'AM',
-};
-
 export const Sidebar: React.FC<SidebarProps> = ({
   badges = {},
-  user = defaultUser,
+  user,
   showAdministration = false,
-  onLogout,
 }) => {
+  const dispatch = useBankDispatch();
+  const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const sections = showAdministration ? [...baseSections, administrationSection] : baseSections;
 
@@ -197,18 +192,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      {/* Bloc utilisateur + menu logout */}
+      {/* Bloc utilisateur + menu compte */}
       <div className="relative mt-3">
         {isMenuOpen && (
-          <div className="rounded-tile absolute right-0 bottom-full left-0 mb-2 overflow-hidden bg-card shadow-toast">
+          <div className="absolute right-0 bottom-[calc(100%+8px)] left-0 animate-badge-in overflow-hidden rounded-[14px] border border-white/10 bg-[#0F4632] py-1.5 shadow-toast">
             <button
               type="button"
               onClick={() => {
                 setMenuOpen(false);
-                onLogout?.();
+                navigate('/profile');
               }}
-              className="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-[13px] font-bold text-danger hover:bg-danger-soft"
+              className="flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-semibold text-[#CDE5DA] hover:bg-white/7"
             >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="5.5" r="2.5" stroke="#CDE5DA" strokeWidth="1.4" />
+                <path d="M3 13a5 5 0 0 1 10 0" stroke="#CDE5DA" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+              Mon profil
+            </button>
+            <div className="my-1 h-px bg-white/10" />
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                dispatch(openModal({ type: 'confirmLogout', props: undefined }));
+              }}
+              className="flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-semibold text-[#F0857D] hover:bg-[#F0857D]/12"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6M10.5 11l3-3-3-3M13.2 8H6" stroke="#F0857D" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               Se déconnecter
             </button>
           </div>

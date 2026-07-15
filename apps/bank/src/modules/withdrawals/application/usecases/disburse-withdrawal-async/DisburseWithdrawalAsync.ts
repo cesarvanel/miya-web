@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { closeModal } from '@/shared/modals';
 import { pushToast } from '@/shared/toasts';
@@ -7,9 +8,6 @@ import { selectWithdrawalById } from '../../../domain/selectors/Selectors';
 import { withdrawalDisbursed } from '../../../domain/events/Events';
 import { DisburseWithdrawalCommand } from './DisburseWithdrawalCommand';
 import { DisburseWithdrawalResponse } from './DisburseWithdrawalResponse';
-
-/** TODO(auth): remplacer par l'utilisateur connecté réel — pas d'auth branchée pour l'instant. */
-const CURRENT_USER = 'A. Mbarga';
 
 /**
  * Décaissement (étape critique) : refusé si la demande n'est pas Approved
@@ -35,12 +33,13 @@ export const DisburseWithdrawalAsync = createBankAsyncThunk<
       await extra.withdrawalGateway.disburse(command);
 
       const at = new Date().toISOString();
+      const by = authSelectors.selectCurrentUserDisplayName(getState());
       dispatch(
         withdrawalDisbursed({
           withdrawalId: command.withdrawalId,
           clientId: withdrawal.client.id,
           amount: withdrawal.requestedAmount,
-          by: CURRENT_USER,
+          by,
           at,
           method: command.method,
           agentId: command.agentId,

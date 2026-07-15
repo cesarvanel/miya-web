@@ -28,7 +28,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       {label} {required && <span className="text-danger">*</span>}
     </label>
     {children}
-    {error ? (
+    {error?.trim() ? (
       <div className="mt-1.5 flex items-center gap-[5px] text-[11px] font-semibold text-danger">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
           <circle cx="6" cy="6" r="5" stroke="#C43B32" strokeWidth="1.3" />

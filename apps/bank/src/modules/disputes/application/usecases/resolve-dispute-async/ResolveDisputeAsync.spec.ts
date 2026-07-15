@@ -1,3 +1,4 @@
+import { LoginAsync } from '@/modules/auth';
 import { FetchDaySummaryAsync } from '@/modules/dashboard';
 import { makeBankDependencies } from '@/config/stores/dependencies/dependencies';
 import { FakeRealtimeClient } from '@/config/stores/socket/realtime';
@@ -10,6 +11,7 @@ const makeStore = () => makeBankStore(makeBankDependencies(), new FakeRealtimeCl
 describe('ResolveDisputeAsync', () => {
   it('resolves in favor of the client and decrements the agent’s dashboard dispute count', async () => {
     const store = makeStore();
+    await store.dispatch(LoginAsync({ identifier: 'a.mbarga@laconfiance.cm', password: 'demo' }));
     await store.dispatch(FetchDaySummaryAsync({}));
     await store.dispatch(FetchDisputesAsync({}));
 
@@ -27,7 +29,7 @@ describe('ResolveDisputeAsync', () => {
     expect(dispute?.resolution).toMatchObject({
       decidedInFavorOf: 'Client',
       reason: 'Reçu SMS présenté.',
-      decidedBy: 'A. Mbarga',
+      decidedBy: 'Antoine Mbarga',
     });
 
     expect(

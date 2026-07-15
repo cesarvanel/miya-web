@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { partialDepositValidated } from '@/modules/collections';
 import { disputesSelectors } from '@/modules/disputes';
@@ -11,9 +12,6 @@ import { SettlementKind } from '../../../domain/entities/SettlementSlip';
 import { FetchSettlementQueueAsync } from '../fetch-settlement-queue-async/FetchSettlementQueueAsync';
 import { ValidateSettlementCommand } from './ValidateSettlementCommand';
 import { ValidateSettlementResponse } from './ValidateSettlementResponse';
-
-/** TODO(auth): remplacer par l'utilisateur connecté réel — pas d'auth branchée pour l'instant. */
-const CURRENT_USER = 'A. Mbarga';
 
 /**
  * Validation croisée : garde-fou contestation ouverte → gateway → transition
@@ -39,6 +37,7 @@ export const ValidateSettlementAsync = createBankAsyncThunk<
       }
 
       const result = await extra.settlementGateway.validate(id);
+      const validatedBy = authSelectors.selectCurrentUserDisplayName(getState());
 
       dispatch(SettlementsActions.validate({ id }));
       dispatch(settlementValidated({ slipId: id, agentId: slip?.agentId ?? '' }));
@@ -50,7 +49,7 @@ export const ValidateSettlementAsync = createBankAsyncThunk<
             roundId: slip.agentId,
             agentId: slip.agentId,
             amount: slip.expectedAmount,
-            validatedBy: CURRENT_USER,
+            validatedBy,
           }),
         );
         dispatch(invalidateTags(['Rounds', `Round:${slip.agentId}`]));

@@ -1,9 +1,16 @@
 import React, { useEffect } from 'react';
+import { initialsOf } from '@miya/ui';
+import { BankUserRole, authSelectors } from '@/modules/auth';
 import { disputesSelectors, FetchDisputesAsync } from '@/modules/disputes';
 import { FetchSettlementQueueAsync, settlementSelectors } from '@/modules/settlements';
 import { FetchWithdrawalsAsync, withdrawalSelectors } from '@/modules/withdrawals';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { Sidebar, type SidebarBadge } from '@/shared/layout/Sidebar';
+
+const ROLE_LABEL: Record<BankUserRole, string> = {
+  [BankUserRole.BankAdmin]: 'Administrateur',
+  [BankUserRole.Supervisor]: 'Responsable',
+};
 
 /**
  * Composition root : lit les compteurs (dérivés du state, donc temps réel)
@@ -15,6 +22,7 @@ export const SidebarContainer: React.FC = () => {
   const pendingSettlementsCount = useBankSelector(settlementSelectors.selectPendingCount);
   const openDisputesCount = useBankSelector(disputesSelectors.selectOpenCount);
   const pendingWithdrawalsCount = useBankSelector(withdrawalSelectors.selectPendingCount);
+  const currentUser = useBankSelector(authSelectors.selectCurrentUser);
 
   useEffect(() => {
     // Les compteurs doivent être visibles dès l'entrée dans l'app, quelle que
@@ -24,6 +32,10 @@ export const SidebarContainer: React.FC = () => {
     dispatch(FetchWithdrawalsAsync({}));
   }, [dispatch]);
 
+  if (!currentUser) {
+    return null;
+  }
+
   const badges: Partial<Record<string, SidebarBadge>> = {
     '/settlements': { count: pendingSettlementsCount, tone: 'amber' },
     '/disputes': { count: openDisputesCount, tone: 'red' },
@@ -31,7 +43,14 @@ export const SidebarContainer: React.FC = () => {
   };
 
   return (
-    // TODO(auth): remettre `showAdministration` derrière le rôle bank_admin une fois l'auth branchée.
-    <Sidebar badges={badges} showAdministration />
+    <Sidebar
+      badges={badges}
+      showAdministration={currentUser.role === BankUserRole.BankAdmin}
+      user={{
+        name: currentUser.fullName,
+        caption: `${ROLE_LABEL[currentUser.role]} · ${currentUser.agency}`,
+        initials: initialsOf(currentUser.fullName),
+      }}
+    />
   );
 };

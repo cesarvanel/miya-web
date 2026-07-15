@@ -1,7 +1,9 @@
+import { FakeAuthGateway, type AuthDependencies } from '@/modules/auth';
 import { FakeClientGateway, type ClientsDependencies } from '@/modules/clients';
 import { FakeCollectionGateway, type CollectionsDependencies } from '@/modules/collections';
 import { FakeDashboardGateway, type DashboardDependencies } from '@/modules/dashboard';
 import { FakeDisputeGateway, type DisputesDependencies } from '@/modules/disputes';
+import { FakeProfileGateway, type ProfileDependencies } from '@/modules/profile';
 import {
   FakeAgenciesGateway,
   FakeAgentGateway,
@@ -24,7 +26,9 @@ export type BankDependencies = SettlementsDependencies &
   WithdrawalsDependencies &
   SettingsDependencies &
   AgenciesDependencies &
-  SupervisionDependencies;
+  SupervisionDependencies &
+  AuthDependencies &
+  ProfileDependencies;
 
 export const makeBankDependencies = (): BankDependencies => ({
   settlementGateway: new FakeSettlementGateway(),
@@ -37,6 +41,8 @@ export const makeBankDependencies = (): BankDependencies => ({
   settingsGateway: new FakeSettingsGateway(),
   agenciesGateway: new FakeAgenciesGateway(),
   supervisionGateway: new FakeSupervisionGateway(),
+  authGateway: new FakeAuthGateway(),
+  profileGateway: new FakeProfileGateway(),
 });
 
 export const bankDependencies = makeBankDependencies();

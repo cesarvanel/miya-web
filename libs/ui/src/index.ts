@@ -23,6 +23,7 @@ export * from './components/NotificationPanel';
 export * from './components/FilterChips';
 export * from './components/FormField';
 export * from './components/TextField';
+export * from './components/PasswordField';
 export * from './components/Textarea';
 export * from './components/PhoneInput';
 export * from './components/Toggle';

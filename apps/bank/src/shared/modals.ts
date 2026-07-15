@@ -23,7 +23,9 @@ export type BankModal =
   | 'managePlans'
   | 'editCustodyFees'
   | 'createZone'
-  | 'assignZoneAgent';
+  | 'assignZoneAgent'
+  | 'changePassword'
+  | 'confirmLogout';
 
 /** Props par modale : { rejectSettlement: { slipId: string }, ... } */
 export interface BankModalProps {
@@ -50,6 +52,8 @@ export interface BankModalProps {
   editCustodyFees: undefined;
   createZone: { agencyId: string };
   assignZoneAgent: { zoneId: string };
+  changePassword: undefined;
+  confirmLogout: undefined;
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

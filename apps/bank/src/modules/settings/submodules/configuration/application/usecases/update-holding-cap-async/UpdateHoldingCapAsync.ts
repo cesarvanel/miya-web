@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { pushToast } from '@/shared/toasts';
 import { SettingsActions } from '../../../domain/slices/SettingsSlice';
@@ -10,7 +11,7 @@ import { UpdateHoldingCapCommand } from './UpdateHoldingCapCommand';
  */
 export const UpdateHoldingCapAsync = createBankAsyncThunk<void, UpdateHoldingCapCommand>(
   'settings/updateHoldingCap',
-  async (changes, { extra, dispatch, rejectWithValue }) => {
+  async (changes, { extra, dispatch, getState, rejectWithValue }) => {
     try {
       if (changes.holdingCap <= 0) {
         throw new Error('Le plafond doit être positif.');
@@ -18,7 +19,7 @@ export const UpdateHoldingCapAsync = createBankAsyncThunk<void, UpdateHoldingCap
 
       await extra.settingsGateway.updateCollectionRules(changes);
 
-      dispatch(SettingsActions.collectionRulesUpdated({ by: 'D. Ndione', at: new Date().toISOString(), changes }));
+      dispatch(SettingsActions.collectionRulesUpdated({ by: authSelectors.selectCurrentUserDisplayName(getState()), at: new Date().toISOString(), changes }));
       dispatch(invalidateTags(['Settings']));
       dispatch(
         pushToast({

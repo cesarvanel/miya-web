@@ -17,16 +17,15 @@ import { rootReducer } from './root-reducer/RootReducer';
 import type { RealtimeClient } from './socket/realtime';
 
 /**
- * redux-persist : rien n'est persisté pour l'instant — `cache`, `modals` et
- * `requestStatus` sont éphémères par nature (persister `cache` sans les
- * entités ferait sauter des fetchs au reload). Ajouter les slices durables
- * à la whitelist au fur et à mesure (ex. 'auth' pour la session).
+ * redux-persist : seule `auth` est persistée (la session survit à un reload) —
+ * `cache`, `modals` et `requestStatus` restent éphémères par nature (persister
+ * `cache` sans les entités ferait sauter des fetchs au reload).
  */
 const persistedReducer = persistReducer(
   {
     key: 'miya-bank',
     storage,
-    whitelist: [],
+    whitelist: ['auth'],
   },
   rootReducer,
 );

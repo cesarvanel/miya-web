@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags, Money } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { closeModal } from '@/shared/modals';
 import { pushToast } from '@/shared/toasts';
@@ -9,9 +10,6 @@ import { DisputesActions } from '../../../domain/slices/DisputesSlice';
 import { FetchDisputesAsync } from '../fetch-disputes-async/FetchDisputesAsync';
 import { ResolveDisputeCommand } from './ResolveDisputeCommand';
 import { ResolveDisputeResponse } from './ResolveDisputeResponse';
-
-/** TODO(auth): remplacer par l'utilisateur connecté réel — pas d'auth branchée pour l'instant. */
-const CURRENT_USER = 'A. Mbarga';
 
 const buildSuccessToast = (
   dispute: Dispute,
@@ -41,15 +39,16 @@ export const ResolveDisputeAsync = createBankAsyncThunk<
       if (!dispute) {
         throw new Error('Contestation introuvable.');
       }
+      const decidedBy = authSelectors.selectCurrentUserDisplayName(getState());
 
       await extra.disputeGateway.resolve({
         disputeId,
         inFavorOf,
         reason,
-        decidedBy: CURRENT_USER,
+        decidedBy,
       });
 
-      const payload = { id: disputeId, reason, decidedBy: CURRENT_USER };
+      const payload = { id: disputeId, reason, decidedBy };
       if (inFavorOf === DisputeDecision.Client) {
         dispatch(DisputesActions.resolveForClient(payload));
       } else {

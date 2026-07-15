@@ -1,4 +1,5 @@
 import { getErrorState, invalidateTags } from '@miya/kernel';
+import { authSelectors } from '@/modules/auth';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
 import { closeModal } from '@/shared/modals';
 import { pushToast } from '@/shared/toasts';
@@ -6,9 +7,6 @@ import { selectWithdrawalById } from '../../../domain/selectors/Selectors';
 import { withdrawalApproved } from '../../../domain/events/Events';
 import { ApproveWithdrawalCommand } from './ApproveWithdrawalCommand';
 import { ApproveWithdrawalResponse } from './ApproveWithdrawalResponse';
-
-/** TODO(auth): remplacer par l'utilisateur connecté réel — pas d'auth branchée pour l'instant. */
-const CURRENT_USER = 'A. Mbarga';
 
 /**
  * Validation d'une demande : refusée si le montant dépasse le solde disponible
@@ -30,7 +28,8 @@ export const ApproveWithdrawalAsync = createBankAsyncThunk<ApproveWithdrawalResp
       await extra.withdrawalGateway.approve(id);
 
       const at = new Date().toISOString();
-      dispatch(withdrawalApproved({ withdrawalId: id, clientId: withdrawal.client.id, by: CURRENT_USER, at }));
+      const by = authSelectors.selectCurrentUserDisplayName(getState());
+      dispatch(withdrawalApproved({ withdrawalId: id, clientId: withdrawal.client.id, by, at }));
       dispatch(invalidateTags(['Withdrawals']));
       dispatch(closeModal());
       dispatch(
