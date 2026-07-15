@@ -1,3 +1,4 @@
+import { FakeAgenciesGateway, type AgenciesDependencies } from '@/modules/agencies';
 import { FakeAgentGateway, type AgentsDependencies } from '@/modules/agents';
 import { FakeClientGateway, type ClientsDependencies } from '@/modules/clients';
 import { FakeCollectionGateway, type CollectionsDependencies } from '@/modules/collections';
@@ -14,7 +15,8 @@ export type BankDependencies = SettlementsDependencies &
   ClientsDependencies &
   AgentsDependencies &
   WithdrawalsDependencies &
-  SettingsDependencies;
+  SettingsDependencies &
+  AgenciesDependencies;
 
 export const makeBankDependencies = (): BankDependencies => ({
   settlementGateway: new FakeSettlementGateway(),
@@ -25,6 +27,7 @@ export const makeBankDependencies = (): BankDependencies => ({
   agentGateway: new FakeAgentGateway(),
   withdrawalGateway: new FakeWithdrawalGateway(),
   settingsGateway: new FakeSettingsGateway(),
+  agenciesGateway: new FakeAgenciesGateway(),
 });
 
 export const bankDependencies = makeBankDependencies();

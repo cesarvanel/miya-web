@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { cacheSlice, requestStatusSlice } from '@miya/kernel';
+import { agenciesReducer } from '@/modules/agencies';
 import { agentsReducer } from '@/modules/agents';
 import { clientsReducer } from '@/modules/clients';
 import { collectionsReducer } from '@/modules/collections';
@@ -29,6 +30,7 @@ export const rootReducer = combineReducers({
   agents: agentsReducer,
   withdrawals: withdrawalsReducer,
   settings: settingsReducer,
+  agencies: agenciesReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

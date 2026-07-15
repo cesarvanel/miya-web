@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { agenciesSelectors, FetchAgenciesAsync } from '@/modules/agencies';
 import { settingsSelectors } from '@/modules/settings';
-import { useBankSelector } from '@/config/stores/root-hook/RootHook';
+import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { AdminShell } from './AdminShell';
 
 interface HubCardProps {
@@ -29,7 +30,14 @@ const formatMeta = (at: string, by: string): string =>
 
 /** Hub Administration — grille de cartes, extensible à mesure que de nouvelles sections d'admin apparaissent. */
 export const AdminHubPage: React.FC = () => {
+  const dispatch = useBankDispatch();
   const latestEntry = useBankSelector(settingsSelectors.selectLatestChangeLogEntry);
+  const agencyCount = useBankSelector(agenciesSelectors.selectAgencyCount);
+  const zoneCount = useBankSelector(agenciesSelectors.selectZoneCount);
+
+  useEffect(() => {
+    dispatch(FetchAgenciesAsync({}));
+  }, [dispatch]);
 
   return (
     <AdminShell breadcrumb={[{ label: 'Administration' }]} title="Administration" subtitle="Configuration, zones & agences, audit">
@@ -50,6 +58,7 @@ export const AdminHubPage: React.FC = () => {
           to="/admin/zones"
           title="Zones & agences"
           description="Découpage géographique et rattachement des agences."
+          meta={agencyCount > 0 ? `${agencyCount} agences · ${zoneCount} zones de collecte` : undefined}
           icon={
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
               <path d="M11 19s7-5 7-11a7 7 0 1 0-14 0c0 6 7 11 7 11z" stroke="#0A6B4E" strokeWidth="1.6" />

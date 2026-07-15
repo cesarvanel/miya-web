@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
-import { Card, EmptyState } from '@miya/ui';
+import { Card } from '@miya/ui';
+import { AgenciesRouter } from '@/modules/agencies';
 import { AgentsRouter } from '@/modules/agents';
 import { ClientsRouter } from '@/modules/clients';
 import { CollectionsRouter } from '@/modules/collections';
@@ -10,7 +11,6 @@ import { SettingsRouter } from '@/modules/settings';
 import { SettlementsRouter } from '@/modules/settlements';
 import { WithdrawalsRouter } from '@/modules/withdrawals';
 import { RequireRole } from '@/shared/guards/RequireRole';
-import { AdminShell } from '@/shared/layout/AdminShell';
 import { ToastHost } from '@/shared/layout/ToastHost';
 import { DesignSystemPage } from '@/devtools/DesignSystemPage';
 import { SidebarContainer } from './layout/SidebarContainer';
@@ -22,15 +22,6 @@ const BankLayout: React.FC = () => (
     <Outlet />
     <ToastHost />
   </div>
-);
-
-/** Zones & agences — carte du hub déjà branchée, section pas encore construite. */
-const AdminZonesPlaceholder: React.FC = () => (
-  <AdminShell breadcrumb={[{ label: 'Administration', to: '/admin' }, { label: 'Zones & agences' }]} title="Zones & agences">
-    <Card padding="none">
-      <EmptyState title="Zones & agences" description="Découpage géographique et rattachement des agences — à venir." />
-    </Card>
-  </AdminShell>
 );
 
 /** Placeholder du module auth (hors layout, non gardé). */
@@ -72,7 +63,7 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
         path: 'admin',
         children: [
           ...SettingsRouter(store),
-          { path: 'zones', element: <AdminZonesPlaceholder /> },
+          ...AgenciesRouter(store),
         ],
       },
     ],
