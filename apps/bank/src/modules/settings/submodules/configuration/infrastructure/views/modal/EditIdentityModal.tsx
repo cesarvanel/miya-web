@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, TextField } from '@miya/ui';
+import { authSelectors } from '@/modules/auth';
 import { useBankDispatch, useBankSelector } from '@/config/stores/root-hook/RootHook';
 import { pushToast } from '@/shared/toasts';
 import { useModal } from '@/shared/modals';
@@ -12,6 +13,7 @@ export const EditIdentityModal: React.FC = () => {
   const { isOpen, close } = useModal('editIdentity');
   const dispatch = useBankDispatch();
   const identity = useBankSelector(selectIdentity);
+  const currentUserName = useBankSelector(authSelectors.selectCurrentUserDisplayName);
 
   const [name, setName] = useState('');
   const [city, setCity] = useState('');
@@ -52,11 +54,29 @@ export const EditIdentityModal: React.FC = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={close} ariaLabel="Identité de l'institution" width={640}>
-      <div className="text-lg font-extrabold text-ink">Identité de l&rsquo;institution</div>
-      <div className="mt-1 text-[12.5px] font-medium text-ink-muted">Coordonnées, logo &amp; couleur documentaire</div>
-
-      <div className="mt-5 grid grid-cols-2 gap-3.5">
+    <Modal
+      isOpen={isOpen}
+      onClose={close}
+      ariaLabel="Identité de l'institution"
+      width={640}
+      header={
+        <>
+          <div className="text-lg font-extrabold text-ink">Identité de l&rsquo;institution</div>
+          <div className="mt-1 text-[12.5px] font-medium text-ink-muted">Coordonnées, logo &amp; couleur documentaire</div>
+        </>
+      }
+      footer={
+        <div className="flex gap-2.5">
+          <Button variant="secondary" className="flex-1" onClick={close}>
+            Annuler
+          </Button>
+          <Button variant="primary" className="flex-[1.4]" loading={submitting} onClick={handleSave}>
+            Enregistrer
+          </Button>
+        </div>
+      }
+    >
+      <div className="grid grid-cols-2 gap-3.5">
         <div className="col-span-2">
           <TextField label="Raison sociale" value={name} onChange={setName} required />
         </div>
@@ -143,17 +163,8 @@ export const EditIdentityModal: React.FC = () => {
           <path d="M8 5v3l2 1.5" stroke="#8A8A82" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
         <span className="text-[12px] font-semibold text-ink-muted">
-          Enregistré au Journal des changements (D. Ndione · aujourd&rsquo;hui).
+          Enregistré au Journal des changements ({currentUserName} · aujourd&rsquo;hui).
         </span>
-      </div>
-
-      <div className="mt-5 flex gap-2.5">
-        <Button variant="secondary" className="flex-1" onClick={close}>
-          Annuler
-        </Button>
-        <Button variant="primary" className="flex-[1.4]" loading={submitting} onClick={handleSave}>
-          Enregistrer
-        </Button>
       </div>
     </Modal>
   );

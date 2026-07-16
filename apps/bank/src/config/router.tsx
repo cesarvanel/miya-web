@@ -12,6 +12,7 @@ import { WithdrawalsRouter } from '@/modules/withdrawals';
 import { RequireAuth } from '@/shared/guards/RequireAuth';
 import { RequireRole } from '@/shared/guards/RequireRole';
 import { ToastHost } from '@/shared/layout/ToastHost';
+import { NotFoundPage } from '@/shared/pages/NotFoundPage';
 import { DesignSystemPage } from '@/devtools/DesignSystemPage';
 import { useBankDispatch, useBankSelector } from './stores/root-hook/RootHook';
 import { SidebarContainer } from './layout/SidebarContainer';

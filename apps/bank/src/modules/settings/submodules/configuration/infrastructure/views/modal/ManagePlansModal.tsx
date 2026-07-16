@@ -49,11 +49,27 @@ export const ManagePlansModal: React.FC = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={close} ariaLabel="Plans de cotisation" width={640}>
-      <div className="text-lg font-extrabold text-ink">Plans de cotisation</div>
-      <div className="mt-1 text-[12.5px] font-medium text-ink-muted">Montants proposés à l&rsquo;enregistrement d&rsquo;un client</div>
-
-      <div className="mt-5 flex max-h-140 flex-col gap-2.5 overflow-y-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={close}
+      ariaLabel="Plans de cotisation"
+      width={640}
+      header={
+        <>
+          <div className="text-lg font-extrabold text-ink">Plans de cotisation</div>
+          <div className="mt-1 text-[12.5px] font-medium text-ink-muted">Montants proposés à l&rsquo;enregistrement d&rsquo;un client</div>
+        </>
+      }
+      footer={
+        <div className="flex items-center justify-between gap-2.5">
+          <span className="text-[11.5px] font-semibold text-ink-faint">Chaque modification est tracée au Journal des changements.</span>
+          <Button variant="secondary" onClick={close}>
+            Terminé
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-2.5">
         {activePlans.map((plan) => (
           <div key={plan.id} className={['rounded-2xl border', plan.isDefault ? 'border-[1.5px] border-primary/40 bg-primary-soft/40' : 'border-line'].join(' ')}>
             <div className="flex items-center gap-3.5 px-4 py-3.25">
@@ -124,13 +140,6 @@ export const ManagePlansModal: React.FC = () => {
             </Button>
           </div>
         </div>
-      </div>
-
-      <div className="mt-5 flex items-center justify-between gap-2.5">
-        <span className="text-[11.5px] font-semibold text-ink-faint">Chaque modification est tracée au Journal des changements.</span>
-        <Button variant="secondary" onClick={close}>
-          Terminé
-        </Button>
       </div>
     </Modal>
   );
