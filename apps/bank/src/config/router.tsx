@@ -80,6 +80,7 @@ export const bankRoutes = (store: BankStore): RouteObject[] => [
       },
     ],
   },
+  { path: '*', element: <NotFoundPage /> },
 ];
 
 export const makeBankRouter = (store: BankStore) =>

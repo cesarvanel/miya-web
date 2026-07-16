@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { NavBadge, type NavBadgeTone } from '@miya/ui';
+import { NavBadge, useOutsideClick, type NavBadgeTone } from '@miya/ui';
 import { useBankDispatch } from '@/config/stores/root-hook/RootHook';
 import { openModal } from '@/shared/modals';
 
@@ -129,6 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const dispatch = useBankDispatch();
   const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const menuRef = useOutsideClick<HTMLDivElement>(() => setMenuOpen(false), isMenuOpen);
   const sections = showAdministration ? [...baseSections, administrationSection] : baseSections;
 
   return (
@@ -193,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Bloc utilisateur + menu compte */}
-      <div className="relative mt-3">
+      <div ref={menuRef} className="relative mt-3">
         {isMenuOpen && (
           <div className="absolute right-0 bottom-[calc(100%+8px)] left-0 animate-badge-in overflow-hidden rounded-[14px] border border-white/10 bg-[#0F4632] py-1.5 shadow-toast">
             <button

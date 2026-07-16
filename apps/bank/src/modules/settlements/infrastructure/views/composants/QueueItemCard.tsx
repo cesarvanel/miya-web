@@ -9,6 +9,7 @@ interface QueueItemCardProps {
   slip: SettlementSlip;
   isSelected: boolean;
   disputeCount: number;
+  index?: number;
 }
 
 /**
@@ -20,6 +21,7 @@ export const QueueItemCard: React.FC<QueueItemCardProps> = ({
   slip,
   isSelected,
   disputeCount,
+  index = 0,
 }) => {
   const isPartialDeposit = slip.kind === SettlementKind.PartialDeposit;
 
@@ -37,14 +39,15 @@ export const QueueItemCard: React.FC<QueueItemCardProps> = ({
       to={SettlementsRoutes.buildDetailPath(slip.id)}
       aria-current={isSelected ? 'true' : undefined}
       className={[
-        'block rounded-2xl bg-card transition',
+        'animate-stagger-in block rounded-2xl bg-card transition',
         isSelected
           ? [
               'border-2 p-2.75',
               isPartialDeposit ? 'border-amber-strong' : 'border-primary',
             ].join(' ')
-          : 'border border-line p-3.25 hover:border-primary/40',
+          : 'border border-line p-3.25 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_14px_28px_-20px_rgba(0,0,0,.35)]',
       ].join(' ')}
+      style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="flex items-center gap-2.75">
         <InitialsAvatar name={slip.agentName} />
@@ -57,7 +60,7 @@ export const QueueItemCard: React.FC<QueueItemCardProps> = ({
         {badge && (
           <span
             className={[
-              'rounded-full px-2.25 py-1 text-[10.5px] font-bold whitespace-nowrap',
+              'animate-badge-in rounded-full px-2.25 py-1 text-[10.5px] font-bold whitespace-nowrap',
               badge.classes,
             ].join(' ')}
           >

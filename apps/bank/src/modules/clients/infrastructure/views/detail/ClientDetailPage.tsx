@@ -59,7 +59,7 @@ export const ClientDetailPage: React.FC = () => {
       }
     >
       {client.pendingWithdrawal && (
-        <div className="mb-4.5 flex items-center gap-5.5 rounded-card-lg bg-[#16241E] p-6 text-white">
+        <div className="animate-badge-in mb-4.5 flex items-center gap-5.5 rounded-card-lg bg-[#16241E] p-6 text-white">
           <div className="flex size-13 flex-none items-center justify-center rounded-2xl bg-[#E5A93B]/18">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
               <path d="M13 18V6m0 12l-4-4m4 4l4-4" stroke="#E5A93B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />

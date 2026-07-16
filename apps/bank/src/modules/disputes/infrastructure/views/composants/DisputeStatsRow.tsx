@@ -1,4 +1,5 @@
 import React from 'react';
+import { CountUp } from '@miya/ui';
 import { formatAmount } from './formatAmount';
 
 interface DisputeStatsRowProps {
@@ -37,12 +38,12 @@ export const DisputeStatsRow: React.FC<DisputeStatsRowProps> = ({
       ].join(' ')}
     >
       <div className="text-[12.5px] font-semibold text-danger">Ouvertes</div>
-      <div className="num mt-2 text-[30px] font-bold text-danger">{openCount}</div>
+      <div className="mt-2 text-[30px] font-bold text-danger"><CountUp value={openCount} /></div>
       <div className="mt-1 text-[11.5px] font-medium text-danger-deep">à trancher aujourd'hui</div>
     </div>
     <div className="rounded-card-lg border border-line bg-card p-[18px]">
       <div className="text-[12.5px] font-semibold text-ink-muted">Résolues aujourd'hui</div>
-      <div className="num mt-2 text-[30px] font-bold text-primary">{resolvedCount}</div>
+      <div className="mt-2 text-[30px] font-bold text-primary"><CountUp value={resolvedCount} /></div>
       <div className="mt-1 text-[11.5px] font-medium text-ink-faint">tracées &amp; notifiées</div>
     </div>
     <div className="rounded-card-lg border border-line bg-card p-[18px]">
@@ -52,7 +53,7 @@ export const DisputeStatsRow: React.FC<DisputeStatsRowProps> = ({
     </div>
     <div className="rounded-card-lg border border-line bg-card p-[18px]">
       <div className="text-[12.5px] font-semibold text-ink-muted">Écart cumulé en jeu</div>
-      <div className="num mt-2 text-[30px] font-bold text-ink">{formatAmount(openGapTotal)}</div>
+      <div className="mt-2 text-[30px] font-bold text-ink"><CountUp value={openGapTotal} formatter={formatAmount} /></div>
       <div className="mt-1 text-[11.5px] font-medium text-ink-faint">FCFA · {openCount} dossier{openCount > 1 ? 's' : ''}</div>
     </div>
   </div>

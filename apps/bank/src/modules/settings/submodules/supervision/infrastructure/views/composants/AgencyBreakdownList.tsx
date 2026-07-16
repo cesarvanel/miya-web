@@ -21,7 +21,7 @@ export const AgencyBreakdownList: React.FC<AgencyBreakdownListProps> = ({ breakd
             </span>
           </div>
           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-cream-100">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${entry.share}%` }} />
+            <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${entry.share}%` }} />
           </div>
         </div>
       ))}

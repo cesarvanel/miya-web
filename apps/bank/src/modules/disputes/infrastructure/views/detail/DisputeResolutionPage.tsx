@@ -40,7 +40,7 @@ export const DisputeResolutionPage: React.FC = () => {
         <div className="max-w-240">
           {/* Bandeau de résolution */}
           <div className="flex items-center gap-4 rounded-card-lg bg-primary p-5 text-white">
-            <div className="flex size-13 flex-none items-center justify-center rounded-2xl bg-white/15">
+            <div className="animate-seal-pop flex size-13 flex-none items-center justify-center rounded-2xl bg-white/15">
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
                 <path d="M8 14.5l4 4 8-9" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>

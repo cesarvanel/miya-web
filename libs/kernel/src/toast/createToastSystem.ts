@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
@@ -22,6 +22,9 @@ export interface UseToastsResult {
   toasts: ToastEntry[];
   dismiss: (id: string) => void;
 }
+
+/** Auto-disparition des toasts — cohérent avec les maquettes ("toast disparaît après 4s"). */
+const AUTO_DISMISS_MS = 4_000;
 
 /**
  * Builds a typed toast system for an app: a slice (`pushToast`/`dismissToast`)
@@ -66,6 +69,43 @@ export const createToastSystem = (sliceName = 'toasts') => {
       (id: string) => dispatch(dismissToast(id)),
       [dispatch],
     );
+
+    /**
+     * Programme la disparition de chaque toast une seule fois, à son
+     * arrivée — les handles vivent dans un ref (pas le state du composant)
+     * pour ne jamais être recréés/annulés par un simple re-render.
+     */
+    const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+    useEffect(() => {
+      const timers = timersRef.current;
+      for (const toast of toasts) {
+        if (!timers.has(toast.id)) {
+          timers.set(
+            toast.id,
+            setTimeout(() => {
+              timers.delete(toast.id);
+              dismiss(toast.id);
+            }, AUTO_DISMISS_MS),
+          );
+        }
+      }
+      // Toast retiré autrement (fermeture manuelle) : on annule son timer devenu inutile.
+      for (const [id, timer] of timers) {
+        if (!toasts.some((toast) => toast.id === id)) {
+          clearTimeout(timer);
+          timers.delete(id);
+        }
+      }
+    }, [toasts, dismiss]);
+
+    useEffect(() => {
+      const timers = timersRef.current;
+      return () => {
+        timers.forEach(clearTimeout);
+        timers.clear();
+      };
+    }, []);
+
     return { toasts, dismiss };
   };
 

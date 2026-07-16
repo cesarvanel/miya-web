@@ -64,7 +64,7 @@ export const ActivationCodeModal: React.FC = () => {
       <div className="text-lg font-extrabold">Code d&rsquo;activation</div>
       <div className="text-primary-muted mt-1 text-[13px] font-medium">{agent.fullName} · nouvel appareil</div>
 
-      <div className="mt-5.5 rounded-2xl border border-dashed border-primary-bright/40 bg-white/6 p-6 text-center">
+      <div key={code ?? 'pending'} className="animate-seal-pop mt-5.5 rounded-2xl border border-dashed border-primary-bright/40 bg-white/6 p-6 text-center">
         <div className="text-primary-bright text-[11.5px] font-bold tracking-[.08em] uppercase">
           Code à usage unique
         </div>

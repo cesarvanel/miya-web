@@ -28,7 +28,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       ) : (
         <div
           style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-          className="h-[3px] rounded-full bg-primary"
+          className="h-[3px] rounded-full bg-primary transition-[width] duration-500 ease-out"
         />
       )}
     </div>

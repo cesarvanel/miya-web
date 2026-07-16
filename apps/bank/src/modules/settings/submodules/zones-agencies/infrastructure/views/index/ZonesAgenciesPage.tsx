@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, EmptyState, SearchInput } from '@miya/ui';
+import { Button, Card, CountUp, EmptyState, SearchInput } from '@miya/ui';
 import { AdminShell } from '@/shared/layout/AdminShell';
 import { AgencyCard } from '../composants/AgencyCard';
 import { AgencyDetailPanel } from '../composants/AgencyDetailPanel';
@@ -78,31 +78,33 @@ export const ZonesAgenciesPage: React.FC = () => {
               </span>
               <div className="mt-0.5 text-[12.5px] font-medium text-ink-faint">Affectez un agent à chaque zone</div>
             </div>
-            <span className="num rounded-full bg-cream-100 px-3 py-1.5 text-xs font-bold text-ink-muted">
-              {zones.length} zone{zones.length > 1 ? 's' : ''}
+            <span className="rounded-full bg-cream-100 px-3 py-1.5 text-xs font-bold text-ink-muted">
+              <CountUp value={zones.length} /> zone{zones.length > 1 ? 's' : ''}
             </span>
           </div>
 
-          {zones.length === 0 ? (
-            <EmptyState
-              title="Aucune zone enregistrée"
-              description="Créez la première zone de collecte de cette agence."
-              action={<Button variant="primary" onClick={openCreateZone}>Nouvelle zone</Button>}
-            />
-          ) : (
-            <>
-              <div className="grid grid-cols-[2fr_1.6fr_1fr_1fr_24px] gap-3.5 border-b border-line-soft bg-cream-50 px-5.5 py-2.75 text-[10.5px] font-bold tracking-[.04em] text-ink-soft uppercase">
-                <span>Zone</span>
-                <span>Agent affecté</span>
-                <span className="text-right">Clients</span>
-                <span className="text-right">Régul.</span>
-                <span />
-              </div>
-              {zones.map((zone) => (
-                <ZoneRow key={zone.id} zone={zone} onAssignAgent={openAssignAgent} />
-              ))}
-            </>
-          )}
+          <div key={selectedAgencyId ?? 'all'} className="animate-fade-in">
+            {zones.length === 0 ? (
+              <EmptyState
+                title="Aucune zone enregistrée"
+                description="Créez la première zone de collecte de cette agence."
+                action={<Button variant="primary" onClick={openCreateZone}>Nouvelle zone</Button>}
+              />
+            ) : (
+              <>
+                <div className="grid grid-cols-[2fr_1.6fr_1fr_1fr_24px] gap-3.5 border-b border-line-soft bg-cream-50 px-5.5 py-2.75 text-[10.5px] font-bold tracking-[.04em] text-ink-soft uppercase">
+                  <span>Zone</span>
+                  <span>Agent affecté</span>
+                  <span className="text-right">Clients</span>
+                  <span className="text-right">Régul.</span>
+                  <span />
+                </div>
+                {zones.map((zone, index) => (
+                  <ZoneRow key={zone.id} zone={zone} onAssignAgent={openAssignAgent} index={index} />
+                ))}
+              </>
+            )}
+          </div>
         </Card>
       </div>
 

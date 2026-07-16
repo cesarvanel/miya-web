@@ -78,14 +78,19 @@ export const SettlementQueuePage: React.FC = () => {
               />
             )}
 
-            {queue.map((slip) => (
-              <QueueItemCard
-                key={slip.id}
-                slip={slip}
-                isSelected={slip.id === selectedId}
-                disputeCount={disputeCount(slip.lines)}
-              />
-            ))}
+            {queue.length > 0 && (
+              <div className="animate-fade-in flex flex-col gap-2.5">
+                {queue.map((slip, index) => (
+                  <QueueItemCard
+                    key={slip.id}
+                    slip={slip}
+                    isSelected={slip.id === selectedId}
+                    disputeCount={disputeCount(slip.lines)}
+                    index={index}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="rounded-tile m-4 flex items-center justify-between bg-cream-100 px-3.75 py-3.25">

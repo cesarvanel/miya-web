@@ -1,4 +1,5 @@
 import React from 'react';
+import { CountUp } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import type { RoundsSummary } from '../../../domain/selectors/Selectors';
 
@@ -11,9 +12,9 @@ export const RoundsStatsRow: React.FC<RoundsStatsRowProps> = ({ summary }) => (
   <div className="mb-5 grid grid-cols-4 gap-4">
     <div className="rounded-card-lg shadow-primary-glow bg-primary p-[18px] text-white">
       <div className="text-primary-tint text-[12.5px] font-semibold">En tournée</div>
-      <div className="num mt-2 text-[30px] font-bold">
-        {summary.openCount}
-        <span className="text-primary-tint text-[20px]">/{summary.totalCount}</span>
+      <div className="mt-2 text-[30px] font-bold">
+        <CountUp value={summary.openCount} className="text-white" />
+        <span className="num text-primary-tint text-[20px]">/{summary.totalCount}</span>
       </div>
       <div className="text-primary-tint mt-1 text-[11.5px] font-medium">
         {summary.closedCount} journée{summary.closedCount > 1 ? 's' : ''} clôturée
@@ -22,16 +23,16 @@ export const RoundsStatsRow: React.FC<RoundsStatsRowProps> = ({ summary }) => (
     </div>
     <div className="rounded-card-lg border border-line bg-card p-[18px]">
       <div className="text-[12.5px] font-semibold text-ink-muted">Collecté en direct</div>
-      <div className="num mt-2 text-[30px] font-bold text-ink">
-        {Money.from(summary.collectedTotal).format().replace(' FCFA', '')}
+      <div className="mt-2 text-[30px] font-bold text-ink">
+        <CountUp value={summary.collectedTotal} formatter={(v) => Money.from(v).format().replace(' FCFA', '')} />
       </div>
       <div className="mt-1 text-[11.5px] font-medium text-ink-faint">FCFA · aujourd'hui</div>
     </div>
     <div className="rounded-card-lg border border-line bg-card p-[18px]">
       <div className="text-[12.5px] font-semibold text-ink-muted">Progression moyenne</div>
-      <div className="num mt-2 text-[30px] font-bold text-ink">
-        {Math.round(summary.averageProgressRatio * 100)}
-        <span className="text-[18px] text-ink-disabled">%</span>
+      <div className="mt-2 text-[30px] font-bold text-ink">
+        <CountUp value={Math.round(summary.averageProgressRatio * 100)} />
+        <span className="num text-[18px] text-ink-disabled">%</span>
       </div>
       <div className="mt-1 text-[11.5px] font-medium text-ink-faint">des clients visités</div>
     </div>

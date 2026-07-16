@@ -9,8 +9,8 @@ interface ClientStatusChipProps {
 export const ClientStatusChip: React.FC<ClientStatusChipProps> = ({ client }) => {
   if (client.pendingWithdrawal) {
     return (
-      <span className="rounded-full bg-amber-soft px-[10px] py-1 text-[11px] font-bold whitespace-nowrap text-amber">
-        Retrait <span role="img" aria-label="en attente">⏳</span>
+      <span className="animate-badge-in rounded-full bg-amber-soft px-[10px] py-1 text-[11px] font-bold whitespace-nowrap text-amber">
+        Retrait <span role="img" aria-label="en attente" className="animate-pulse-soft inline-block">⏳</span>
       </span>
     );
   }

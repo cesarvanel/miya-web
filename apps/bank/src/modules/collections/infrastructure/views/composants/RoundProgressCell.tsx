@@ -17,7 +17,7 @@ export const RoundProgressCell: React.FC<RoundProgressCellProps> = ({ progress }
         <span className="num text-[11.5px] font-semibold text-ink-faint">{percent}%</span>
       </div>
       <div className="h-1.75 overflow-hidden rounded-full bg-cream-100">
-        <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+        <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${percent}%` }} />
       </div>
     </div>
   );

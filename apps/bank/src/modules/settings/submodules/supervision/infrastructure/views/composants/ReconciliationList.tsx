@@ -13,8 +13,8 @@ export const ReconciliationList: React.FC<ReconciliationListProps> = ({ reconcil
   <div className="rounded-card-lg border border-line bg-card p-5">
     <div className="mb-3.5 text-[15px] font-extrabold text-ink">Rapprochements du jour</div>
     <div className="flex flex-col gap-3.5">
-      {reconciliations.map((entry) => (
-        <div key={entry.agencyId}>
+      {reconciliations.map((entry, index) => (
+        <div key={entry.agencyId} className="animate-stagger-in" style={{ animationDelay: `${index * 40}ms` }}>
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[13.5px] font-bold text-ink">Agence {entry.agencyName}</div>

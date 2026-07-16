@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { InitialsAvatar, KpiCard, NotificationBell, Skeleton, Table, Tabs, type TableColumn } from '@miya/ui';
+import { InitialsAvatar, KpiCard, NotificationBell, NotificationPanel, Skeleton, Table, Tabs, useOutsideClick, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
 import { AgentDayStatus, type AgentDaySummary } from '../../domain/entities/AgentDaySummary';
@@ -25,6 +25,11 @@ export const DashboardPage: React.FC = () => {
     kpis,
     alerts,
     activity,
+    notificationItems,
+    isNotificationsOpen,
+    toggleNotifications,
+    closeNotifications,
+    viewAllNotifications,
     isPending,
     filter,
     setFilter,
@@ -33,6 +38,8 @@ export const DashboardPage: React.FC = () => {
     goToDisputes,
     goToRound,
   } = useDashboard();
+
+  const notificationsRef = useOutsideClick<HTMLDivElement>(closeNotifications, isNotificationsOpen);
 
   const columns: TableColumn<AgentDaySummary>[] = [
     {
@@ -102,7 +109,7 @@ export const DashboardPage: React.FC = () => {
       header: '',
       align: 'right',
       cell: () => (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
           <path d="M7 4l5 5-5 5" stroke="#B9BAB2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
@@ -113,7 +120,28 @@ export const DashboardPage: React.FC = () => {
     <PageShell
       title="Tableau de bord"
       subtitle="Vue d'ensemble de la journée — Agence Mokolo"
-      actions={<NotificationBell variant={kpis.openDisputes > 0 ? 'count' : 'none'} count={kpis.openDisputes} />}
+      actions={
+        <div ref={notificationsRef} className="relative">
+          <NotificationBell
+            variant={notificationItems.length > 0 ? 'count' : 'none'}
+            count={notificationItems.length}
+            active={isNotificationsOpen}
+            onClick={toggleNotifications}
+          />
+          {isNotificationsOpen && (
+            <div className="absolute top-[calc(100%+8px)] right-0 z-20">
+              <NotificationPanel
+                items={
+                  notificationItems.length > 0
+                    ? notificationItems
+                    : [{ id: 'empty', title: 'Rien à signaler', meta: 'Vous êtes à jour.', tone: 'success', read: true }]
+                }
+                onViewAll={notificationItems.length > 0 ? viewAllNotifications : undefined}
+              />
+            </div>
+          )}
+        </div>
+      }
     >
       {isPending && agents.length === 0 ? (
         <div className="grid grid-cols-4 gap-4">

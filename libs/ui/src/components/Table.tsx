@@ -166,7 +166,7 @@ export const Table = <TRow,>({
                   key={key}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                   className={[
-                    'border-b border-line-faint last:border-b-0',
+                    'group border-b border-line-faint transition-[background-color,box-shadow] last:border-b-0',
                     onRowClick ? 'cursor-pointer' : '',
                     isSelected
                       ? 'bg-[#F3FAF6] shadow-[inset_3px_0_0_#0A6B4E]'

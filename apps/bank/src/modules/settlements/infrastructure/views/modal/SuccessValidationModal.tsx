@@ -41,7 +41,7 @@ export const SuccessValidationModal: React.FC = () => {
       ariaLabel="Reversement validé"
       panelClassName="bg-primary-deep p-[34px_30px] text-center"
     >
-      <div className="mx-auto flex size-[92px] items-center justify-center rounded-full bg-white">
+      <div className="animate-seal-pop mx-auto flex size-[92px] items-center justify-center rounded-full bg-white">
         <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <path
             d="M12 22.5l7 7 14-16"

@@ -72,7 +72,7 @@ export const Gauge: React.FC<GaugeProps> = ({
           data-testid="gauge-fill"
           style={{ width: `${ratio * 100}%` }}
           className={[
-            'rounded-gauge h-full',
+            'rounded-gauge h-full transition-[width] duration-500 ease-out',
             isWarning
               ? 'bg-linear-to-r from-amber-strong to-amber-fill-end'
               : 'bg-primary',

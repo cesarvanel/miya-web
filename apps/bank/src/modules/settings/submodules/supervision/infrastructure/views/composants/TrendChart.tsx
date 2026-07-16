@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { DailyCollectionPoint } from '../../../domain/entities/Supervision';
 
 interface TrendChartProps {
@@ -11,12 +11,10 @@ const WIDTH = 640;
 const HEIGHT = 200;
 const PADDING = 24;
 
-/**
- * Tendance quotidienne — polyline SVG légère (pas de librairie de graphes
- * dans le projet). Simplification assumée vs la maquette : pas de tooltip
- * interactif point-par-point.
- */
+/** Tendance quotidienne — polyline SVG légère (pas de librairie de graphes dans le projet). */
 export const TrendChart: React.FC<TrendChartProps> = ({ title, points, average }) => {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
   if (points.length === 0) {
     return null;
   }
@@ -32,9 +30,10 @@ export const TrendChart: React.FC<TrendChartProps> = ({ title, points, average }
   const areaPath = `${linePath} L${toX(points.length - 1)},${HEIGHT - PADDING} L${toX(0)},${HEIGHT - PADDING} Z`;
   const averageY = toY(average);
   const last = points[points.length - 1];
+  const hovered = hoverIndex !== null ? points[hoverIndex] : null;
 
   return (
-    <div className="rounded-card-lg border border-line bg-card p-5">
+    <div className="relative rounded-card-lg border border-line bg-card p-5">
       <div className="mb-1 flex items-baseline justify-between">
         <span className="text-[15px] font-extrabold text-ink">{title}</span>
         <span className="text-[11.5px] font-semibold text-ink-faint">
@@ -46,7 +45,32 @@ export const TrendChart: React.FC<TrendChartProps> = ({ title, points, average }
         <path d={areaPath} fill="var(--color-primary-soft)" opacity={0.5} />
         <path d={linePath} fill="none" stroke="var(--color-primary)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
         <circle cx={toX(points.length - 1)} cy={toY(last.amount)} r={3.5} fill="var(--color-primary)" />
+        {points.map((point, index) => (
+          <circle
+            key={point.date}
+            cx={toX(index)}
+            cy={toY(point.amount)}
+            r={hoverIndex === index ? 5 : 9}
+            fill={hoverIndex === index ? 'var(--color-primary)' : 'transparent'}
+            className="cursor-pointer transition-[r] duration-150 ease-out"
+            onMouseEnter={() => setHoverIndex(index)}
+            onMouseLeave={() => setHoverIndex((current) => (current === index ? null : current))}
+          />
+        ))}
       </svg>
+      {hovered && hoverIndex !== null && (
+        <div
+          className="animate-fade-in pointer-events-none absolute rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-toast"
+          style={{
+            left: `${(toX(hoverIndex) / WIDTH) * 100}%`,
+            top: `${(toY(hovered.amount) / HEIGHT) * 100}%`,
+            transform: 'translate(-50%, -130%)',
+          }}
+        >
+          <div className="num text-[12.5px] font-bold">{hovered.amount.toLocaleString('fr-FR')} FCFA</div>
+          <div className="text-primary-tint">{hovered.date}</div>
+        </div>
+      )}
       <div className="mt-1 flex justify-between text-[11px] font-semibold text-ink-faint">
         <span>{points[0].date}</span>
         <span>Dernier point : {last.amount.toLocaleString('fr-FR')} FCFA</span>

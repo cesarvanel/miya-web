@@ -148,42 +148,44 @@ export const DisputesListPage: React.FC = () => {
         )}
       </div>
 
-      {showOpen && (
-        <Table
-          columns={columns}
-          rows={openDisputes}
-          rowKey={(dispute) => dispute.id}
-          onRowClick={(dispute) => goToResolution(dispute.id)}
-          emptyState={
-            !isPending ? (
-              <EmptyState title="Aucune contestation ouverte" description="Tout est réglé pour le moment." />
-            ) : undefined
-          }
-        />
-      )}
-
-      {showResolved && resolvedDisputes.length > 0 && (
-        <div className={showOpen ? 'mt-5' : ''}>
-          {showOpen && (
-            <div className="mb-2.5 px-1 text-[11.5px] font-bold tracking-[.04em] text-ink-faint uppercase">
-              Résolues aujourd'hui
-            </div>
-          )}
+      <div key={tab} className="animate-fade-in">
+        {showOpen && (
           <Table
             columns={columns}
-            rows={resolvedDisputes}
+            rows={openDisputes}
             rowKey={(dispute) => dispute.id}
             onRowClick={(dispute) => goToResolution(dispute.id)}
+            emptyState={
+              !isPending ? (
+                <EmptyState title="Aucune contestation ouverte" description="Tout est réglé pour le moment." />
+              ) : undefined
+            }
           />
-        </div>
-      )}
+        )}
 
-      {showResolved && !showOpen && resolvedDisputes.length === 0 && !isPending && (
-        <EmptyState
-          title="Aucune contestation résolue"
-          description="Les décisions prises aujourd'hui apparaîtront ici."
-        />
-      )}
+        {showResolved && resolvedDisputes.length > 0 && (
+          <div className={showOpen ? 'mt-5' : ''}>
+            {showOpen && (
+              <div className="mb-2.5 px-1 text-[11.5px] font-bold tracking-[.04em] text-ink-faint uppercase">
+                Résolues aujourd'hui
+              </div>
+            )}
+            <Table
+              columns={columns}
+              rows={resolvedDisputes}
+              rowKey={(dispute) => dispute.id}
+              onRowClick={(dispute) => goToResolution(dispute.id)}
+            />
+          </div>
+        )}
+
+        {showResolved && !showOpen && resolvedDisputes.length === 0 && !isPending && (
+          <EmptyState
+            title="Aucune contestation résolue"
+            description="Les décisions prises aujourd'hui apparaîtront ici."
+          />
+        )}
+      </div>
     </PageShell>
   );
 };
