@@ -30,12 +30,20 @@ describe('platform router', () => {
     expect(screen.getByText('Plateforme')).toBeDefined();
   });
 
-  it('renders each module placeholder under the layout', async () => {
+  it('renders the tenants list under the layout', async () => {
     const store = makeStore();
     await loginAsOwner(store);
     renderAt('/tenants', store);
-    expect(await screen.findByRole('heading', { name: 'Banques' })).toBeDefined();
+    expect(await screen.findByRole('heading', { name: 'Banques clientes' })).toBeDefined();
     expect(screen.getByText('Console éditeur')).toBeDefined();
+    expect(await screen.findByText('MEC La Confiance')).toBeDefined();
+  });
+
+  it('renders a module placeholder for a stub route', async () => {
+    const store = makeStore();
+    await loginAsOwner(store);
+    renderAt('/activity', store);
+    expect(await screen.findByRole('heading', { name: 'Activité plateforme' })).toBeDefined();
   });
 
   it('marks the active link only', async () => {

@@ -1,10 +1,95 @@
+import { initialsOf } from '@miya/ui';
+import { BillingStatus, computePlanLimitAlerts, TenantStatus, tenantFixtures, type Tenant } from '@/modules/tenants';
 import type { OverviewGateway, OverviewSnapshot } from '../../application/ports/OverviewGateway';
-import { AlertKind, AlertSeverity } from '../../domain/entities/Overview';
+import { AlertKind, AlertSeverity, type BankColorTone, type PlatformAlert, type TopBank } from '../../domain/entities/Overview';
 
 const delay = (): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, 300 + Math.random() * 300));
 
-/** Gateway en mémoire — données exactes de la maquette 1a « Vue d'ensemble ». */
+const COLOR_TONES: BankColorTone[] = ['info', 'primary', 'orange', 'olive'];
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const RECENTLY_CREATED_MS = 3 * ONE_DAY_MS;
+
+/** 4 banques actives/en essai au volume le plus élevé — dérivé des mêmes fixtures que le module tenants. */
+const deriveTopBanks = (tenants: Tenant[]): TopBank[] =>
+  [...tenants]
+    .filter((tenant) => tenant.status !== TenantStatus.Suspended)
+    .sort((a, b) => b.volumeMonth - a.volumeMonth)
+    .slice(0, 4)
+    .map((tenant, index) => {
+      const [previous, last] = tenant.volumeSeries.slice(-2);
+      const growthPct = previous && last && previous.volume > 0 ? Math.round(((last.volume - previous.volume) / previous.volume) * 100) : undefined;
+      const isRecent = Date.now() - new Date(tenant.registeredAt).getTime() <= 60 * ONE_DAY_MS;
+      return {
+        id: tenant.id,
+        name: tenant.name,
+        city: tenant.city,
+        plan: tenant.plan.name,
+        initials: initialsOf(tenant.name),
+        colorTone: COLOR_TONES[index % COLOR_TONES.length],
+        volumeThirtyDaysM: tenant.volumeMonth / 1_000_000,
+        growthPct: isRecent ? undefined : growthPct,
+        isNew: isRecent,
+      };
+    });
+
+/** COOPEC-style impayés, plafonds de plan à 85%+, essais tout juste créés — 3 dérivations, pas de duplication. */
+const deriveAlerts = (tenants: Tenant[]): PlatformAlert[] => {
+  const alerts: PlatformAlert[] = [];
+
+  for (const tenant of tenants) {
+    if (tenant.status === TenantStatus.Suspended || tenant.billingStatus !== BillingStatus.Overdue) {
+      continue;
+    }
+    alerts.push({
+      id: `alert-${tenant.id}-overdue`,
+      kind: AlertKind.PaymentOverdue,
+      bankId: tenant.id,
+      bankName: tenant.name,
+      severity: AlertSeverity.Critical,
+      amount: tenant.plan.monthlyPrice,
+      daysLate: 12,
+      readOnlyInDays: 3,
+      planName: tenant.plan.name,
+    });
+  }
+
+  for (const limitAlert of computePlanLimitAlerts(tenants)) {
+    if (limitAlert.metric !== 'agents') {
+      continue;
+    }
+    alerts.push({
+      id: `alert-${limitAlert.tenantId}-plan-limit`,
+      kind: AlertKind.PlanLimitApproaching,
+      bankId: limitAlert.tenantId,
+      bankName: limitAlert.tenantName,
+      severity: AlertSeverity.Warning,
+      currentAgents: limitAlert.used,
+      maxAgents: limitAlert.limit,
+      planName: limitAlert.planName,
+    });
+  }
+
+  for (const tenant of tenants) {
+    const isFreshTrial =
+      tenant.status === TenantStatus.Trial && Date.now() - new Date(tenant.registeredAt).getTime() <= RECENTLY_CREATED_MS;
+    if (!isFreshTrial) {
+      continue;
+    }
+    alerts.push({
+      id: `alert-${tenant.id}-pending`,
+      kind: AlertKind.PendingActivation,
+      bankId: tenant.id,
+      bankName: tenant.name,
+      severity: AlertSeverity.Info,
+      planRequested: tenant.plan.name,
+    });
+  }
+
+  return alerts;
+};
+
+/** Gateway en mémoire — KPIs plateforme curés (agrégat des 27 banques, hors périmètre des fixtures détaillées) ; banques phares et alertes dérivées des mêmes fixtures que le module tenants. */
 export class FakeOverviewGateway implements OverviewGateway {
   async fetchOverview(): Promise<OverviewSnapshot> {
     await delay();
@@ -32,79 +117,8 @@ export class FakeOverviewGateway implements OverviewGateway {
         { monthLabel: 'Juin', volumeMd: 1.71 },
         { monthLabel: 'Juil', volumeMd: 1.84 },
       ],
-      topBanks: [
-        {
-          id: 'bank-camccul-express',
-          name: 'CamCCUL Express',
-          city: 'Bamenda',
-          plan: 'Élite',
-          initials: 'CE',
-          colorTone: 'info',
-          volumeThirtyDaysM: 298.4,
-          growthPct: 14,
-        },
-        {
-          id: 'bank-mec-confiance',
-          name: 'MEC La Confiance',
-          city: 'Yaoundé',
-          plan: 'Élite',
-          initials: 'MC',
-          colorTone: 'primary',
-          volumeThirtyDaysM: 214.7,
-          growthPct: 8,
-        },
-        {
-          id: 'bank-regionale-mf',
-          name: 'La Régionale MF',
-          city: 'Douala',
-          plan: 'Croissance',
-          initials: 'LR',
-          colorTone: 'orange',
-          volumeThirtyDaysM: 128.9,
-          growthPct: 9,
-        },
-        {
-          id: 'bank-financia-mf',
-          name: 'Financia MF',
-          city: 'Bafoussam',
-          plan: 'Croissance',
-          initials: 'FM',
-          colorTone: 'olive',
-          volumeThirtyDaysM: 96.1,
-          isNew: true,
-        },
-      ],
-      alerts: [
-        {
-          id: 'alert-coopec-sahel-overdue',
-          kind: AlertKind.PaymentOverdue,
-          bankId: 'bank-coopec-sahel',
-          bankName: 'COOPEC Sahel',
-          severity: AlertSeverity.Critical,
-          amount: 120_000,
-          daysLate: 12,
-          readOnlyInDays: 3,
-          planName: 'Croissance',
-        },
-        {
-          id: 'alert-camccul-plan-limit',
-          kind: AlertKind.PlanLimitApproaching,
-          bankId: 'bank-camccul-express',
-          bankName: 'CamCCUL Express',
-          severity: AlertSeverity.Warning,
-          currentAgents: 51,
-          maxAgents: 60,
-          planName: 'Élite',
-        },
-        {
-          id: 'alert-union-financiere-pending',
-          kind: AlertKind.PendingActivation,
-          bankId: 'bank-union-financiere-ouest',
-          bankName: "Union Financière de l'Ouest",
-          severity: AlertSeverity.Info,
-          planRequested: 'Croissance',
-        },
-      ],
+      topBanks: deriveTopBanks(tenantFixtures),
+      alerts: deriveAlerts(tenantFixtures),
     };
   }
 }

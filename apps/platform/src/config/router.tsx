@@ -3,8 +3,18 @@ import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom'
 import { Card, EmptyState } from '@miya/ui';
 import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
 import { OverviewPage } from '@/modules/overview';
+import {
+  ChangePlanModal,
+  ConfirmReactivateModal,
+  NewTenantPage,
+  ResendInvitationModal,
+  SuspendTenantModal,
+  TenantDetailPage,
+  TenantsListPage,
+} from '@/modules/tenants';
 import { RequireAuth } from '@/shared/guards/RequireAuth';
 import { PageShell } from '@/shared/layout/PageShell';
+import { ToastHost } from '@/shared/layout/ToastHost';
 import { NotFoundPage } from '@/shared/pages/NotFoundPage';
 import { SidebarContainer } from './layout/SidebarContainer';
 
@@ -16,6 +26,11 @@ const PlatformLayout: React.FC = () => (
       <Outlet />
     </div>
     <ConfirmLogoutModal />
+    <ChangePlanModal />
+    <SuspendTenantModal />
+    <ConfirmReactivateModal />
+    <ResendInvitationModal />
+    <ToastHost />
   </div>
 );
 
@@ -38,6 +53,15 @@ const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title }) => (
 export const platformRoutes: RouteObject[] = [
   ...AuthRouter(),
   {
+    path: '/tenants/new',
+    element: (
+      <RequireAuth>
+        <NewTenantPage />
+        <ToastHost />
+      </RequireAuth>
+    ),
+  },
+  {
     path: '/',
     element: (
       <RequireAuth>
@@ -46,7 +70,8 @@ export const platformRoutes: RouteObject[] = [
     ),
     children: [
       { index: true, element: <OverviewPage /> },
-      { path: 'tenants', element: <ModulePlaceholder title="Banques" /> },
+      { path: 'tenants', element: <TenantsListPage /> },
+      { path: 'tenants/:id', element: <TenantDetailPage /> },
       { path: 'billing', element: <ModulePlaceholder title="Abonnements" /> },
       { path: 'activity', element: <ModulePlaceholder title="Activité plateforme" /> },
       { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },

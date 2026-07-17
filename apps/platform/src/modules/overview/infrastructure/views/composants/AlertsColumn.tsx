@@ -24,10 +24,10 @@ const PaymentOverdueCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'Paym
       Plan {alert.planName} · {fcfa(alert.amount)} · lecture seule dans {alert.readOnlyInDays} jours
     </div>
     <div className="mt-3 flex gap-2.25">
-      <Link to="/billing" className="rounded-full bg-danger px-3.25 py-2 text-xs font-bold text-white">
+      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-danger px-3.25 py-2 text-xs font-bold text-white">
         Déployer
       </Link>
-      <Link to="/billing" className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted">
+      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted">
         Relancer
       </Link>
     </div>
@@ -58,7 +58,7 @@ const PlanLimitCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'PlanLimit
         />
       </div>
       <div className="mt-3">
-        <Link to="/billing" className="rounded-full bg-amber-soft px-3.25 py-2 text-xs font-bold text-amber">
+        <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-amber-soft px-3.25 py-2 text-xs font-bold text-amber">
           Proposer un palier
         </Link>
       </div>
@@ -81,10 +81,10 @@ const PendingActivationCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'P
       Dossier complet · KYC validé · plan {alert.planRequested} demandé
     </div>
     <div className="mt-3 flex gap-2.25">
-      <Link to="/tenants" className="rounded-full bg-info px-3.25 py-2 text-xs font-bold text-white">
+      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-info px-3.25 py-2 text-xs font-bold text-white">
         Activer la banque
       </Link>
-      <Link to="/tenants" className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted">
+      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted">
         Dossier
       </Link>
     </div>
