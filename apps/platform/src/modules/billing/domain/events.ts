@@ -8,12 +8,38 @@ export interface InvoicePaidEvent {
   /** ISO. */
   at: string;
   recordedBy: string;
+  recordedById: string;
 }
 
 /**
- * Event de domaine dispatché par `MarkInvoicePaidAsync` — le module tenants s'y
- * abonne (extraReducer sur cette action, importée via cet index public) pour
- * repasser son `billingStatus` à `UpToDate` et journaliser l'événement, sans
- * que billing ait besoin de connaître les entrailles de tenants.
+ * Events de domaine — le module tenants s'abonne à `invoicePaid` (repasse
+ * `billingStatus` à `UpToDate`) et le module activity s'abonne aux trois pour
+ * construire sa piste d'audit en direct, tous via cet index public. billing
+ * n'importe rien en retour : dépendance à sens unique.
  */
 export const invoicePaid = createAction<InvoicePaidEvent>('billing/invoicePaid');
+
+export interface PlanUpdatedEvent {
+  planId: string;
+  planName: string;
+  previousMonthlyPrice: number;
+  monthlyPrice: number;
+  by: string;
+  byId: string;
+  /** ISO. */
+  at: string;
+}
+
+export const planUpdated = createAction<PlanUpdatedEvent>('billing/planUpdated');
+
+export interface ReminderSentEvent {
+  invoiceId: string;
+  tenantId: string;
+  tenantName: string;
+  by: string;
+  byId: string;
+  /** ISO. */
+  at: string;
+}
+
+export const reminderSent = createAction<ReminderSentEvent>('billing/reminderSent');

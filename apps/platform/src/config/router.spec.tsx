@@ -42,8 +42,16 @@ describe('platform router', () => {
   it('renders a module placeholder for a stub route', async () => {
     const store = makeStore();
     await loginAsOwner(store);
+    renderAt('/settings', store);
+    expect(await screen.findByRole('heading', { name: 'Paramètres' })).toBeDefined();
+  });
+
+  it('renders the activity page with its supervision sections under the layout', async () => {
+    const store = makeStore();
+    await loginAsOwner(store);
     renderAt('/activity', store);
     expect(await screen.findByRole('heading', { name: 'Activité plateforme' })).toBeDefined();
+    expect(await screen.findByText(/Journal d.audit/)).toBeDefined();
   });
 
   it('marks the active link only', async () => {

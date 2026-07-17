@@ -37,5 +37,17 @@ describe('SuspendTenantAsync / ReactivateTenantAsync', () => {
     const reactivated = store.getState().tenants.tenants.entities['coopec-sahel'];
     expect(reactivated?.status).toBe('Active');
     expect(reactivated?.suspension).toBeUndefined();
+
+    // Le module activity n'a jamais été fetché (ni FetchActivityAsync, ni FetchAuditLogAsync) —
+    // les deux entrées doivent malgré tout apparaître dans son journal d'audit, en direct,
+    // via les events tenantSuspended/tenantReactivated consommés par son slice.
+    const auditEntries = Object.values(store.getState().activity.auditLog.entities);
+    const suspendedEntry = auditEntries.find((entry) => entry?.action === 'TenantSuspended' && entry?.targetTenant?.id === 'coopec-sahel');
+    const reactivatedEntry = auditEntries.find((entry) => entry?.action === 'TenantReactivated' && entry?.targetTenant?.id === 'coopec-sahel');
+    expect(suspendedEntry?.summary).toContain('COOPEC Sahel');
+    expect(suspendedEntry?.summary).toContain("Impayé d'abonnement depuis 12 jours.");
+    expect(suspendedEntry?.actor.name).toBe('César Vanel');
+    expect(reactivatedEntry?.summary).toContain('COOPEC Sahel');
+    expect(reactivatedEntry?.actor.name).toBe('César Vanel');
   });
 });

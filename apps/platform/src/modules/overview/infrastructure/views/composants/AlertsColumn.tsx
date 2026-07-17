@@ -97,7 +97,30 @@ const PendingActivationCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'P
   </div>
 );
 
-/** Colonne d'alertes plateforme — 3 variantes fidèles à la maquette 1a. */
+const SyncHealthDegradedCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'SyncHealthDegraded' }> }> = ({ alert }) => (
+  <div className="animate-stagger-in rounded-2xl border border-amber-border bg-card p-4">
+    <div className="mb-2.5 flex items-center gap-2.25">
+      <span className="flex size-8 flex-none items-center justify-center rounded-[10px] bg-amber-soft">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+          <path d="M8.5 2l6.5 11h-13L8.5 2z" stroke="#E08A1E" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M8.5 6.5v3M8.5 11.5h.01" stroke="#E08A1E" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </span>
+      <span className="text-[12px] font-extrabold tracking-[.02em] text-amber uppercase">Synchronisations en difficulté</span>
+    </div>
+    <div className="text-[14px] font-bold text-ink">{alert.bankName}</div>
+    <div className="num mt-0.75 text-[12.5px] font-semibold text-amber-deep">
+      {(alert.errorRate * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}% d&rsquo;erreurs de synchro
+    </div>
+    <div className="mt-3">
+      <Link to={`/activity?tenantId=${alert.bankId}`} className="rounded-full bg-amber-soft px-3.25 py-2 text-xs font-bold text-amber">
+        Voir la supervision
+      </Link>
+    </div>
+  </div>
+);
+
+/** Colonne d'alertes plateforme — 4 variantes fidèles à la maquette 1a. */
 export const AlertsColumn: React.FC<AlertsColumnProps> = ({ alerts }) => (
   <div className="flex w-90 flex-none flex-col gap-3.5">
     <div className="flex items-center gap-2.25">
@@ -112,6 +135,9 @@ export const AlertsColumn: React.FC<AlertsColumnProps> = ({ alerts }) => (
       }
       if (alert.kind === AlertKind.PlanLimitApproaching) {
         return <PlanLimitCard key={alert.id} alert={alert} />;
+      }
+      if (alert.kind === AlertKind.SyncHealthDegraded) {
+        return <SyncHealthDegradedCard key={alert.id} alert={alert} />;
       }
       return <PendingActivationCard key={alert.id} alert={alert} />;
     })}

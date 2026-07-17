@@ -7,9 +7,9 @@ export type { Invoice, InvoicePayment, InvoiceReminder } from './domain/entities
 export { PlanStatus } from './domain/entities/Plan';
 export type { Plan, PlanLimits, PlanName } from './domain/entities/Plan';
 
-// Events (le module tenants s'y abonne via cet index)
-export { invoicePaid } from './domain/events';
-export type { InvoicePaidEvent } from './domain/events';
+// Events (les modules tenants/activity s'y abonnent via cet index)
+export { invoicePaid, planUpdated, reminderSent } from './domain/events';
+export type { InvoicePaidEvent, PlanUpdatedEvent, ReminderSentEvent } from './domain/events';
 
 // Reducer (branché dans root-reducer)
 export const billingReducer = billingSlice.reducer;

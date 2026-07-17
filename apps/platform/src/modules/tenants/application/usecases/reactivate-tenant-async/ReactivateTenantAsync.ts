@@ -2,6 +2,8 @@ import { getErrorState, invalidateTags } from '@miya/kernel';
 import { authSelectors } from '@/modules/auth';
 import { createPlatformAsyncThunk } from '@/config/thunks/CreatePlatformAsyncThunks';
 import { pushToast } from '@/shared/toasts';
+import { tenantReactivated } from '../../../domain/events';
+import { selectTenantById } from '../../../domain/selectors/Selectors';
 import { TenantsActions } from '../../../domain/slices/TenantsSlice';
 
 export const ReactivateTenantAsync = createPlatformAsyncThunk<void, { tenantId: string }>(
@@ -10,13 +12,13 @@ export const ReactivateTenantAsync = createPlatformAsyncThunk<void, { tenantId: 
     try {
       await extra.tenantGateway.reactivate(tenantId);
 
-      dispatch(
-        TenantsActions.reactivated({
-          tenantId,
-          by: authSelectors.selectCurrentUserDisplayName(getState()),
-          at: new Date().toISOString(),
-        }),
-      );
+      const tenantName = selectTenantById(getState(), tenantId)?.name ?? tenantId;
+      const by = authSelectors.selectCurrentUserDisplayName(getState());
+      const byId = authSelectors.selectCurrentUser(getState())?.id ?? '';
+      const at = new Date().toISOString();
+
+      dispatch(TenantsActions.reactivated({ tenantId, by, at }));
+      dispatch(tenantReactivated({ tenantId, tenantName, by, byId, at }));
       dispatch(invalidateTags(['Tenants']));
       dispatch(
         pushToast({

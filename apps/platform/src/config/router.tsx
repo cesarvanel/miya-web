@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
+import { ActivityPage } from '@/modules/activity';
 import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
 import { BillingPage, EditPlanModal, MarkInvoicePaidModal, SendReminderModal } from '@/modules/billing';
 import { OverviewPage } from '@/modules/overview';
@@ -77,7 +78,7 @@ export const platformRoutes: RouteObject[] = [
       { path: 'tenants', element: <TenantsListPage /> },
       { path: 'tenants/:id', element: <TenantDetailPage /> },
       { path: 'billing', element: <BillingPage /> },
-      { path: 'activity', element: <ModulePlaceholder title="Activité plateforme" /> },
+      { path: 'activity', element: <ActivityPage /> },
       { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
       { path: 'profile', element: <ModulePlaceholder title="Mon profil" /> },
     ],

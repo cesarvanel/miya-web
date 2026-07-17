@@ -2,6 +2,8 @@ import { getErrorState, invalidateTags } from '@miya/kernel';
 import { authSelectors } from '@/modules/auth';
 import { createPlatformAsyncThunk } from '@/config/thunks/CreatePlatformAsyncThunks';
 import { pushToast } from '@/shared/toasts';
+import { tenantSuspended } from '../../../domain/events';
+import { selectTenantById } from '../../../domain/selectors/Selectors';
 import { TenantsActions } from '../../../domain/slices/TenantsSlice';
 import { SuspendTenantCommand } from './SuspendTenantCommand';
 
@@ -12,14 +14,13 @@ export const SuspendTenantAsync = createPlatformAsyncThunk<void, SuspendTenantCo
     try {
       await extra.tenantGateway.suspend(tenantId, reason);
 
-      dispatch(
-        TenantsActions.suspended({
-          tenantId,
-          by: authSelectors.selectCurrentUserDisplayName(getState()),
-          at: new Date().toISOString(),
-          reason,
-        }),
-      );
+      const tenantName = selectTenantById(getState(), tenantId)?.name ?? tenantId;
+      const by = authSelectors.selectCurrentUserDisplayName(getState());
+      const byId = authSelectors.selectCurrentUser(getState())?.id ?? '';
+      const at = new Date().toISOString();
+
+      dispatch(TenantsActions.suspended({ tenantId, by, at, reason }));
+      dispatch(tenantSuspended({ tenantId, tenantName, reason, by, byId, at }));
       dispatch(invalidateTags(['Tenants']));
       dispatch(
         pushToast({

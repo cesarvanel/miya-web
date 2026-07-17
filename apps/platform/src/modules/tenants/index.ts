@@ -17,6 +17,10 @@ export type {
 export { computePlanLimitAlerts } from './domain/selectors/Selectors';
 export type { PlanLimitAlert, PlanLimitMetric, TenantsFilter, TenantsStatusFilter } from './domain/selectors/Selectors';
 
+// Events (les modules activity/overview s'y abonnent via cet index)
+export { tenantCreated, tenantPlanChanged, tenantReactivated, tenantSuspended } from './domain/events';
+export type { TenantAuditContext } from './domain/events';
+
 // Reducer (branché dans root-reducer)
 export const tenantsReducer = tenantsSlice.reducer;
 

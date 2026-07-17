@@ -41,6 +41,7 @@ export const AlertKind = {
   PaymentOverdue: 'PaymentOverdue',
   PlanLimitApproaching: 'PlanLimitApproaching',
   PendingActivation: 'PendingActivation',
+  SyncHealthDegraded: 'SyncHealthDegraded',
 } as const;
 
 interface PlatformAlertBase {
@@ -70,4 +71,10 @@ export interface PendingActivationAlert extends PlatformAlertBase {
   planRequested: string;
 }
 
-export type PlatformAlert = PaymentOverdueAlert | PlanLimitApproachingAlert | PendingActivationAlert;
+export interface SyncHealthDegradedAlert extends PlatformAlertBase {
+  kind: typeof AlertKind.SyncHealthDegraded;
+  errorRate: number;
+  lastSyncAt: string;
+}
+
+export type PlatformAlert = PaymentOverdueAlert | PlanLimitApproachingAlert | PendingActivationAlert | SyncHealthDegradedAlert;

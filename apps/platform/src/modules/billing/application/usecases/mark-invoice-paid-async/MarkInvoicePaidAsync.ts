@@ -19,6 +19,7 @@ export const MarkInvoicePaidAsync = createPlatformAsyncThunk<void, MarkInvoicePa
     try {
       const invoice = await extra.billingGateway.markInvoicePaid(command);
       const recordedBy = authSelectors.selectCurrentUserDisplayName(getState());
+      const recordedById = authSelectors.selectCurrentUser(getState())?.id ?? '';
       const payment: InvoicePayment = {
         receivedAt: command.receivedAt,
         method: command.method,
@@ -35,6 +36,7 @@ export const MarkInvoicePaidAsync = createPlatformAsyncThunk<void, MarkInvoicePa
           amount: invoice.amount,
           at: command.receivedAt,
           recordedBy,
+          recordedById,
         }),
       );
       dispatch(invalidateTags(['Billing', 'Tenants']));

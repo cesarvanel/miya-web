@@ -1,4 +1,5 @@
 import { initialsOf } from '@miya/ui';
+import { computeDegradedSyncHealth, syncHealthFixtures } from '@/modules/activity';
 import { computeMrr, planFixtures } from '@/modules/billing';
 import { BillingStatus, computePlanLimitAlerts, TenantStatus, tenantFixtures, type Tenant } from '@/modules/tenants';
 import type { OverviewGateway, OverviewSnapshot } from '../../application/ports/OverviewGateway';
@@ -90,6 +91,18 @@ const deriveAlerts = (tenants: Tenant[]): PlatformAlert[] => {
   return alerts;
 };
 
+/** Une ligne de sync en rouge (≥ seuil d'alerte) → une carte d'alerte Warning — dérivé du module activity, pas dupliqué. */
+const deriveSyncHealthAlerts = (): PlatformAlert[] =>
+  computeDegradedSyncHealth(syncHealthFixtures).map((entry) => ({
+    id: `alert-${entry.tenantId}-sync-health`,
+    kind: AlertKind.SyncHealthDegraded,
+    bankId: entry.tenantId,
+    bankName: entry.tenantName,
+    severity: AlertSeverity.Warning,
+    errorRate: entry.errorRate,
+    lastSyncAt: entry.lastSyncAt,
+  }));
+
 /** Gateway en mémoire — KPIs plateforme curés (agrégat des 27 banques, hors périmètre des fixtures détaillées) ; banques phares et alertes dérivées des mêmes fixtures que le module tenants. */
 export class FakeOverviewGateway implements OverviewGateway {
   async fetchOverview(): Promise<OverviewSnapshot> {
@@ -121,7 +134,7 @@ export class FakeOverviewGateway implements OverviewGateway {
         { monthLabel: 'Juil', volumeMd: 1.84 },
       ],
       topBanks: deriveTopBanks(tenantFixtures),
-      alerts: deriveAlerts(tenantFixtures),
+      alerts: [...deriveAlerts(tenantFixtures), ...deriveSyncHealthAlerts()],
     };
   }
 }
