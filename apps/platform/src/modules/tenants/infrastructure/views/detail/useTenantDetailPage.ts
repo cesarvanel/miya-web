@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRequestStatus } from '@miya/kernel';
+import { billingSelectors, FetchBillingAsync } from '@/modules/billing';
 import { usePlatformDispatch, usePlatformSelector } from '@/config/root-hook';
 import { openModal } from '@/shared/modals';
 import { FetchTenantAsync } from '../../../application/usecases/fetch-tenant-async/FetchTenantAsync';
@@ -15,11 +16,13 @@ export const useTenantDetailPage = () => {
     if (tenantId) {
       dispatch(FetchTenantAsync(tenantId));
     }
+    dispatch(FetchBillingAsync());
   }, [dispatch, tenantId]);
 
   const { isPending } = useRequestStatus(FetchTenantAsync);
   const tenant = usePlatformSelector((state) => selectTenantById(state, tenantId));
   const events = usePlatformSelector((state) => selectEventsByTenant(state, tenantId));
+  const invoices = usePlatformSelector((state) => billingSelectors.selectInvoicesByTenant(state, tenantId));
 
   const openChangePlan = (): void => {
     dispatch(openModal({ type: 'changePlan', props: { tenantId } }));
@@ -37,6 +40,7 @@ export const useTenantDetailPage = () => {
   return {
     tenant,
     events,
+    invoices,
     isPending: isPending && !tenant,
     openChangePlan,
     openSuspend,

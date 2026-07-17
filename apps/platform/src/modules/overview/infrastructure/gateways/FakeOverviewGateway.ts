@@ -1,4 +1,5 @@
 import { initialsOf } from '@miya/ui';
+import { computeMrr, planFixtures } from '@/modules/billing';
 import { BillingStatus, computePlanLimitAlerts, TenantStatus, tenantFixtures, type Tenant } from '@/modules/tenants';
 import type { OverviewGateway, OverviewSnapshot } from '../../application/ports/OverviewGateway';
 import { AlertKind, AlertSeverity, type BankColorTone, type PlatformAlert, type TopBank } from '../../domain/entities/Overview';
@@ -106,7 +107,9 @@ export class FakeOverviewGateway implements OverviewGateway {
         clientsDeltaThirtyDays: 1_240,
         totalAgents: 412,
         agentsActiveToday: 387,
-        mrr: 4_250_000,
+        // Dérivé du catalogue de plans du module billing (tarif × banques abonnées par plan) —
+        // même calcul que le KPI MRR de la page Abonnements, pas un chiffre dupliqué.
+        mrr: computeMrr(planFixtures),
         mrrGrowthPct: 6.2,
       },
       volumeSeries: [

@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
 import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
+import { BillingPage, EditPlanModal, MarkInvoicePaidModal, SendReminderModal } from '@/modules/billing';
 import { OverviewPage } from '@/modules/overview';
 import {
   ChangePlanModal,
@@ -30,6 +31,9 @@ const PlatformLayout: React.FC = () => (
     <SuspendTenantModal />
     <ConfirmReactivateModal />
     <ResendInvitationModal />
+    <EditPlanModal />
+    <MarkInvoicePaidModal />
+    <SendReminderModal />
     <ToastHost />
   </div>
 );
@@ -72,7 +76,7 @@ export const platformRoutes: RouteObject[] = [
       { index: true, element: <OverviewPage /> },
       { path: 'tenants', element: <TenantsListPage /> },
       { path: 'tenants/:id', element: <TenantDetailPage /> },
-      { path: 'billing', element: <ModulePlaceholder title="Abonnements" /> },
+      { path: 'billing', element: <BillingPage /> },
       { path: 'activity', element: <ModulePlaceholder title="Activité plateforme" /> },
       { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
       { path: 'profile', element: <ModulePlaceholder title="Mon profil" /> },

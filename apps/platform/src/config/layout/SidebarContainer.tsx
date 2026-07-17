@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { initialsOf } from '@miya/ui';
 import { authSelectors, PlatformUserRole } from '@/modules/auth';
+import { billingSelectors, FetchBillingAsync } from '@/modules/billing';
 import { FetchTenantsAsync, tenantsSelectors } from '@/modules/tenants';
 import { usePlatformDispatch, usePlatformSelector } from '@/config/root-hook';
 import { openModal } from '@/shared/modals';
@@ -15,15 +16,18 @@ const ROLE_LABEL: Record<PlatformUserRole, string> = {
  * Composition root : lit l'utilisateur courant dans l'index public du
  * module auth et le passe à la `Sidebar`, qui reste un composant de layout
  * pur — aucun accès store depuis `shared/`. Badge « Banques » branché sur le
- * nombre réel de tenants (billing/activity restent des stubs sans compteur).
+ * nombre réel de tenants ; badge « Abonnements » sur les factures en retard
+ * (activity reste un stub sans compteur).
  */
 export const SidebarContainer: React.FC = () => {
   const dispatch = usePlatformDispatch();
   const currentUser = usePlatformSelector(authSelectors.selectCurrentUser);
   const tenantsCount = usePlatformSelector(tenantsSelectors.selectTenantsFilterCounts).all;
+  const overdueInvoicesCount = usePlatformSelector(billingSelectors.selectOverdueCount);
 
   useEffect(() => {
     dispatch(FetchTenantsAsync());
+    dispatch(FetchBillingAsync());
   }, [dispatch]);
 
   if (!currentUser) {
@@ -32,6 +36,7 @@ export const SidebarContainer: React.FC = () => {
 
   const badges: Partial<Record<string, SidebarBadge>> = {
     '/tenants': { count: tenantsCount, tone: 'neutral' },
+    '/billing': { count: overdueInvoicesCount, tone: 'danger' },
   };
 
   return (

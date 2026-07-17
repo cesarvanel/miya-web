@@ -1,5 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { invoicePaid } from '@/modules/billing';
 import {
+  BillingStatus,
   eventsAdapter,
   tenantsAdapter,
   TenantEventKind,
@@ -21,6 +23,17 @@ export type TenantsState = typeof initialState;
 
 let nextEventSeq = 1;
 const nextEventId = (): string => `tev-local-${Date.now()}-${nextEventSeq++}`;
+
+/**
+ * "180000" -> "180 000" - fr-FR groupe les milliers avec une espace insecable
+ * (U+00A0 ou U+202F selon l'environnement JS) ; normalisee en espace ASCII
+ * classique par code point, comme Money.format(), pour un texte previsible
+ * dans le journal du tenant.
+ */
+const formatFcfa = (amount: number): string =>
+  Array.from(amount.toLocaleString('fr-FR'))
+    .map((char) => (char.charCodeAt(0) === 160 || char.charCodeAt(0) === 8239 ? ' ' : char))
+    .join('');
 
 /** Le journal se construit dans le domaine — chaque transition ajoute son propre event. */
 const pushEvent = (state: TenantsState, event: Omit<TenantEvent, 'id'>): void => {
@@ -110,6 +123,19 @@ export const tenantsSlice = createSlice({
       .addCase(FetchTenantAsync.fulfilled, (state, action) => {
         tenantsAdapter.upsertOne(state.tenants, action.payload.tenant);
         eventsAdapter.upsertMany(state.events, action.payload.events);
+      })
+      .addCase(invoicePaid, (state, action) => {
+        const { tenantId, amount, at } = action.payload;
+        if (!state.tenants.entities[tenantId]) {
+          return;
+        }
+        tenantsAdapter.updateOne(state.tenants, { id: tenantId, changes: { billingStatus: BillingStatus.UpToDate } });
+        pushEvent(state, {
+          tenantId,
+          at,
+          kind: TenantEventKind.InvoicePaid,
+          summary: `Paiement reçu · ${formatFcfa(amount)} FCFA`,
+        });
       });
   },
 });

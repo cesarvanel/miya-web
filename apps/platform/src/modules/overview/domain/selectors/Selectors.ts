@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { BillingStatus, tenantsSelectors } from '@/modules/tenants';
 import type { PlatformRootState } from '@/config/store';
-import { AlertSeverity, type PlatformAlert } from '../entities/Overview';
+import { AlertKind, AlertSeverity, type PlatformAlert } from '../entities/Overview';
 
 const SEVERITY_ORDER: Record<AlertSeverity, number> = {
   [AlertSeverity.Critical]: 0,
@@ -16,12 +17,26 @@ export const selectTopBanks = (state: PlatformRootState) => state.overview.topBa
 
 const selectRawAlerts = (state: PlatformRootState) => state.overview.alerts;
 
-export const selectAlerts = createSelector([selectRawAlerts], (alerts): PlatformAlert[] =>
-  [...alerts].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]),
+/**
+ * Les alertes plateforme sont un instantané pris au fetch — mais une alerte
+ * "Retard de paiement" doit s'éteindre dès le paiement enregistré côté
+ * billing, sans attendre un nouveau fetch. On la reconcilie donc ici avec le
+ * `billingStatus` live du tenant plutôt que de la stocker figée.
+ */
+export const selectAlerts = createSelector(
+  [selectRawAlerts, tenantsSelectors.selectAllTenants],
+  (alerts, tenants): PlatformAlert[] =>
+    [...alerts]
+      .filter(
+        (alert) =>
+          alert.kind !== AlertKind.PaymentOverdue ||
+          tenants.find((tenant) => tenant.id === alert.bankId)?.billingStatus === BillingStatus.Overdue,
+      )
+      .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]),
 );
 
 export const selectCriticalAlertsCount = createSelector(
-  [selectRawAlerts],
+  [selectAlerts],
   (alerts) => alerts.filter((alert) => alert.severity === AlertSeverity.Critical).length,
 );
 

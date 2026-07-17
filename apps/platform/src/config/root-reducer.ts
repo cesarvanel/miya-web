@@ -1,6 +1,7 @@
 import { combineReducers, type Reducer, type UnknownAction } from '@reduxjs/toolkit';
 import { cacheSlice, requestStatusSlice } from '@miya/kernel';
 import { authReducer, LogoutAsync } from '@/modules/auth';
+import { billingReducer } from '@/modules/billing';
 import { overviewReducer } from '@/modules/overview';
 import { tenantsReducer } from '@/modules/tenants';
 import { modalsSlice } from '@/shared/modals';
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
   auth: authReducer,
   overview: overviewReducer,
   tenants: tenantsReducer,
+  billing: billingReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

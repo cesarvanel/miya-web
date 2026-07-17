@@ -24,10 +24,16 @@ const PaymentOverdueCard: React.FC<{ alert: Extract<PlatformAlert, { kind: 'Paym
       Plan {alert.planName} · {fcfa(alert.amount)} · lecture seule dans {alert.readOnlyInDays} jours
     </div>
     <div className="mt-3 flex gap-2.25">
-      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-danger px-3.25 py-2 text-xs font-bold text-white">
-        Déployer
+      <Link
+        to={`/billing?status=overdue&tenantId=${alert.bankId}`}
+        className="rounded-full bg-danger px-3.25 py-2 text-xs font-bold text-white"
+      >
+        Voir la facture
       </Link>
-      <Link to={`/tenants/${alert.bankId}`} className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted">
+      <Link
+        to={`/billing?status=overdue&tenantId=${alert.bankId}`}
+        className="rounded-full bg-cream-100 px-3.25 py-2 text-xs font-bold text-ink-muted"
+      >
         Relancer
       </Link>
     </div>

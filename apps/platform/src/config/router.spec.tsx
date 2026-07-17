@@ -50,7 +50,7 @@ describe('platform router', () => {
     const store = makeStore();
     await loginAsOwner(store);
     renderAt('/billing', store);
-    await screen.findByRole('heading', { name: 'Abonnements' });
+    await screen.findByRole('heading', { name: 'Abonnements & facturation' });
     const active = screen.getByRole('link', { name: /Abonnements/ });
     const inactive = screen.getByRole('link', { name: /Banques/ });
     expect(active.className).toContain('bg-admin-primary');

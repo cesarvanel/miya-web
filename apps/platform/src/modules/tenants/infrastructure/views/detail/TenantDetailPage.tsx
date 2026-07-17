@@ -15,7 +15,7 @@ const monthYear = (iso: string): string =>
 
 /** Fiche banque — drill-down plein écran. Maquette 2f (active) / 2d (suspendue). */
 export const TenantDetailPage: React.FC = () => {
-  const { tenant, events, isPending, openChangePlan, openSuspend, openReactivate, openResendInvitation } = useTenantDetailPage();
+  const { tenant, events, invoices, isPending, openChangePlan, openSuspend, openReactivate, openResendInvitation } = useTenantDetailPage();
 
   if (isPending) {
     return (
@@ -166,7 +166,7 @@ export const TenantDetailPage: React.FC = () => {
               </>
             )}
 
-            <BillingHistoryTable tenant={tenant} />
+            <BillingHistoryTable tenantId={tenant.id} invoices={invoices} />
           </div>
 
           <div className="flex w-85 flex-none flex-col gap-4.5">

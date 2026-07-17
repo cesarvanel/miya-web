@@ -9,7 +9,10 @@ export type PlatformModal =
   | 'changePlan'
   | 'suspendTenant'
   | 'confirmReactivateTenant'
-  | 'resendInvitation';
+  | 'resendInvitation'
+  | 'editPlan'
+  | 'markInvoicePaid'
+  | 'sendReminder';
 
 export interface PlatformModalProps {
   confirmLogout: undefined;
@@ -17,6 +20,9 @@ export interface PlatformModalProps {
   suspendTenant: { tenantId: string };
   confirmReactivateTenant: { tenantId: string };
   resendInvitation: { tenantId: string };
+  editPlan: { planId: string };
+  markInvoicePaid: { invoiceId: string };
+  sendReminder: { invoiceId: string };
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =
