@@ -1,6 +1,6 @@
 import { getErrorState } from '@miya/kernel';
 import { createBankAsyncThunk } from '@/config/stores/thunks/CreateBankAsyncThunks';
-import { checkPasswordStrength } from '../../../domain/services/PasswordStrength';
+import { checkPasswordStrength } from '@miya/kernel';
 import { ResetPasswordCommand } from './ResetPasswordCommand';
 
 export const ResetPasswordAsync = createBankAsyncThunk<void, ResetPasswordCommand>(

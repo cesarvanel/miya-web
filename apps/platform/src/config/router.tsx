@@ -1,15 +1,21 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { Card, EmptyState } from '@miya/ui';
-import { RequireRole } from '@/shared/guards/RequireRole';
+import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
+import { OverviewPage } from '@/modules/overview';
+import { RequireAuth } from '@/shared/guards/RequireAuth';
 import { PageShell } from '@/shared/layout/PageShell';
-import { Sidebar } from '@/shared/layout/Sidebar';
+import { NotFoundPage } from '@/shared/pages/NotFoundPage';
+import { SidebarContainer } from './layout/SidebarContainer';
 
 /** Layout des pages authentifiées : Sidebar fixe + colonne <Outlet/>. */
 const PlatformLayout: React.FC = () => (
   <div className="flex h-screen bg-cream">
-    <Sidebar />
-    <Outlet />
+    <SidebarContainer />
+    <div className="flex-1 overflow-y-auto">
+      <Outlet />
+    </div>
+    <ConfirmLogoutModal />
   </div>
 );
 
@@ -29,38 +35,25 @@ const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title }) => (
   </PageShell>
 );
 
-/** Placeholder du module auth (hors layout, non gardé). */
-const LoginPlaceholder: React.FC = () => (
-  <div className="flex min-h-screen items-center justify-center bg-cream">
-    <Card className="w-[400px]">
-      <div className="text-xl font-extrabold text-ink">
-        Miya <span className="text-primary">Admin</span>
-      </div>
-      <p className="mt-2 text-sm font-medium text-ink-muted">
-        Connexion — module auth en construction.
-      </p>
-    </Card>
-  </div>
-);
-
 export const platformRoutes: RouteObject[] = [
-  { path: '/auth/login', element: <LoginPlaceholder /> },
+  ...AuthRouter(),
   {
     path: '/',
     element: (
-      <RequireRole allow={['super_admin']}>
+      <RequireAuth>
         <PlatformLayout />
-      </RequireRole>
+      </RequireAuth>
     ),
     children: [
-      { index: true, element: <ModulePlaceholder title="Vue d'ensemble" /> },
+      { index: true, element: <OverviewPage /> },
       { path: 'tenants', element: <ModulePlaceholder title="Banques" /> },
       { path: 'billing', element: <ModulePlaceholder title="Abonnements" /> },
       { path: 'activity', element: <ModulePlaceholder title="Activité plateforme" /> },
-      /* Lien maquette sans module dédié pour l'instant. */
       { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
+      { path: 'profile', element: <ModulePlaceholder title="Mon profil" /> },
     ],
   },
+  { path: '*', element: <NotFoundPage /> },
 ];
 
 export const makePlatformRouter = () => createBrowserRouter(platformRoutes);

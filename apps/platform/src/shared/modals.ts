@@ -1,12 +1,14 @@
 import { createModalSystem } from '@miya/kernel';
 
 /**
- * Enum des modales de la console éditeur — vide pour l'instant, chaque
- * module y ajoutera ses types et déclarera ses props dans PlatformModalProps.
+ * Enum des modales de la console éditeur — chaque module y ajoute ses types
+ * et déclare ses props dans PlatformModalProps.
  */
-export type PlatformModal = never;
+export type PlatformModal = 'confirmLogout';
 
-export type PlatformModalProps = Record<PlatformModal, undefined>;
+export interface PlatformModalProps {
+  confirmLogout: undefined;
+}
 
 export const { modalsSlice, openModal, closeModal, useModal } =
   createModalSystem<PlatformModal, PlatformModalProps>();

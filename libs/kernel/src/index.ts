@@ -22,3 +22,7 @@ export * from './errors/getErrorState';
 
 // Realtime data freshness ("il y a 8 s"), keyed off cacheSlice's fetchedAt
 export * from './realtime/useFreshness';
+
+// Password strength rules + route guard factory, shared across apps
+export * from './auth/checkPasswordStrength';
+export * from './auth/createAuthGuards';

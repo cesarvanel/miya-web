@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useOutsideClick } from '@miya/ui';
 
 export interface SidebarBadge {
   count: number;
@@ -16,7 +17,7 @@ interface SidebarUser {
 interface SidebarProps {
   /** Compteurs par route (branchés plus tard sur les selectors des modules). */
   badges?: Partial<Record<string, SidebarBadge>>;
-  /** TODO(auth): utilisateur connecté — placeholder maquette par défaut. */
+  /** Utilisateur connecté — fourni par SidebarContainer. */
   user?: SidebarUser;
   onLogout?: () => void;
 }
@@ -95,7 +96,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   user = defaultUser,
   onLogout,
 }) => {
+  const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const menuRef = useOutsideClick<HTMLDivElement>(() => setMenuOpen(false), isMenuOpen);
 
   return (
     <aside className="flex w-64 flex-none flex-col bg-admin-sidebar px-4 pt-[22px] pb-[18px]">
@@ -160,18 +163,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      {/* Bloc utilisateur + menu logout */}
-      <div className="relative mt-3">
+      {/* Bloc utilisateur + menu compte */}
+      <div ref={menuRef} className="relative mt-3">
         {isMenuOpen && (
-          <div className="rounded-tile absolute right-0 bottom-full left-0 mb-2 overflow-hidden bg-card shadow-toast">
+          <div className="rounded-tile absolute right-0 bottom-full left-0 mb-2 animate-badge-in overflow-hidden bg-card shadow-toast">
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                navigate('/profile');
+              }}
+              className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-left text-[13px] font-semibold text-ink hover:bg-cream-50"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.4" />
+                <path d="M3 13a5 5 0 0 1 10 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+              Mon profil
+            </button>
+            <div className="mx-2 my-1 h-px bg-line" />
             <button
               type="button"
               onClick={() => {
                 setMenuOpen(false);
                 onLogout?.();
               }}
-              className="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-[13px] font-bold text-danger hover:bg-danger-soft"
+              className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-left text-[13px] font-bold text-danger hover:bg-danger-soft"
             >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6M10.5 11l3-3-3-3M13.2 8H6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               Se déconnecter
             </button>
           </div>

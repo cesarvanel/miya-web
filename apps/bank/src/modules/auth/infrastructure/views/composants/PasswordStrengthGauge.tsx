@@ -1,5 +1,5 @@
 import React from 'react';
-import { PasswordStrengthLabel, type PasswordStrength } from '../../../domain/services/PasswordStrength';
+import { PasswordStrengthLabel, type PasswordStrength } from '@miya/kernel';
 
 interface PasswordStrengthGaugeProps {
   strength: PasswordStrength;

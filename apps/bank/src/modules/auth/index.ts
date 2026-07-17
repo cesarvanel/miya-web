@@ -6,8 +6,8 @@ export { BankUserRole } from './domain/entities/Session';
 export type { Session, SessionBank, SessionUser } from './domain/entities/Session';
 export { AuthStatus } from './domain/slices/AuthSlice';
 export type { LoginError, BankSelectionPending } from './domain/slices/AuthSlice';
-export { PasswordStrengthLabel, checkPasswordStrength } from './domain/services/PasswordStrength';
-export type { PasswordCriterion, PasswordStrength } from './domain/services/PasswordStrength';
+export { PasswordStrengthLabel, checkPasswordStrength } from '@miya/kernel';
+export type { PasswordCriterion, PasswordStrength } from '@miya/kernel';
 
 // Reducer (branché dans RootReducer)
 export const authReducer = authSlice.reducer;

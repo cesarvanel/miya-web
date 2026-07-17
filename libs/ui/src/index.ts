@@ -37,4 +37,5 @@ export * from './components/FreshnessIndicator';
 export * from './components/CountUp';
 export * from './components/KpiCard';
 export * from './components/NavBadge';
+export * from './components/BarChart';
 export * from './internal/useOutsideClick';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBankDispatch } from '@/config/stores/root-hook/RootHook';
-import { checkPasswordStrength } from '../../../domain/services/PasswordStrength';
+import { checkPasswordStrength } from '@miya/kernel';
 import { CheckResetTokenAsync } from '../../../application/usecases/check-reset-token-async/CheckResetTokenAsync';
 import { ResetPasswordAsync } from '../../../application/usecases/reset-password-async/ResetPasswordAsync';
 import { AuthRoutes } from '../../router/AuthRoutes';
