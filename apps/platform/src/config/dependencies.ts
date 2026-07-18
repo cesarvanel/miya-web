@@ -2,6 +2,7 @@ import { FakeActivityGateway, type ActivityDependencies } from '@/modules/activi
 import { FakeAuthGateway, type AuthDependencies } from '@/modules/auth';
 import { FakeBillingGateway, type BillingDependencies } from '@/modules/billing';
 import { FakeOverviewGateway, type OverviewDependencies } from '@/modules/overview';
+import { FakePlatformProfileGateway, type PlatformProfileDependencies } from '@/modules/profile';
 import { FakePlatformSettingsGateway, type PlatformSettingsDependencies } from '@/modules/settings-platform';
 import { FakeTenantGateway, type TenantsDependencies } from '@/modules/tenants';
 
@@ -16,7 +17,8 @@ export type PlatformDependencies = AuthDependencies &
   TenantsDependencies &
   BillingDependencies &
   ActivityDependencies &
-  PlatformSettingsDependencies;
+  PlatformSettingsDependencies &
+  PlatformProfileDependencies;
 
 export const makePlatformDependencies = (): PlatformDependencies => ({
   authGateway: new FakeAuthGateway(),
@@ -25,4 +27,5 @@ export const makePlatformDependencies = (): PlatformDependencies => ({
   billingGateway: new FakeBillingGateway(),
   activityGateway: new FakeActivityGateway(),
   platformSettingsGateway: new FakePlatformSettingsGateway(),
+  platformProfileGateway: new FakePlatformProfileGateway(),
 });

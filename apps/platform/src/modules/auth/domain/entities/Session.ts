@@ -6,6 +6,7 @@ export interface SessionUser {
   fullName: string;
   role: PlatformUserRole;
   email: string;
+  phone: string;
 }
 
 export interface Session {

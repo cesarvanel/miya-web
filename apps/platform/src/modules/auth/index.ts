@@ -10,6 +10,9 @@ export type { LoginError } from './domain/slices/AuthSlice';
 // Reducer (branché dans root-reducer)
 export const authReducer = authSlice.reducer;
 
+// Actions plates (sessionUserUpdated consommé par le module profile après une édition d'identité)
+export const AuthActions = authSlice.actions;
+
 // Selectors — groupés, comme prescrit par CLAUDE.md
 export const authSelectors = {
   ...AuthSelectors,

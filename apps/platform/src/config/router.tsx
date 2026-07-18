@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
-import { Card, EmptyState } from '@miya/ui';
 import { ActivityPage } from '@/modules/activity';
 import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
 import { BillingPage, EditPlanModal, MarkInvoicePaidModal, SendReminderModal } from '@/modules/billing';
 import { OverviewPage } from '@/modules/overview';
+import { ChangePasswordModal, ProfilePage } from '@/modules/profile';
 import {
   ChangeCollaboratorRoleModal,
   ChangeLogDrawerPage,
@@ -25,7 +25,6 @@ import {
   TenantsListPage,
 } from '@/modules/tenants';
 import { RequireAuth } from '@/shared/guards/RequireAuth';
-import { PageShell } from '@/shared/layout/PageShell';
 import { ToastHost } from '@/shared/layout/ToastHost';
 import { NotFoundPage } from '@/shared/pages/NotFoundPage';
 import { SidebarContainer } from './layout/SidebarContainer';
@@ -51,24 +50,9 @@ const PlatformLayout: React.FC = () => (
     <RevokeCollaboratorModal />
     <ConfirmResendCollaboratorInvitationModal />
     <TemplateEditorModal />
+    <ChangePasswordModal />
     <ToastHost />
   </div>
-);
-
-interface ModulePlaceholderProps {
-  title: string;
-}
-
-/** Placeholder en attendant les views des modules. */
-const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title }) => (
-  <PageShell title={title}>
-    <Card padding="none">
-      <EmptyState
-        title={title}
-        description="Module en construction — les vues arrivent avec l'intégration."
-      />
-    </Card>
-  </PageShell>
 );
 
 export const platformRoutes: RouteObject[] = [
@@ -97,7 +81,7 @@ export const platformRoutes: RouteObject[] = [
       { path: 'activity', element: <ActivityPage /> },
       { path: 'settings', element: <PlatformSettingsPage /> },
       { path: 'settings/change-log', element: <ChangeLogDrawerPage /> },
-      { path: 'profile', element: <ModulePlaceholder title="Mon profil" /> },
+      { path: 'profile', element: <ProfilePage /> },
     ],
   },
   { path: '*', element: <NotFoundPage /> },

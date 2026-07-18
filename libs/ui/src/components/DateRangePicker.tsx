@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useOutsideClick } from '../internal/useOutsideClick';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface DateRange {
   start: Date;
@@ -30,6 +30,12 @@ const PRESETS: { id: DateRangePreset; label: string }[] = [
 ];
 
 const WEEKDAY_INITIALS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+/** Dimensions estimées du panneau (presets + 2 calendriers) — le contenu est de longueur fixe, pas de mesure post-rendu nécessaire. */
+const PANEL_WIDTH = 676;
+const PANEL_HEIGHT = 430;
+const GAP = 6;
+const VIEWPORT_MARGIN = 12;
 
 const startOfDay = (date: Date): Date => {
   const copy = new Date(date);
@@ -100,6 +106,12 @@ const formatRangeLabel = (range: DateRange): string => {
  * Sélecteur de période — presets + plage personnalisée, semaines lundi →
  * dimanche, mois en français. État replié (bouton) / ouvert (presets +
  * 2 calendriers). L'application (Annuler/Appliquer) se fait au pied du panneau.
+ *
+ * Le panneau se rend dans un portail sur `document.body`, positionné en
+ * `fixed` et toujours cadré dans le viewport (jamais d'après le bord gauche
+ * du déclencheur seul) : évite qu'il déborde hors écran — et fasse défiler
+ * la page — quand le déclencheur est proche du bord droit (ex. l'en-tête
+ * d'Activité plateforme).
  */
 export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   value,
@@ -107,11 +119,43 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onApply,
 }) => {
   const [isOpen, setOpen] = useState(false);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const [draftPreset, setDraftPreset] = useState<DateRangePreset>(presetId);
   const [draftRange, setDraftRange] = useState<DateRange>(value);
   const [pickingStart, setPickingStart] = useState(true);
   const [leftMonth, setLeftMonth] = useState<Date>(firstOfMonth(value.start));
-  const ref = useOutsideClick<HTMLDivElement>(() => setOpen(false), isOpen);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) {
+      return;
+    }
+    const rect = triggerRef.current.getBoundingClientRect();
+    const opensUpward = rect.bottom + GAP + PANEL_HEIGHT > window.innerHeight;
+    const left = Math.min(
+      Math.max(VIEWPORT_MARGIN, rect.right - PANEL_WIDTH),
+      window.innerWidth - PANEL_WIDTH - VIEWPORT_MARGIN,
+    );
+    setPosition({
+      top: opensUpward ? rect.top - GAP - PANEL_HEIGHT : rect.bottom + GAP,
+      left,
+    });
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+    const handlePointerDown = (event: MouseEvent): void => {
+      const target = event.target as Node;
+      if (!triggerRef.current?.contains(target) && !panelRef.current?.contains(target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [isOpen]);
 
   const handleOpen = (): void => {
     setDraftPreset(presetId);
@@ -161,7 +205,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     ];
 
     return (
-      <div>
+      <div className="min-w-0 flex-1">
         <div className="mb-3 flex items-center justify-between">
           <button
             type="button"
@@ -241,8 +285,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       : (PRESETS.find((preset) => preset.id === presetId)?.label ?? formatRangeLabel(value));
 
   return (
-    <div ref={ref} className="relative inline-block">
+    <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={handleOpen}
         aria-haspopup="dialog"
@@ -259,62 +304,67 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         </svg>
       </button>
 
-      {isOpen && (
-        <div
-          role="dialog"
-          aria-label="Sélectionner une période"
-          className="rounded-modal absolute top-[52px] left-0 z-20 flex overflow-hidden border border-line bg-card shadow-[0_24px_50px_-22px_rgba(0,0,0,.35)]"
-        >
-          <div className="flex w-[158px] flex-none flex-col gap-[3px] border-r border-line-soft p-2.5">
-            {PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => handlePresetClick(preset.id)}
-                className={[
-                  'cursor-pointer rounded-lg px-3 py-[9px] text-left text-[13px] font-semibold transition',
-                  draftPreset === preset.id
-                    ? 'bg-primary-soft font-bold text-primary'
-                    : 'text-ink hover:bg-cream-50',
-                ].join(' ')}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-          <div className="p-4">
-            <div className="flex gap-[26px]">
-              {renderMonth(leftMonth, true, false)}
-              {renderMonth(addMonths(leftMonth, 1), false, true)}
+      {isOpen &&
+        position &&
+        createPortal(
+          <div
+            ref={panelRef}
+            role="dialog"
+            aria-label="Sélectionner une période"
+            style={{ position: 'fixed', top: position.top, left: position.left, width: PANEL_WIDTH }}
+            className="rounded-modal z-50 flex overflow-hidden border border-line bg-card shadow-[0_24px_50px_-22px_rgba(0,0,0,.35)]"
+          >
+            <div className="flex w-[158px] flex-none flex-col gap-[3px] border-r border-line-soft p-2.5">
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handlePresetClick(preset.id)}
+                  className={[
+                    'cursor-pointer rounded-lg px-3 py-[9px] text-left text-[13px] font-semibold transition',
+                    draftPreset === preset.id
+                      ? 'bg-primary-soft font-bold text-primary'
+                      : 'text-ink hover:bg-cream-50',
+                  ].join(' ')}
+                >
+                  {preset.label}
+                </button>
+              ))}
             </div>
-            <div className="mt-[14px] flex items-center justify-between border-t border-line-soft pt-[14px]">
-              <span className="num text-[12.5px] font-semibold text-ink-muted">
-                Du <b className="text-ink">{shortDateLabel(draftRange.start)}</b> au{' '}
-                <b className="text-ink">
-                  {shortDateLabel(draftRange.end)} {draftRange.end.getFullYear()}
-                </b>{' '}
-                · {dayCount} jour{dayCount > 1 ? 's' : ''}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="cursor-pointer rounded-[10px] bg-cream-100 px-[14px] py-2 text-[12.5px] font-bold text-ink-muted hover:bg-line"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  className="cursor-pointer rounded-[10px] bg-primary px-4 py-2 text-[12.5px] font-bold text-white hover:bg-primary/90"
-                >
-                  Appliquer
-                </button>
+            <div className="flex-1 p-4">
+              <div className="flex gap-[26px]">
+                {renderMonth(leftMonth, true, false)}
+                {renderMonth(addMonths(leftMonth, 1), false, true)}
+              </div>
+              <div className="mt-[14px] flex items-center justify-between border-t border-line-soft pt-[14px]">
+                <span className="num text-[12.5px] font-semibold text-ink-muted">
+                  Du <b className="text-ink">{shortDateLabel(draftRange.start)}</b> au{' '}
+                  <b className="text-ink">
+                    {shortDateLabel(draftRange.end)} {draftRange.end.getFullYear()}
+                  </b>{' '}
+                  · {dayCount} jour{dayCount > 1 ? 's' : ''}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="cursor-pointer rounded-[10px] bg-cream-100 px-[14px] py-2 text-[12.5px] font-bold text-ink-muted hover:bg-line"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    className="cursor-pointer rounded-[10px] bg-primary px-4 py-2 text-[12.5px] font-bold text-white hover:bg-primary/90"
+                  >
+                    Appliquer
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 };

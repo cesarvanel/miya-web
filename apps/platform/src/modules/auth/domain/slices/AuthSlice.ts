@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { Session } from '../entities/Session';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { Session, SessionUser } from '../entities/Session';
 import { LoginAsync } from '../../application/usecases/login-async/LoginAsync';
 import { LogoutAsync } from '../../application/usecases/logout-async/LogoutAsync';
 
@@ -26,7 +26,14 @@ export type AuthState = typeof initialState;
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    /** Édition du profil (module profile) — garde la session synchronisée avec l'identité affichée partout (sidebar…). */
+    sessionUserUpdated: (state, action: PayloadAction<Partial<SessionUser>>) => {
+      if (state.session) {
+        state.session.user = { ...state.session.user, ...action.payload };
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(LoginAsync.pending, (state) => {
@@ -51,3 +58,5 @@ export const authSlice = createSlice({
       .addCase(LogoutAsync.fulfilled, () => initialState);
   },
 });
+
+export const AuthActions = authSlice.actions;

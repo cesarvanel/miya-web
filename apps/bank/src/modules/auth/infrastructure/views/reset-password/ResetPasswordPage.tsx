@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, PasswordField } from '@miya/ui';
+import { Button, PasswordField, PasswordStrengthGauge } from '@miya/ui';
 import { AuthSplitShell } from '../composants/AuthSplitShell';
-import { PasswordStrengthGauge } from '../composants/PasswordStrengthGauge';
 import { ExpiredLinkPage } from '../expired-link/ExpiredLinkPage';
 import { AuthRoutes } from '../../router/AuthRoutes';
 import { useResetPasswordPage } from './useResetPasswordPage';

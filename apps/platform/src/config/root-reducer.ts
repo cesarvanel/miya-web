@@ -4,6 +4,7 @@ import { activityReducer } from '@/modules/activity';
 import { authReducer, LogoutAsync } from '@/modules/auth';
 import { billingReducer } from '@/modules/billing';
 import { overviewReducer } from '@/modules/overview';
+import { profileReducer } from '@/modules/profile';
 import { platformSettingsReducer } from '@/modules/settings-platform';
 import { tenantsReducer } from '@/modules/tenants';
 import { modalsSlice } from '@/shared/modals';
@@ -25,6 +26,7 @@ const appReducer = combineReducers({
   billing: billingReducer,
   activity: activityReducer,
   platformSettings: platformSettingsReducer,
+  profile: profileReducer,
   // Reducers des autres modules ajoutés au fur et à mesure.
 });
 

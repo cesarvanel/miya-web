@@ -6,6 +6,7 @@ const CESAR: SessionUser = {
   fullName: 'César Vanel',
   role: PlatformUserRole.Owner,
   email: 'cesar@miya.cm',
+  phone: '+237 6 98 44 21 07',
 };
 
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;

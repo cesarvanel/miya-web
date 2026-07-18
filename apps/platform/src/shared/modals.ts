@@ -18,7 +18,8 @@ export type PlatformModal =
   | 'changeCollaboratorRole'
   | 'revokeCollaborator'
   | 'confirmResendCollaboratorInvitation'
-  | 'editTemplate';
+  | 'editTemplate'
+  | 'changePlatformPassword';
 
 export interface PlatformModalProps {
   confirmLogout: undefined;
@@ -35,6 +36,7 @@ export interface PlatformModalProps {
   revokeCollaborator: { collaboratorId: string };
   confirmResendCollaboratorInvitation: { collaboratorId: string };
   editTemplate: { templateId: string };
+  changePlatformPassword: undefined;
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

@@ -33,6 +33,9 @@ export const ActivityPage: React.FC = () => {
     tenants,
     tenantId,
     setTenantId,
+    actorId,
+    setActorId,
+    isFilteredOnMe,
     selectedTenant,
     tenantNames,
     dateRange,
@@ -91,12 +94,26 @@ export const ActivityPage: React.FC = () => {
         </div>
       </div>
 
-      {tenantId && selectedTenant && (
+      {((tenantId && selectedTenant) || actorId) && (
         <div className="mb-4">
           <FilterChips
-            filters={[{ id: 'tenant', label: `${selectedTenant.name}${selectedTenant.city ? ` · ${selectedTenant.city}` : ''}`, emphasis: true }]}
-            onRemove={() => setTenantId(null)}
-            onClearAll={() => setTenantId(null)}
+            filters={[
+              ...(tenantId && selectedTenant
+                ? [{ id: 'tenant', label: `${selectedTenant.name}${selectedTenant.city ? ` · ${selectedTenant.city}` : ''}`, emphasis: true }]
+                : []),
+              ...(actorId ? [{ id: 'actor', label: isFilteredOnMe ? 'Mes actions uniquement' : 'Un acteur', emphasis: true }] : []),
+            ]}
+            onRemove={(id) => {
+              if (id === 'tenant') {
+                setTenantId(null);
+              } else {
+                setActorId(null);
+              }
+            }}
+            onClearAll={() => {
+              setTenantId(null);
+              setActorId(null);
+            }}
           />
         </div>
       )}

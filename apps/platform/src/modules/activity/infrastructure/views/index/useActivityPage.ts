@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useRequestStatus } from '@miya/kernel';
 import type { DateRange, DateRangePreset } from '@miya/ui';
+import { authSelectors } from '@/modules/auth';
 import { FetchTenantsAsync, tenantsSelectors } from '@/modules/tenants';
 import { usePlatformDispatch, usePlatformSelector } from '@/config/root-hook';
 import { FetchActivityAsync } from '../../../application/usecases/fetch-activity-async/FetchActivityAsync';
@@ -33,9 +34,12 @@ export const useActivityPage = () => {
   const [searchParams] = useSearchParams();
 
   const [tenantId, setTenantId] = useState<string | null>(searchParams.get('tenantId'));
+  const [actorId, setActorId] = useState<string | null>(searchParams.get('actorId'));
   const [dateRange, setDateRange] = useState<DateRange>(defaultRange());
   const [presetId, setPresetId] = useState<DateRangePreset>('last30');
   const [auditAction, setAuditAction] = useState<AuditActionFilter>('all');
+  const currentUser = usePlatformSelector(authSelectors.selectCurrentUser);
+  const isFilteredOnMe = actorId !== null && actorId === currentUser?.id;
 
   const period = useMemo(() => rangeToPeriod(dateRange), [dateRange]);
 
@@ -64,6 +68,7 @@ export const useActivityPage = () => {
     ActivitySelectors.selectFilteredAuditLog(state, {
       tenantId: tenantId ?? undefined,
       action: auditAction === 'all' ? undefined : auditAction,
+      actorId: actorId ?? undefined,
     }),
   );
 
@@ -85,6 +90,9 @@ export const useActivityPage = () => {
     tenants,
     tenantId,
     setTenantId,
+    actorId,
+    setActorId,
+    isFilteredOnMe,
     selectedTenant,
     tenantNames,
     dateRange,

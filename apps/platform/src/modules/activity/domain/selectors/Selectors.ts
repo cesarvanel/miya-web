@@ -43,6 +43,8 @@ export const selectAllAuditEntries = auditSelectors.selectAll;
 export interface AuditLogFilter {
   tenantId?: string;
   action?: AuditAction;
+  /** Filtre "mes actions" — utilisé par le lien profil → journal d'audit. */
+  actorId?: string;
   /** Ne garde que les entrées des `sinceDays` derniers jours. */
   sinceDays?: number;
 }
@@ -56,6 +58,9 @@ export const selectFilteredAuditLog = createSelector(
     }
     if (filter.action) {
       result = result.filter((entry) => entry.action === filter.action);
+    }
+    if (filter.actorId) {
+      result = result.filter((entry) => entry.actor.id === filter.actorId);
     }
     if (filter.sinceDays !== undefined) {
       const threshold = Date.now() - filter.sinceDays * 24 * 60 * 60 * 1000;

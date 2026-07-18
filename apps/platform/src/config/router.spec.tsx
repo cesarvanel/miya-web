@@ -39,11 +39,15 @@ describe('platform router', () => {
     expect(await screen.findByText('MEC La Confiance')).toBeDefined();
   });
 
-  it('renders a module placeholder for a stub route', async () => {
+  it('renders the profile page with identity, security and notifications', async () => {
     const store = makeStore();
     await loginAsOwner(store);
     renderAt('/profile', store);
     expect(await screen.findByRole('heading', { name: 'Mon profil' })).toBeDefined();
+    expect((await screen.findAllByText('Console éditeur')).length).toBeGreaterThan(0);
+    expect(await screen.findByText('Informations personnelles')).toBeDefined();
+    expect(await screen.findByText('Sécurité')).toBeDefined();
+    expect(await screen.findByText('Journal de mes actions')).toBeDefined();
   });
 
   it('renders the platform settings page with identity, collaborators and templates', async () => {

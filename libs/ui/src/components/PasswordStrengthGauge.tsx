@@ -21,7 +21,7 @@ const SEGMENT_CLASSES: Record<PasswordStrengthLabel, string> = {
   [PasswordStrengthLabel.Strong]: 'bg-primary',
 };
 
-/** Jauge 4 segments + checklist temps réel — « Robuste » seulement si score === 4 (jamais avant). Maquette B5. */
+/** Jauge 4 segments + checklist temps réel — « Robuste » seulement si score === 4 (jamais avant). Maquette B5. Partagée bank/platform. */
 export const PasswordStrengthGauge: React.FC<PasswordStrengthGaugeProps> = ({ strength }) => (
   <div>
     <div className="flex items-center gap-[5px]">

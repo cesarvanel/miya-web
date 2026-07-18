@@ -40,4 +40,5 @@ export * from './components/NavBadge';
 export * from './components/BarChart';
 export * from './components/LineChart';
 export * from './components/Tooltip';
+export * from './components/PasswordStrengthGauge';
 export * from './internal/useOutsideClick';

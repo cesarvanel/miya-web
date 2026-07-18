@@ -51,4 +51,4 @@ export { AuthRouter } from './infrastructure/router/AuthRouter';
 export { AuthRoutes } from './infrastructure/router/AuthRoutes';
 export { SessionExpiredModal } from './infrastructure/views/modal/SessionExpiredModal';
 export { ConfirmLogoutModal } from './infrastructure/views/modal/ConfirmLogoutModal';
-export { PasswordStrengthGauge } from './infrastructure/views/composants/PasswordStrengthGauge';
+export { PasswordStrengthGauge } from '@miya/ui';
