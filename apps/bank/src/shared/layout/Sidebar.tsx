@@ -196,7 +196,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Bloc utilisateur + menu compte */}
       <div ref={menuRef} className="relative mt-3">
         {isMenuOpen && (
-          <div className="absolute right-0 bottom-[calc(100%+8px)] left-0 animate-badge-in overflow-hidden rounded-[14px] border border-white/10 bg-[#0F4632] py-1.5 shadow-toast">
+          <div className="absolute right-0 bottom-[calc(100%+8px)] left-0 origin-bottom animate-acct-pop overflow-hidden rounded-[14px] border border-white/10 bg-[#0F4632] py-1.5 shadow-toast">
             <button
               type="button"
               onClick={() => {

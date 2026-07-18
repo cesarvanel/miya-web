@@ -115,6 +115,7 @@
   --animate-flash-amber: flash-amber 0.8s ease-out;
   --animate-drawer-in: drawer-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-badge-in: badge-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-acct-pop: acct-pop 0.15s ease-out;
   --animate-auth-gradient: auth-gradient 18s ease-in-out infinite;
   --animate-auth-float-a: auth-float-a 7s ease-in-out infinite;
   --animate-auth-float-b: auth-float-b 6.5s ease-in-out infinite;
@@ -201,6 +202,16 @@
     from {
       opacity: 0;
       transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes acct-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
     }
     to {
       opacity: 1;
