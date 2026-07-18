@@ -13,8 +13,8 @@ export type {
   ValidationChainEntry,
   Validator,
 } from './domain/entities/BankSettings';
-export { ChangeLogAdapter } from './domain/entities/ChangeLogEntry';
-export type { ChangeLogEntry } from './domain/entities/ChangeLogEntry';
+export { ChangeLogAdapter } from '@miya/kernel';
+export type { ChangeLogEntry } from '@miya/kernel';
 
 // Reducer (branché dans RootReducer)
 export const settingsReducer = settingsSlice.reducer;

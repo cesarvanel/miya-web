@@ -26,3 +26,6 @@ export * from './realtime/useFreshness';
 // Password strength rules + route guard factory, shared across apps
 export * from './auth/checkPasswordStrength';
 export * from './auth/createAuthGuards';
+
+// Generic settings change log (entity + adapter), shared across apps
+export * from './changelog/ChangeLogEntry';

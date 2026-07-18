@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button, Dropdown, TextField } from '@miya/ui';
+import { Button, Dropdown, TextField, Tooltip } from '@miya/ui';
 import { Money } from '@miya/kernel';
+import { useCanWrite } from '@/shared/guards/useCanWrite';
 import { useNewTenantPage, TRIAL_DAY_OPTIONS } from './useNewTenantPage';
 
 const SuccessIcon: React.FC = () => (
@@ -34,6 +35,7 @@ export const NewTenantPage: React.FC = () => {
     goToDetail,
     planCatalog,
   } = useNewTenantPage();
+  const canWrite = useCanWrite();
 
   if (createdTenant) {
     return (
@@ -130,9 +132,17 @@ export const NewTenantPage: React.FC = () => {
           <Button variant="secondary" onClick={cancel}>
             Annuler
           </Button>
-          <Button variant="primary" onClick={submit} loading={submitting} disabled={!canSubmit}>
-            Créer &amp; inviter l&rsquo;admin
-          </Button>
+          {canWrite ? (
+            <Button variant="primary" onClick={submit} loading={submitting} disabled={!canSubmit}>
+              Créer &amp; inviter l&rsquo;admin
+            </Button>
+          ) : (
+            <Tooltip label="Rôle lecture seule">
+              <Button variant="primary" disabled>
+                Créer &amp; inviter l&rsquo;admin
+              </Button>
+            </Tooltip>
+          )}
         </div>
       </div>
     </div>

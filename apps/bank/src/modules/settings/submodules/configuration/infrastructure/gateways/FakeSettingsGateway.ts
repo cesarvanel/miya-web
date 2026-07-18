@@ -1,3 +1,4 @@
+import type { ChangeLogEntry } from '@miya/kernel';
 import type { SettingsGateway, UpsertPlanInput } from '../../application/ports/SettingsGateway';
 import {
   CapBehavior,
@@ -11,7 +12,6 @@ import {
   type InstitutionIdentity,
   type Validator,
 } from '../../domain/entities/BankSettings';
-import type { ChangeLogEntry } from '../../domain/entities/ChangeLogEntry';
 
 const daysAgo = (days: number, hour = 9, minute = 0): string => {
   const date = new Date();

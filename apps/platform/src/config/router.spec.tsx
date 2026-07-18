@@ -42,8 +42,18 @@ describe('platform router', () => {
   it('renders a module placeholder for a stub route', async () => {
     const store = makeStore();
     await loginAsOwner(store);
+    renderAt('/profile', store);
+    expect(await screen.findByRole('heading', { name: 'Mon profil' })).toBeDefined();
+  });
+
+  it('renders the platform settings page with identity, collaborators and templates', async () => {
+    const store = makeStore();
+    await loginAsOwner(store);
     renderAt('/settings', store);
     expect(await screen.findByRole('heading', { name: 'Paramètres' })).toBeDefined();
+    expect((await screen.findAllByText('Comptes super admin')).length).toBeGreaterThan(0);
+    expect(await screen.findByText('César Vanel')).toBeDefined();
+    expect(await screen.findByText('Modèles de notifications')).toBeDefined();
   });
 
   it('renders the activity page with its supervision sections under the layout', async () => {

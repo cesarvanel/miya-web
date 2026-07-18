@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { ChangeLogAdapter, type ChangeLogEntry } from '@miya/kernel';
 import type { BankRootState } from '@/config/stores/store';
-import { ChangeLogAdapter, type ChangeLogEntry } from '../entities/ChangeLogEntry';
 import { ContributionPlanStatus, type BankSettings, type ValidationChainEntry } from '../entities/BankSettings';
 
 const changeLogAdapterSelectors = ChangeLogAdapter.getSelectors((state: BankRootState) => state.settings.changeLog);

@@ -1,4 +1,4 @@
-import type { ChangeLogEntry } from '../../../domain/entities/ChangeLogEntry';
+import type { ChangeLogEntry } from '@miya/kernel';
 
 export interface FetchChangeLogResponse {
   entries: ChangeLogEntry[];

@@ -6,6 +6,16 @@ import { AuthRouter, ConfirmLogoutModal } from '@/modules/auth';
 import { BillingPage, EditPlanModal, MarkInvoicePaidModal, SendReminderModal } from '@/modules/billing';
 import { OverviewPage } from '@/modules/overview';
 import {
+  ChangeCollaboratorRoleModal,
+  ChangeLogDrawerPage,
+  ConfirmResendInvitationModal as ConfirmResendCollaboratorInvitationModal,
+  EditPlatformIdentityModal,
+  InviteCollaboratorModal,
+  PlatformSettingsPage,
+  RevokeCollaboratorModal,
+  TemplateEditorModal,
+} from '@/modules/settings-platform';
+import {
   ChangePlanModal,
   ConfirmReactivateModal,
   NewTenantPage,
@@ -35,6 +45,12 @@ const PlatformLayout: React.FC = () => (
     <EditPlanModal />
     <MarkInvoicePaidModal />
     <SendReminderModal />
+    <EditPlatformIdentityModal />
+    <InviteCollaboratorModal />
+    <ChangeCollaboratorRoleModal />
+    <RevokeCollaboratorModal />
+    <ConfirmResendCollaboratorInvitationModal />
+    <TemplateEditorModal />
     <ToastHost />
   </div>
 );
@@ -79,7 +95,8 @@ export const platformRoutes: RouteObject[] = [
       { path: 'tenants/:id', element: <TenantDetailPage /> },
       { path: 'billing', element: <BillingPage /> },
       { path: 'activity', element: <ActivityPage /> },
-      { path: 'settings', element: <ModulePlaceholder title="Paramètres" /> },
+      { path: 'settings', element: <PlatformSettingsPage /> },
+      { path: 'settings/change-log', element: <ChangeLogDrawerPage /> },
       { path: 'profile', element: <ModulePlaceholder title="Mon profil" /> },
     ],
   },

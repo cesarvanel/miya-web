@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ChangeLogEntry } from '../../../domain/entities/ChangeLogEntry';
+import type { ChangeLogEntry } from '@miya/kernel';
 
 interface ChangeLogEntryCardProps {
   entry: ChangeLogEntry;

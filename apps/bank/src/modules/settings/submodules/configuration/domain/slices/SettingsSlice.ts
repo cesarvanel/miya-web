@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { ChangeLogAdapter, type ChangeLogEntry } from '@miya/kernel';
 import {
   ContributionPlanStatus,
   type BankSettings,
@@ -8,7 +9,6 @@ import {
   type InstitutionIdentity,
   type Validator,
 } from '../entities/BankSettings';
-import { ChangeLogAdapter, type ChangeLogEntry } from '../entities/ChangeLogEntry';
 import { FetchChangeLogAsync } from '../../application/usecases/fetch-change-log-async/FetchChangeLogAsync';
 import { FetchSettingsAsync } from '../../application/usecases/fetch-settings-async/FetchSettingsAsync';
 

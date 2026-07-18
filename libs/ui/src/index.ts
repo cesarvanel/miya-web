@@ -39,4 +39,5 @@ export * from './components/KpiCard';
 export * from './components/NavBadge';
 export * from './components/BarChart';
 export * from './components/LineChart';
+export * from './components/Tooltip';
 export * from './internal/useOutsideClick';

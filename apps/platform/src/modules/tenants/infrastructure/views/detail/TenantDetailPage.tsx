@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart, Gauge, InitialsAvatar, Skeleton } from '@miya/ui';
+import { BarChart, Gauge, InitialsAvatar, Skeleton, Tooltip } from '@miya/ui';
 import { Money } from '@miya/kernel';
+import { useCanWrite } from '@/shared/guards/useCanWrite';
 import { TenantStatus } from '../../../domain/entities/Tenant';
 import { BillingHistoryTable } from '../composants/BillingHistoryTable';
 import { IdentityContactsCard } from '../composants/IdentityContactsCard';
@@ -10,12 +11,15 @@ import { TenantPlanBadge } from '../composants/TenantPlanBadge';
 import { TenantStatusBadge } from '../composants/TenantStatusBadge';
 import { useTenantDetailPage } from './useTenantDetailPage';
 
+const READ_ONLY_TOOLTIP = 'Rôle lecture seule';
+
 const monthYear = (iso: string): string =>
   new Date(iso).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
 /** Fiche banque — drill-down plein écran. Maquette 2f (active) / 2d (suspendue). */
 export const TenantDetailPage: React.FC = () => {
   const { tenant, events, invoices, isPending, openChangePlan, openSuspend, openReactivate, openResendInvitation } = useTenantDetailPage();
+  const canWrite = useCanWrite();
 
   if (isPending) {
     return (
@@ -78,23 +82,46 @@ export const TenantDetailPage: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-2.5">
-            {!isSuspended && (
-              <button type="button" onClick={openChangePlan} className="cursor-pointer rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink">
-                Changer de plan
-              </button>
-            )}
-            <button type="button" onClick={openResendInvitation} className="cursor-pointer rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink">
-              Renvoyer l&rsquo;invitation
-            </button>
-            {isSuspended ? (
-              <button
-                type="button"
-                onClick={openReactivate}
-                className="bg-admin-primary shadow-[0_8px_18px_-8px_rgba(15,158,108,.7)] flex cursor-pointer items-center gap-2 rounded-[12px] px-4.25 py-2.5 text-[13px] font-bold text-white"
-              >
-                Réactiver la banque
+            {!isSuspended &&
+              (canWrite ? (
+                <button type="button" onClick={openChangePlan} className="cursor-pointer rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink">
+                  Changer de plan
+                </button>
+              ) : (
+                <Tooltip label={READ_ONLY_TOOLTIP}>
+                  <button type="button" disabled className="cursor-not-allowed rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink opacity-40">
+                    Changer de plan
+                  </button>
+                </Tooltip>
+              ))}
+            {canWrite ? (
+              <button type="button" onClick={openResendInvitation} className="cursor-pointer rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink">
+                Renvoyer l&rsquo;invitation
               </button>
             ) : (
+              <Tooltip label={READ_ONLY_TOOLTIP}>
+                <button type="button" disabled className="cursor-not-allowed rounded-[12px] bg-cream-100 px-3.75 py-2.5 text-[13px] font-bold text-ink opacity-40">
+                  Renvoyer l&rsquo;invitation
+                </button>
+              </Tooltip>
+            )}
+            {isSuspended ? (
+              canWrite ? (
+                <button
+                  type="button"
+                  onClick={openReactivate}
+                  className="bg-admin-primary shadow-[0_8px_18px_-8px_rgba(15,158,108,.7)] flex cursor-pointer items-center gap-2 rounded-[12px] px-4.25 py-2.5 text-[13px] font-bold text-white"
+                >
+                  Réactiver la banque
+                </button>
+              ) : (
+                <Tooltip label={READ_ONLY_TOOLTIP}>
+                  <button type="button" disabled className="bg-admin-primary flex cursor-not-allowed items-center gap-2 rounded-[12px] px-4.25 py-2.5 text-[13px] font-bold text-white opacity-40">
+                    Réactiver la banque
+                  </button>
+                </Tooltip>
+              )
+            ) : canWrite ? (
               <button type="button" onClick={openSuspend} className="flex cursor-pointer items-center gap-1.75 rounded-[12px] bg-danger-soft px-3.75 py-2.5 text-[13px] font-bold text-danger">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <rect x="3.5" y="3" width="2.2" height="8" rx="1" fill="#C43B32" />
@@ -102,6 +129,16 @@ export const TenantDetailPage: React.FC = () => {
                 </svg>
                 Suspendre
               </button>
+            ) : (
+              <Tooltip label={READ_ONLY_TOOLTIP}>
+                <button type="button" disabled className="flex cursor-not-allowed items-center gap-1.75 rounded-[12px] bg-danger-soft px-3.75 py-2.5 text-[13px] font-bold text-danger opacity-40">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <rect x="3.5" y="3" width="2.2" height="8" rx="1" fill="#C43B32" />
+                    <rect x="8.3" y="3" width="2.2" height="8" rx="1" fill="#C43B32" />
+                  </svg>
+                  Suspendre
+                </button>
+              </Tooltip>
             )}
           </div>
         </div>

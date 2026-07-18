@@ -1,11 +1,17 @@
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
+/**
+ * Journal des changements générique — chaque mutation d'un module de
+ * paramètres (bank/settings, platform/settings-platform…) « prépend » une
+ * entrée immuable. Extrait dans le kernel car dupliqué à l'identique entre
+ * les deux apps (même pattern que `createAuthGuards`).
+ */
 export interface ChangeLogEntry {
   id: string;
   /** ISO. */
   at: string;
   by: string;
-  /** Ex. « Identité », « Plans », « Règles de collecte », « Frais de garde », « Validation ». */
+  /** Ex. « Identité », « Comptes super admin », « Notifications ». */
   section: string;
   /** Libellé du champ modifié, ex. « Plafond de détention par agent ». */
   field: string;

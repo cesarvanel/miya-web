@@ -12,7 +12,13 @@ export type PlatformModal =
   | 'resendInvitation'
   | 'editPlan'
   | 'markInvoicePaid'
-  | 'sendReminder';
+  | 'sendReminder'
+  | 'editPlatformIdentity'
+  | 'inviteCollaborator'
+  | 'changeCollaboratorRole'
+  | 'revokeCollaborator'
+  | 'confirmResendCollaboratorInvitation'
+  | 'editTemplate';
 
 export interface PlatformModalProps {
   confirmLogout: undefined;
@@ -23,6 +29,12 @@ export interface PlatformModalProps {
   editPlan: { planId: string };
   markInvoicePaid: { invoiceId: string };
   sendReminder: { invoiceId: string };
+  editPlatformIdentity: undefined;
+  inviteCollaborator: undefined;
+  changeCollaboratorRole: { collaboratorId: string };
+  revokeCollaborator: { collaboratorId: string };
+  confirmResendCollaboratorInvitation: { collaboratorId: string };
+  editTemplate: { templateId: string };
 }
 
 export const { modalsSlice, openModal, closeModal, useModal } =

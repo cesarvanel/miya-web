@@ -1,12 +1,15 @@
 import React from 'react';
-import { Button, InitialsAvatar, SearchInput, Skeleton, Table, type TableColumn } from '@miya/ui';
+import { Button, InitialsAvatar, SearchInput, Skeleton, Table, Tooltip, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
+import { useCanWrite } from '@/shared/guards/useCanWrite';
 import { TenantStatus, type Tenant } from '../../../domain/entities/Tenant';
 import type { TenantsStatusFilter } from '../../../domain/selectors/Selectors';
 import { TenantPlanBadge } from '../composants/TenantPlanBadge';
 import { TenantStatusBadge } from '../composants/TenantStatusBadge';
 import { useTenantsListPage } from './useTenantsListPage';
+
+const READ_ONLY_TOOLTIP = 'Rôle lecture seule';
 
 const PlusIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -62,6 +65,7 @@ export const TenantsListPage: React.FC = () => {
     openSuspend,
     openReactivate,
   } = useTenantsListPage();
+  const canWrite = useCanWrite();
 
   const columns: TableColumn<Tenant>[] = [
     {
@@ -125,31 +129,31 @@ export const TenantsListPage: React.FC = () => {
           >
             <EyeIcon />
           </button>
-          {tenant.status === TenantStatus.Suspended ? (
-            <button
-              type="button"
-              title="Réactiver"
-              onClick={(event) => {
-                event.stopPropagation();
-                openReactivate(tenant.id);
-              }}
-              className="bg-primary-soft flex size-8 cursor-pointer items-center justify-center rounded-[9px]"
-            >
-              <ReactivateIcon />
-            </button>
-          ) : (
-            <button
-              type="button"
-              title="Suspendre"
-              onClick={(event) => {
-                event.stopPropagation();
-                openSuspend(tenant.id);
-              }}
-              className="flex size-8 cursor-pointer items-center justify-center rounded-[9px] bg-danger-soft"
-            >
-              <SuspendIcon />
-            </button>
-          )}
+          {(() => {
+            const isReactivate = tenant.status === TenantStatus.Suspended;
+            const button = (
+              <button
+                type="button"
+                title={isReactivate ? 'Réactiver' : 'Suspendre'}
+                disabled={!canWrite}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (isReactivate) {
+                    openReactivate(tenant.id);
+                  } else {
+                    openSuspend(tenant.id);
+                  }
+                }}
+                className={[
+                  'flex size-8 cursor-pointer items-center justify-center rounded-[9px] disabled:cursor-not-allowed disabled:opacity-40',
+                  isReactivate ? 'bg-primary-soft' : 'bg-danger-soft',
+                ].join(' ')}
+              >
+                {isReactivate ? <ReactivateIcon /> : <SuspendIcon />}
+              </button>
+            );
+            return canWrite ? button : <Tooltip label={READ_ONLY_TOOLTIP}>{button}</Tooltip>;
+          })()}
         </div>
       ),
     },
@@ -162,12 +166,23 @@ export const TenantsListPage: React.FC = () => {
       actions={
         <>
           <SearchInput value={search} onChange={setSearch} placeholder="Rechercher…" aria-label="Rechercher une banque" />
-          <Button variant="primary" onClick={goToNew}>
-            <span className="flex items-center gap-2">
-              <PlusIcon />
-              Nouvelle banque
-            </span>
-          </Button>
+          {canWrite ? (
+            <Button variant="primary" onClick={goToNew}>
+              <span className="flex items-center gap-2">
+                <PlusIcon />
+                Nouvelle banque
+              </span>
+            </Button>
+          ) : (
+            <Tooltip label={READ_ONLY_TOOLTIP}>
+              <Button variant="primary" disabled>
+                <span className="flex items-center gap-2">
+                  <PlusIcon />
+                  Nouvelle banque
+                </span>
+              </Button>
+            </Tooltip>
+          )}
         </>
       }
     >

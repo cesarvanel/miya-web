@@ -1,10 +1,13 @@
 import React from 'react';
+import { Tooltip } from '@miya/ui';
 import type { Plan } from '../../../domain/entities/Plan';
 
 interface PlanCardProps {
   plan: Plan;
   /** Plan mis en avant visuellement (bordure verte, ruban) — le plus souscrit. Maquette 3a. */
   featured?: boolean;
+  /** Rôle Lecture : « Modifier » reste visible mais désactivé, avec tooltip. */
+  canEdit?: boolean;
   onEdit: () => void;
 }
 
@@ -23,7 +26,7 @@ const EditIcon: React.FC<{ color: string }> = ({ color }) => (
 );
 
 /** Carte plan — tarif, limites (illimité pour Élite), banques abonnées, édition. Maquette 3a. */
-export const PlanCard: React.FC<PlanCardProps> = ({ plan, featured = false, onEdit }) => (
+export const PlanCard: React.FC<PlanCardProps> = ({ plan, featured = false, canEdit = true, onEdit }) => (
   <div
     className={[
       'relative rounded-card-lg p-[22px_22px_18px]',
@@ -81,16 +84,32 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, featured = false, onEd
         </span>
       </div>
     </div>
-    <button
-      type="button"
-      onClick={onEdit}
-      className={[
-        'mt-5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[12px] py-2.75 text-[13px] font-bold',
-        featured ? 'shadow-primary-glow bg-primary text-white' : 'border border-line text-ink',
-      ].join(' ')}
-    >
-      <EditIcon color={featured ? '#fff' : '#16241E'} />
-      Modifier le plan
-    </button>
+    {canEdit ? (
+      <button
+        type="button"
+        onClick={onEdit}
+        className={[
+          'mt-5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[12px] py-2.75 text-[13px] font-bold',
+          featured ? 'shadow-primary-glow bg-primary text-white' : 'border border-line text-ink',
+        ].join(' ')}
+      >
+        <EditIcon color={featured ? '#fff' : '#16241E'} />
+        Modifier le plan
+      </button>
+    ) : (
+      <Tooltip label="Rôle lecture seule" className="mt-5 w-full">
+        <button
+          type="button"
+          disabled
+          className={[
+            'flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-[12px] py-2.75 text-[13px] font-bold opacity-40',
+            featured ? 'bg-primary text-white' : 'border border-line text-ink',
+          ].join(' ')}
+        >
+          <EditIcon color={featured ? '#fff' : '#16241E'} />
+          Modifier le plan
+        </button>
+      </Tooltip>
+    )}
   </div>
 );

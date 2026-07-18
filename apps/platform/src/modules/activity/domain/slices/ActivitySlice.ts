@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { PlatformUserRole } from '@/modules/auth';
 import { invoicePaid, planUpdated, reminderSent } from '@/modules/billing';
+import { collaboratorAdded } from '@/modules/settings-platform';
 import { tenantCreated, tenantPlanChanged, tenantReactivated, tenantSuspended } from '@/modules/tenants';
 import { adoptionAdapter } from '../entities/AdoptionStat';
 import { auditAdapter, AuditAction, type AuditEntry } from '../entities/AuditEntry';
@@ -28,6 +30,11 @@ const formatFcfa = (amount: number): string =>
 
 const pushAudit = (state: ActivityState, entry: Omit<AuditEntry, 'id'>): void => {
   auditAdapter.addOne(state.auditLog, { ...entry, id: nextAuditId() });
+};
+
+const COLLABORATOR_ROLE_LABEL: Record<PlatformUserRole, string> = {
+  [PlatformUserRole.Owner]: 'Complet',
+  [PlatformUserRole.ReadOnly]: 'Lecture',
 };
 
 /**
@@ -119,6 +126,15 @@ export const activitySlice = createSlice({
           action: AuditAction.ReminderSent,
           targetTenant: { id: tenantId, name: tenantName },
           summary: `a envoyé une relance de facturation à ${tenantName}`,
+        });
+      })
+      .addCase(collaboratorAdded, (state, action) => {
+        const { collaboratorName, role, by, byId, at } = action.payload;
+        pushAudit(state, {
+          at,
+          actor: { id: byId, name: by },
+          action: AuditAction.CollaboratorAdded,
+          summary: `a ajouté ${collaboratorName} comme collaborateur — rôle ${COLLABORATOR_ROLE_LABEL[role]}`,
         });
       });
   },

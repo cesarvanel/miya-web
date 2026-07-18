@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { KpiCard, Skeleton, Table, type TableColumn } from '@miya/ui';
+import { KpiCard, Skeleton, Table, Tooltip, type TableColumn } from '@miya/ui';
 import { Money } from '@miya/kernel';
 import { PageShell } from '@/shared/layout/PageShell';
+import { useCanWrite } from '@/shared/guards/useCanWrite';
 import { InvoiceStatus, type Invoice } from '../../../domain/entities/Invoice';
 import type { PlanName } from '../../../domain/entities/Plan';
 import type { InvoiceStatusFilter } from '../../../domain/selectors/Selectors';
 import { InvoiceStatusBadge } from '../composants/InvoiceStatusBadge';
 import { PlanCard } from '../composants/PlanCard';
 import { useBillingPage } from './useBillingPage';
+
+const READ_ONLY_TOOLTIP = 'Rôle lecture seule';
 
 const PLAN_BADGE_CLASSES: Record<PlanName, string> = {
   Élite: 'bg-violet-soft text-violet',
@@ -42,6 +45,7 @@ export const BillingPage: React.FC = () => {
     openMarkInvoicePaid,
     openSendReminder,
   } = useBillingPage();
+  const canWrite = useCanWrite();
 
   const columns: TableColumn<Invoice>[] = [
     {
@@ -84,30 +88,44 @@ export const BillingPage: React.FC = () => {
       align: 'right',
       cell: (invoice) => (
         <div className="flex justify-end gap-1.5">
-          {invoice.status !== InvoiceStatus.Paid && (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                openMarkInvoicePaid(invoice.id);
-              }}
-              className="shadow-primary-glow cursor-pointer rounded-[10px] bg-primary px-3 py-1.75 text-xs font-bold text-white"
-            >
-              Marquer payée
-            </button>
-          )}
-          {invoice.status === InvoiceStatus.Overdue && (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                openSendReminder(invoice.id);
-              }}
-              className="cursor-pointer rounded-[10px] bg-cream-100 px-3 py-1.75 text-xs font-bold text-ink"
-            >
-              Relancer
-            </button>
-          )}
+          {invoice.status !== InvoiceStatus.Paid &&
+            (canWrite ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openMarkInvoicePaid(invoice.id);
+                }}
+                className="shadow-primary-glow cursor-pointer rounded-[10px] bg-primary px-3 py-1.75 text-xs font-bold text-white"
+              >
+                Marquer payée
+              </button>
+            ) : (
+              <Tooltip label={READ_ONLY_TOOLTIP}>
+                <button type="button" disabled className="cursor-not-allowed rounded-[10px] bg-primary px-3 py-1.75 text-xs font-bold text-white opacity-40">
+                  Marquer payée
+                </button>
+              </Tooltip>
+            ))}
+          {invoice.status === InvoiceStatus.Overdue &&
+            (canWrite ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openSendReminder(invoice.id);
+                }}
+                className="cursor-pointer rounded-[10px] bg-cream-100 px-3 py-1.75 text-xs font-bold text-ink"
+              >
+                Relancer
+              </button>
+            ) : (
+              <Tooltip label={READ_ONLY_TOOLTIP}>
+                <button type="button" disabled className="cursor-not-allowed rounded-[10px] bg-cream-100 px-3 py-1.75 text-xs font-bold text-ink opacity-40">
+                  Relancer
+                </button>
+              </Tooltip>
+            ))}
         </div>
       ),
     },
@@ -161,7 +179,7 @@ export const BillingPage: React.FC = () => {
       ) : (
         <div className="mb-6.5 grid grid-cols-3 gap-3.5">
           {plans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} featured={plan.id === featuredPlanId} onEdit={() => openEditPlan(plan.id)} />
+            <PlanCard key={plan.id} plan={plan} featured={plan.id === featuredPlanId} canEdit={canWrite} onEdit={() => openEditPlan(plan.id)} />
           ))}
         </div>
       )}

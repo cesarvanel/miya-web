@@ -1,3 +1,4 @@
+import type { ChangeLogEntry } from '@miya/kernel';
 import type {
   BankSettings,
   CollectionRules,
@@ -6,7 +7,6 @@ import type {
   InstitutionIdentity,
   Validator,
 } from '../../domain/entities/BankSettings';
-import type { ChangeLogEntry } from '../../domain/entities/ChangeLogEntry';
 
 export interface UpsertPlanInput {
   id?: string;
